@@ -12,11 +12,10 @@
 	library(ggmap)
 	library(maps)
 	library(mapdata)
-	library(cowplot)
 
 ### this section loads in the disparate meta-data files and concatenates them.
 	### load in DrosEU data
-		dat.drosEU <- read.xls("/Users/alanbergland/Documents/work/Projects/2016_DrosEU_integration/population_info/DrosEU_allYears_180607.xlsx")
+		dat.drosEU <- read.xls("./populationInfo/DrosEU_allYears_180607.xlsx")
 
 		dat.drosEU.dt <- as.data.table(dat.drosEU[-1,c(2,2,5,6,7,12,13,15,16)])
 		setnames(dat.drosEU.dt,
@@ -33,7 +32,7 @@
 
 
 	### load in DrosRTEC data
-		dat.drosRTEC <- read.xls("/Users/alanbergland/Documents/work/Projects/2016_DrosEU_integration/population_info/vcf_popinfo_Oct2018.xlsx")
+		dat.drosRTEC <- read.xls("./populationInfo/vcf_popinfo_Oct2018.xlsx")
 
 		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 9, 7, 12, 10, 11, 6, 16, 3)])
 		setnames(dat.drosRTEC.dt,
@@ -47,7 +46,7 @@
 
 	### load in DPGP data
 		###http://johnpool.net/TableS2_populations.xls
-		dat.dpgp <- read.xls("/Users/alanbergland/Documents/work/Projects/2016_DrosEU_integration/population_info/TableS2_populations.xls")
+		dat.dpgp <- read.xls("./populationInfo/TableS2_populations.xls")
 
 		dat.dpgp.dt <- as.data.table(dat.dpgp[-c(1:4),c(1,1, 2,3,4,6,7,9)])
 		setnames(dat.dpgp.dt,
@@ -89,163 +88,4 @@
 		samps <- merge(samps, o[,-c("lat", "long"), with=F])
 
 	### save
-		save(samps, str
-		write.csv(samps, "~/samps.csv", quote=F, row.names=F)
-
-### quality checks: are all the samples from the meta-data files in the SYNC file?
-	### load header info for SYNC file
-		sync.meta <- fread("/Users/alanbergland/Documents/work/Projects/2016_DrosEU_integration/population_info/DrosEU14-16-DrosRTEC-DPG.meta")
-		setnames(sync.meta, names(sync.meta), c("colNum", "sequenceId", "origin"))
-
-	### do test
-		sapply(samps$sequenceId, function(x) x%in%sync.meta$sequenceId)
-
-		samps$sequenceId[!sapply(samps$sequenceId, function(x) x%in%sync.meta$sequenceId)]
-		sync.meta$sequenceId[!sapply(sync.meta$sequenceId, function(x) x%in%samps$sequenceId)]
-
-
-
-
-		setkey(samps, sequenceId)
-		setkey(sync.meta, sequenceId)
-
-
-		samps <- merge(samps, sync.meta)
-
-
-
-### find sites with multiple time points
-	samps.ag <- samps[,list(nSamps=length(locality),
-						nSpring=sum(season=="spring"),
-						nFall=sum(season=="fall"),
-						nTime=length(unique(collectionDate)),
-						maxDelta=max(yday) - min(yday),
-						lat=mean(lat),
-						long=mean(long)),
-				list(locality, year, continent)]
-
-	setkey(samps.ag, locality, year)
-	setkey(samps, locality, year)
-
-
-### plot multi-sample populations
-
-	multi_sample <- ggplot() +
-	geom_line(data= samps[J(samps.ag[maxDelta>10])], aes(x=as.Date(yday, origin = as.Date("2018-01-01")), y=lat, group=locality, linetype=continent)) +
-	geom_point(data=samps[J(samps.ag[maxDelta>10])], aes(x=as.Date(yday, origin = as.Date("2018-01-01")), y=lat, group=locality, color=season)) +
-	facet_grid(.~year) +
-	theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position="bottom", legend.direction="vertical") +
-	scale_x_date(date_labels = "%b", limits = as.Date(c(110,355), origin = as.Date("2018-01-01"))) +
-	xlab("Collection Date") + ylab("Latitude")
-
-	ggsave(multi_sample, file="~/multiSample.pdf")
-
-
-### num. flies plot
-
-	samps[,nFlies:=as.numeric(as.character(nFlies))]
-	samps[,sampleId:=as.character(sampleId)]
-	samps[,sampleId:=factor(sampleId,
-							levels=c(samps[set=="DrosEU"]$sampleId,
-						  			 samps[set=="DrosRTEC"][order(nFlies)]$sampleId,
-								 	 samps[set=="dpgp"]$sampleId))]
-
-
-	nFlies.plot <- ggplot(data=samps, aes(x=sampleId, y=nFlies, color=set)) + geom_point() +
-					theme(axis.text.x=element_blank(), axis.title.x=element_blank()) +
-					ylab("Num. flies sampled")
-
-	ggsave(nFlies.plot, file="~/numFlies.pdf")
-
-
-
-
-
-
-
-
-
-
-
-
-
-	single_samp <- ggplot(data=samps[J(samps.ag[maxDelta<10])], aes(x=yday, y=lat, color=season)) +
-	geom_point()
-
-
-
-
-	ggplot(data=samps[J(samps.ag[maxDelta>20])], aes(x=yday, y=lat, color=continent, group=locality)) +
-	geom_line() + geom_point() + facet_grid(.~year) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-	xlab("Julian Day") + ylab("Latitude")
-
-
-
-	samps[J(samps.ag[maxDelta>20]), popId := factor(sampleId, levels=sampleId[order(lat)])]
-
-	ggplot(data=samps[J(samps.ag[maxDelta>20])], aes(x=yday, y=popId, color=season, group=popId)) +
-	geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-	xlab("Julian Day") + ylab("Latitude")
-
-
-
-
-	samps[J(samps.ag[maxDelta>20]), popId := factor(sampleId, levels=sampleId[order(lat)])]
-
-	ggplot(data=samps, aes(x=yday, y=lat, color=season, group=sampleId)) +
-	geom_line() + geom_point() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-	xlab("Julian Day") + ylab("Latitude")
-
-
-
-
-
-
-### progression plot
-
-	drosRTEC.plosG <- ggplot() +
-			geom_line(data=samps[J(samps.ag[maxDelta>30])][set=="DrosRTEC"][year<=2011], aes(x=yday, y=lat, group=locality), color="grey") +
-			geom_point(data=samps[J(samps.ag[maxDelta>30])][set=="DrosRTEC"][year<=2011], aes(x=yday, y=lat, color=season, group=locality))
-
-
-	drosRTEC.plot <- ggplot() +
-			geom_line(data=samps[J(samps.ag[maxDelta>30])][set=="DrosRTEC"], aes(x=yday, y=lat, group=locality), color="grey") +
-			geom_point(data=samps[J(samps.ag[maxDelta>30])][set=="DrosRTEC"], aes(x=yday, y=lat, color=season, group=locality))
-
-
-	dest.plot <- ggplot() +
-			geom_line(data=samps[J(samps.ag[maxDelta>30])], aes(x=yday, y=lat, group=locality), color="grey") +
-			geom_point(data=samps[J(samps.ag[maxDelta>30])], aes(x=yday, y=lat, color=continent, group=locality)) +
-			facet_grid(year~.)
-
-	plot_grid(drosRTEC.plosG, drosRTEC.plot, dest.plot, nrow)
-
-
-
-### map plot
-
-	world <- as.data.table(map_data("world"))
-
-	samps.ag.ag <- samps.ag[,list(n=sum(nTime), lat=mean(lat), long=mean(long)), list(locality)]
-
-	### make maps
-
-		min.lat.eu <- 35
-		max.lat.eu <- 55
-		min.long.eu <- -10
-		max.long.eu <- 37
-		# [long>=min.long.eu & long<= max.long.eu][lat>=min.lat.eu & lat<=max.lat.eu]
-		#[longitude>=min.long.eu & longitude<= max.long.eu][latitude>=min.lat.eu & latitude<=max.lat.eu]
-
-
-		europe <- 	ggplot() +
-					geom_polygon(data = world,
-								aes(x=long, y = lat, group = group), fill="lightgrey") +
-					geom_point(data = samps.ag.ag,
-								aes(x=long, y=lat, size=I((n-1)/2 + 4)), alpha=.5) +
-					xlab("Longitude") + ylab("Latitude") + scale_fill_manual(values="black")
-		## north america
-		min.lat.na <- 25
-		max.lat.na <- 50
-		min.long.na <- -130
-		max.long.na <- -65
+		write.csv(samps, "./populationInfo/samps.csv", quote=F, row.names=F)
