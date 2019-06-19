@@ -80,5 +80,3 @@
 					ylab("Num. flies sampled")
 
 	ggsave(nFlies.plot, file="~/numFlies.pdf")
-
-

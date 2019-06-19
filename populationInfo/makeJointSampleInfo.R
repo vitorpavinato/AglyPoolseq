@@ -20,7 +20,7 @@
 		dat.drosEU.dt <- as.data.table(dat.drosEU[-1,c(2,2,5,6,7,12,13,15,16)])
 		setnames(dat.drosEU.dt,
 				names(dat.drosEU.dt),
-				c("sampleId", "sequenceId", "country", "city", "collectionDate", "lat", "long", "season", "nFlies"))
+				c("sampleId", "sequenceId", "country", "city", "collectionDate", "lat", "long", "season", "nAutosomes"))
 		dat.drosEU.dt[,locality:=paste(tstrsplit(sampleId, "_")[[1]],
 									tstrsplit(sampleId, "_")[[2]], sep="_")]
 		dat.drosEU.dt[season=="S", season:="spring"]
@@ -29,7 +29,7 @@
 		dat.drosEU.dt[,collectionDate := as.POSIXct(collectionDate)]
 		dat.drosEU.dt[,continent:="Europe"]
 		dat.drosEU.dt[,set:="DrosEU"]
-
+		dat.drosEU.dt[,nFlies:=nAutosomes/2]
 
 	### load in DrosRTEC data
 		dat.drosRTEC <- read.xls("./populationInfo/vcf_popinfo_Oct2018.xlsx")
