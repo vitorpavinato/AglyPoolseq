@@ -23,22 +23,36 @@
     seqSetFilter(genofile, variant.id=snp.samp$variant.id)
     tmp <- seqGetData(genofile, "annotation/format/AD")
 
-    tmp.names <- foreach(i=1:length(tmp$length), .combine="rbind")%do%{
-      data.table(var=c("refDP", "altDP")[1:tmp$length[i]],
-                 col=i*(1:tmp$length[i]),
-                 variant.id=snp.samp[i]$variant.id)
-    }
 
-    tmp.refDP <- tmp$data[,tmp.names$var=="refDP"]
+    tmp.names <- data.table(col=cumsum(unlist(sapply(tmp$length, function(x) rep(1, x)))),
+                            var=unlist(sapply(tmp$length, function(x) list(c("refDP", "altDP")[1:x]))),
+                            variant.id=unlist(apply(cbind(snp.samp$variant.id, tmp$length), 1, function(x) rep(x[1], each=x[2]))))
+
+    tmp.ag <- tmp.names[,list(n=length(col)), list(variant.id)]
+
     tmp.dt <- data.table(refDP = expand.grid(tmp$data[,tmp.names$var=="refDP"])[,1],
                          sample.id = rep(seqGetData(genofile, "sample.id"), dim(snp.samp)[1]),
                          variant.id = rep(snp.samp$variant.id, each=length(seqGetData(genofile, "sample.id"))))
 
-     setkey(tmp.dt, variant.id)
-     setkey(snp.samp, variant.id)
+
+
+    setkey(tmp.dt, variant.id)
+    setkey(snp.samp, variant.id)
 
      tmp.dt <- merge(tmp.dt, snp.samp)
      tmp.dt.ag <- tmp.dt[,list(medRD=mean(refDP, na.rm=T)), list(chr, sample.id)]
 
  ### plot
      ggplot(data=tmp.dt.ag[sort(medRD)], aes(x=chr, y=log10(medRD))) + geom_boxplot()
+
+
+
+
+
+
+
+### needs some work
+tmp.dt <- data.table(refDP = expand.grid(tmp$data[,tmp.names[tmp.names$variant.id%in%tmp.ag[n==2]$variant.id]$var=="refDP"])[,1],
+                     altDP = expand.grid(tmp$data[,tmp.names[tmp.names$variant.id%in%tmp.ag[n==2]$variant.id]$var=="altDP"])[,1],
+                     sample.id = rep(seqGetData(genofile, "sample.id"), dim(snp.samp)[1]),
+                     variant.id = rep(snp.samp$variant.id, each=length(seqGetData(genofile, "sample.id"))))
