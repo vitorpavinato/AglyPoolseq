@@ -15,7 +15,7 @@
 
 ### this section loads in the disparate meta-data files and concatenates them.
 	### load in DrosEU data
-		dat.drosEU <- read.xls("./populationInfo/DrosEU_allYears_180607.xlsx")
+		dat.drosEU <- read.xls("./DEST/populationInfo/DrosEU_allYears_180607.xlsx")
 
 		dat.drosEU.dt <- as.data.table(dat.drosEU[-1,c(2,2,5,6,7,12,13,15,16)])
 		setnames(dat.drosEU.dt,
@@ -29,10 +29,11 @@
 		dat.drosEU.dt[,collectionDate := as.POSIXct(collectionDate)]
 		dat.drosEU.dt[,continent:="Europe"]
 		dat.drosEU.dt[,set:="DrosEU"]
-		dat.drosEU.dt[,nFlies:=nAutosomes/2]
+		dat.drosEU.dt[,nFlies:=as.numeric(as.character(nAutosomes))/2]
+		dat.drosEU.dt[,nAutosomes:=NULL]
 
 	### load in DrosRTEC data
-		dat.drosRTEC <- read.xls("./populationInfo/vcf_popinfo_Oct2018.xlsx")
+		dat.drosRTEC <- read.xls("./DEST/populationInfo/vcf_popinfo_Oct2018.xlsx")
 
 		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 9, 7, 12, 10, 11, 6, 16, 3)])
 		setnames(dat.drosRTEC.dt,
@@ -46,7 +47,7 @@
 
 	### load in DPGP data
 		###http://johnpool.net/TableS2_populations.xls
-		dat.dpgp <- read.xls("./populationInfo/TableS2_populations.xls")
+		dat.dpgp <- read.xls("./DEST/populationInfo/TableS2_populations.xls")
 
 		dat.dpgp.dt <- as.data.table(dat.dpgp[-c(1:4),c(1,1, 2,3,4,6,7,9)])
 		setnames(dat.dpgp.dt,
@@ -70,10 +71,10 @@
 		samps[,long := as.numeric(as.character(long))]
 		samps[,year := year(collectionDate)]
 		samps[,yday := yday(collectionDate)]
-
+		samps[,nFlies := as.numeric(as.character(nFlies))]
 
 	### get GHCND site
-		gh <- fread("~/ghcnd-stations.csv", header=F, fill=T)
+		gh <- fread("./DEST/populationInfo/ghcnd-stations.csv", header=F, fill=T)
 		setnames(gh, names(gh), c("stationName", "lat", "long"))
 
 		o <- foreach(i=1:dim(samps)[1], .combine="rbind")%do%{
@@ -88,4 +89,4 @@
 		samps <- merge(samps, o[,-c("lat", "long"), with=F])
 
 	### save
-		write.csv(samps, "./populationInfo/samps.csv", quote=F, row.names=F)
+		write.csv(samps, "./DEST/populationInfo/samps.csv", quote=F, row.names=F)
