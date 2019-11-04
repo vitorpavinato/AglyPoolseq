@@ -59,5 +59,6 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
 elif [ "${SLURM_ARRAY_TASK_ID}" == "7" ]; then
   echo "foo7"
 elif [ "${SLURM_ARRAY_TASK_ID}" == "8" ]; then
-  mv /scratch/aob2x/dest/dgn/rawData/Simulans* /scratch/aob2x/dest/dgn/wideData/
+  cd /scratch/aob2x/dest/dgn/rawData/
+  ls Simulans* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/SIM_{}
 fi
