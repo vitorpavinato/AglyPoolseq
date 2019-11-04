@@ -18,7 +18,7 @@
   fileName=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | rev | cut -f1 -d'/' | rev )
 
   tar -zvx \
-  --directory=/scratch/aob2x/dest/dgn/wideData \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
 cd /scratch/aob2x/dest/dgn/wideData
@@ -34,16 +34,30 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
   echo "foo4"
 elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
 
-  cd /scratch/aob2x/dest/dgn/wideData/NUZHDIN_sequences
+  cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences
 
   tar -xvf NUZHDIN_Chr2L_sequences.tar
+  cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences/NUZHDIN_Chr2L
+  ls w* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/WCA_{}
+
   tar -xvf NUZHDIN_Chr2R_sequences.tar
+  cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences/NUZHDIN_Chr2R
+  ls w* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/WCA_{}
+
   tar -xvf NUZHDIN_Chr3L_sequences.tar
+  cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences/NUZHDIN_Chr3L
+  ls w* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/WCA_{}
+
   tar -xvf NUZHDIN_Chr3R_sequences.tar
+  cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences/NUZHDIN_Chr3R
+  ls w* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/WCA_{}
+
   tar -xvf NUZHDIN_ChrX_sequences.tar
-  
+  cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences/NUZHDIN_ChrX
+  ls w* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/WCA_{}
+
 elif [ "${SLURM_ARRAY_TASK_ID}" == "7" ]; then
   echo "foo7"
 elif [ "${SLURM_ARRAY_TASK_ID}" == "8" ]; then
-  echo "foo8"
+  mv /scratch/aob2x/dest/dgn/rawData/Simulans* /scratch/aob2x/dest/dgn/wideData/
 fi
