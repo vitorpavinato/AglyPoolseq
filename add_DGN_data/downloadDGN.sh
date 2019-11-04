@@ -12,7 +12,7 @@
 
 
 ### download datasets
-  #SLURM_ARRAY_TASK_ID=3
+  #SLURM_ARRAY_TASK_ID=4
 
   name=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f2 -d' ' )
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
