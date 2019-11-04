@@ -11,14 +11,42 @@
 #SBATCH --account berglandlab
 
 ### unpack datasets
-  #SLURM_ARRAY_TASK_ID=8
+  #SLURM_ARRAY_TASK_ID=6
 
   name=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f2 -d' ' )
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
   fileName=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | rev | cut -f1 -d'/' | rev )
 
-  mkdir -p /scratch/aob2x/dest/dgn/wideData
-
   tar -zvx \
   --directory=/scratch/aob2x/dest/dgn/wideData \
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
+cd /scratch/aob2x/dest/dgn/wideData
+
+if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
+  echo ${SLURM_ARRAY_TASK_ID}
+  echo "foo1"
+elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
+  echo "foo2"
+elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
+  echo "foo3"
+elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
+  echo "foo4"
+elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
+
+  cd /scratch/aob2x/dest/dgn/wideData/NUZHDIN_sequences
+
+  tar -xvf NUZHDIN_Chr2L_sequences.tar
+  tar -xvf NUZHDIN_Chr2R_sequences.tar
+  tar -xvf NUZHDIN_Chr3L_sequences.tar
+  tar -xvf NUZHDIN_Chr3R_sequences.tar
+  tar -xvf NUZHDIN_ChrX_sequences.tar
+
+
+elif [ "${SLURM_ARRAY_TASK_ID}" == "7" ]; then
+  echo "foo6"
+elif [ "${SLURM_ARRAY_TASK_ID}" == "8" ]; then
+
+  ###NONE!
+  
+fi
