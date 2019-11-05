@@ -31,7 +31,43 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
   echo "foo3"
 elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
-  echo "foo4"
+
+    cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences
+
+    tar -xvf CLARK_Chr2L_sequences.tar
+    cd /scratch/aob2x/dest/dgn/rawData/CLARK/CLARK_Chr2L
+    ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/PEK_{}
+    ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/INY_{}
+    ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/NL_{}
+
+    tar -xvf CLARK_Chr2R_sequences.tar
+    cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr2R
+    ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/PEK_{}
+    ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/INY_{}
+    ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/NL_{}
+    ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/TAS_{}
+
+    tar -xvf CLARK_Chr3L_sequences.tar
+    cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr3L
+    ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/PEK_{}
+    ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/INY_{}
+    ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/NL_{}
+    ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/TAS_{}
+
+    tar -xvf CLARK_Chr3R_sequences.tar
+    cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr3R
+    ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/PEK_{}
+    ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/INY_{}
+    ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/NL_{}
+    ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/TAS_{}
+
+    tar -xvf CLARK_ChrX_sequences.tar
+    cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_ChrX
+    ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/PEK_{}
+    ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/INY_{}
+    ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/NL_{}
+    ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/TAS_{}
+
 elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
 
   cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences
