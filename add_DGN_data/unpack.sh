@@ -17,20 +17,28 @@
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
   fileName=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | rev | cut -f1 -d'/' | rev )
 
-  tar -zvx \
-  --directory=/scratch/aob2x/dest/dgn/rawData \
-  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
 cd /scratch/aob2x/dest/dgn/wideData
 
 if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
-  echo ${SLURM_ARRAY_TASK_ID}
-  echo "foo1"
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
 elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
-  echo "foo2"
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
-  echo "foo3"
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
 elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
+    tar -zvx \
+    --directory=/scratch/aob2x/dest/dgn/rawData \
+    --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences
 
@@ -69,6 +77,9 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/TAS_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
+  tar -zvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
   cd /scratch/aob2x/dest/dgn/rawData/NUZHDIN_sequences
 
@@ -93,8 +104,15 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
   ls w* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/WCA_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "7" ]; then
-  echo "foo7"
+  tar -zvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
 elif [ "${SLURM_ARRAY_TASK_ID}" == "8" ]; then
+  tar -zvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
   cd /scratch/aob2x/dest/dgn/rawData/
   ls Simulans* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/SIM_{}
 fi
