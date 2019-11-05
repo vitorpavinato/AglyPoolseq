@@ -7,10 +7,10 @@
 
 ## Parse DGN data ###
   ### 0. Download all DGN data
-  > Needs a tab delimited file with jobID, prefix, path to DGN bz2 file: DEST/add_DGN_data/dgn.list
-  > Note that job 4 will fail. Why? Because 4 is the fourth line on DGN website for the DSPR. I don't think that we need to include that one.
-  > RUN: `sbatch --array=1-8 /scratch/aob2x/dest/DEST/add_DGN_data/downloadDGN.sh`
-  > OUT: /scratch/aob2x/dest/dgn/rawData
+  > Needs a tab delimited file with jobID, prefix, path to DGN bz2 file: DEST/add_DGN_data/dgn.list <br/>
+  > Note that job 4 will fail. Why? Because 4 is the fourth line on DGN website for the DSPR. I don't think that we need to include that one.<br/>
+  > RUN: `sbatch --array=1-8 /scratch/aob2x/dest/DEST/add_DGN_data/downloadDGN.sh`<br/>
+  > OUT: /scratch/aob2x/dest/dgn/rawData<br/>
 
   ### 1. Unpack
   > Each tarball is a bit different so unpack script plays differently for each 1-8 (minus 4), from above. <br/>
@@ -21,6 +21,7 @@
   > NUZHDIN RUN & DONE: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
   > POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
   > SIMULANS RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  <br/>
   > OUT: /scratch/aob2x/dest/dgn/wideData/<br/>
 
   ### 2. Wide to long
