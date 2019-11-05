@@ -16,12 +16,11 @@
   > Each tarball is a bit different so unpack script plays differently for each 1-8 (minus 4), from above. <br/>
   > DPGP2 RUN: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
   > DPGP3 RUN: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
-  > DGRP RUN: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > DGRP RUN & DONE: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
   > CLARK RUN & DONE: `sbatch --array=5 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
   > NUZHDIN RUN & DONE: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
-  > POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > ~~POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>~~
   > SIMULANS RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
-  <br/>
   > OUT: /scratch/aob2x/dest/dgn/wideData/<br/>
 
   ### 2. Wide to long
