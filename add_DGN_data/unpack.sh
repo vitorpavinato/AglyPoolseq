@@ -31,9 +31,18 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
-  tar -jvx \
-  --directory=/scratch/aob2x/dest/dgn/rawData \
-  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+  #tar -jvx \
+  #--directory=/scratch/aob2x/dest/dgn/rawData \
+  #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
+  cd /scratch/aob2x/dest/dgn/rawData/
+  tar -xvf dgrp_2L.tar
+  tar -xvf dgrp_2R.tar
+  tar -xvf dgrp_3L.tar
+  tar -xvf dgrp_3R.tar
+  tar -xvf dgrp_X.tar
+
+  ls dgrp_* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DGRP_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
     tar -zvx \

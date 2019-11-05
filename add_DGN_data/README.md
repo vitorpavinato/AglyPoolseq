@@ -14,13 +14,13 @@
 
   ### 1. Unpack
   > Each tarball is a bit different so unpack script plays differently for each 1-8 (minus 4), from above.
-  > RUN: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > RUN: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > RUN: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > RUN: `sbatch --array=5 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > RUN: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
+  > DPGP2 RUN: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
+  > DPGP3 RUN: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
+  > DGRP RUN: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
+  > CLARK RUN & DONE: `sbatch --array=5 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
+  > NUZHDIN RUN & DONE: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
+  > POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
+  > SIMULANS RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
   > OUT: /scratch/aob2x/dest/dgn/wideData/
 
   ### 2. Wide to long
