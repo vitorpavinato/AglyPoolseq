@@ -5,7 +5,7 @@
 
 ## File structure set up
 
-## Parse DGN data ###
+## Parse DGN data ###  
   ### 0. Download all DGN data
   > Needs a tab delimited file with jobID, prefix, path to DGN bz2 file: DEST/add_DGN_data/dgn.list
   > Note that job 4 will fail. Why? Because 4 is the fourth line on DGN website for the DSPR. I don't think that we need to include that one.
