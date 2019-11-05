@@ -26,7 +26,7 @@ if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
-  tar -jvx \
+  tar -zvx \
   --directory=/scratch/aob2x/dest/dgn/rawData \
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
