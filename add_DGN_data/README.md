@@ -5,7 +5,7 @@
 
 ## File structure set up
 
-## Parse DGN data ###  
+## Parse DGN data ###
   ### 0. Download all DGN data
   > Needs a tab delimited file with jobID, prefix, path to DGN bz2 file: DEST/add_DGN_data/dgn.list
   > Note that job 4 will fail. Why? Because 4 is the fourth line on DGN website for the DSPR. I don't think that we need to include that one.
@@ -13,15 +13,15 @@
   > OUT: /scratch/aob2x/dest/dgn/rawData
 
   ### 1. Unpack
-  > Each tarball is a bit different so unpack script plays differently for each 1-8 (minus 4), from above.
-  > DPGP2 RUN: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > DPGP3 RUN: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > DGRP RUN: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > CLARK RUN & DONE: `sbatch --array=5 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > NUZHDIN RUN & DONE: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > SIMULANS RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`
-  > OUT: /scratch/aob2x/dest/dgn/wideData/
+  > Each tarball is a bit different so unpack script plays differently for each 1-8 (minus 4), from above. <br/>
+  > DPGP2 RUN: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > DPGP3 RUN: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > DGRP RUN: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > CLARK RUN & DONE: `sbatch --array=5 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > NUZHDIN RUN & DONE: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > SIMULANS RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh`<br/>
+  > OUT: /scratch/aob2x/dest/dgn/wideData/<br/>
 
   ### 2. Wide to long
   > RUN: `ls /scratch/aob2x/dest/dgn/wideData/ | tr '\t' '\n' | awk '{print NR"\t"$0}' > /scratch/aob2x/dest/dgn/dgn_wideFiles.delim`
