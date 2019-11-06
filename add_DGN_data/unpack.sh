@@ -149,11 +149,11 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "7" ]; then
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
   cd /scratch/aob2x/dest/dgn/rawData/POOL_sequences
-  tar -xvf POOL_Chr2L_sequences.tar
-  tar -xvf POOL_Chr2R_sequences.tar
-  tar -xvf POOL_Chr3L_sequences.tar
-  tar -xvf POOL_Chr3R_sequences.tar
-  tar -xvf POOL_ChrX_sequences.tar
+  tar -xvf POOL_Chr2L_Sequences.tar
+  tar -xvf POOL_Chr2R_Sequences.tar
+  tar -xvf POOL_Chr3L_Sequences.tar
+  tar -xvf POOL_Chr3R_Sequences.tar
+  tar -xvf POOL_ChrX_Sequences.tar
 
   cd /scratch/aob2x/dest/dgn/rawData/POOL_sequences/POOL_Chr2L
   for i in *.seq; do
