@@ -32,7 +32,12 @@ if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
   tar -xvf dpgp2_Chr3R_sequences.tar
   tar -xvf dpgp2_ChrX_sequences.tar
 
-  ls *.seq | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DPGP2_{}
+  for i in *.seq; do
+    pre=$( echo $i |  cut -f1 -d'_' | cut -c1,2 )
+    mv $i /scratch/aob2x/dest/dgn/wideData/${pre}_${i}
+  done
+
+  #ls *.seq | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DPGP2_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
   tar -jvx \
