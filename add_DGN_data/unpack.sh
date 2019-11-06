@@ -31,11 +31,11 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
   #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
   cd /scratch/aob2x/dest/dgn/rawData/
-  tar -xvf dpgp2_Chr2L.tar
-  tar -xvf dpgp2_Chr2R.tar
-  tar -xvf dpgp2_Chr3L.tar
-  tar -xvf dpgp2_Chr3R.tar
-  tar -xvf dpgp2_ChrX.tar
+  tar -xvf dpgp2_Chr2L_sequences.tar
+  tar -xvf dpgp2_Chr2R_sequences.tar
+  tar -xvf dpgp2_Chr3L_sequences.tar
+  tar -xvf dpgp2_Chr3R_sequences.tar
+  tar -xvf dpgp2_ChrX_sequences.tar
 
   ls *.seq | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DPGP2_{}
 
