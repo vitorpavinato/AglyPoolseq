@@ -3,7 +3,7 @@
 #SBATCH -J wide2long # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 6:00:00 ### 6 hours
+#SBATCH -t 0:30:00 ### 30 minutes
 #SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/wide2long.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/wide2long.%A_%a.err # Standard error

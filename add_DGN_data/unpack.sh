@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### unpack datasets
-  #SLURM_ARRAY_TASK_ID=6
+  #SLURM_ARRAY_TASK_ID=2
 
   name=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f2 -d' ' )
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
@@ -40,9 +40,20 @@ if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
   #ls *.seq | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DPGP2_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
-  tar -jvx \
+  tar -zvx \
   --directory=/scratch/aob2x/dest/dgn/rawData \
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
+  cd dpgp3_sequences
+
+  tar -xvf dpgp3_Chr2L.tar
+  tar -xvf dpgp3_Chr2R.tar
+  tar -xvf dpgp3_Chr3L.tar
+  tar -xvf dpgp3_Chr3R.tar
+  tar -xvf dpgp3_ChrX.tar
+
+  ls ZI* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/dpgp3_{}
+
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
   #tar -jvx \
