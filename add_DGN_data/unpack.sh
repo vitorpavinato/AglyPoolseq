@@ -21,11 +21,6 @@
 cd /scratch/aob2x/dest/dgn/wideData
 
 if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
-  tar -jvx \
-  --directory=/scratch/aob2x/dest/dgn/rawData \
-  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
-
-elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
   #tar -zvx \
   #--directory=/scratch/aob2x/dest/dgn/rawData \
   #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
@@ -38,6 +33,11 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
   tar -xvf dpgp2_ChrX_sequences.tar
 
   ls *.seq | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DPGP2_{}
+
+elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
   #tar -jvx \
