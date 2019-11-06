@@ -18,9 +18,12 @@
 ###
   #SLURM_ARRAY_TASK_ID=1
 
-  filestem=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/dgn/dgn_wideFiles.delim | cut -f2 )
+  filestem=$( grep -w "^${SLURM_ARRAY_TASK_ID}" /scratch/aob2x/dest/dgn/dgn_wideFiles.delim | cut -f2 )
 
   mkdir -p /scratch/aob2x/dest/dgn/longData
+
+
+
 
   sed 's/\(.\)/\1\n/g' \
   /scratch/aob2x/dest/dgn/wideData/${filestem} > \
