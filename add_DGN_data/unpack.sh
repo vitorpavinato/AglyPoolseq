@@ -26,9 +26,18 @@ if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
-  tar -zvx \
-  --directory=/scratch/aob2x/dest/dgn/rawData \
-  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+  #tar -zvx \
+  #--directory=/scratch/aob2x/dest/dgn/rawData \
+  #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
+  cd /scratch/aob2x/dest/dgn/rawData/
+  tar -xvf dpgp2_Chr2L.tar
+  tar -xvf dpgp2_Chr2R.tar
+  tar -xvf dpgp2_Chr3L.tar
+  tar -xvf dpgp2_Chr3R.tar
+  tar -xvf dpgp2_ChrX.tar
+
+  ls *.seq | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DPGP2_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
   #tar -jvx \
@@ -42,7 +51,7 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
   tar -xvf dgrp_Chr3R.tar
   tar -xvf dgrp_ChrX.tar
 
-  ls RAL_* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DGRP_{}
+  ls RAL* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/DGRP_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
     tar -zvx \
