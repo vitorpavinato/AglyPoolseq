@@ -57,6 +57,8 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
   tar -xvf dpgp3_ChrX.tar
 
   ls ZI* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZI_{}
+  cd dpgp3_ChrX
+  ls ZI* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZI_{}
 
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
@@ -86,7 +88,7 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
     tar -xvf CLARK_Chr3R_sequences.tar
     tar -xvf CLARK_ChrX_sequences.tar
 
-    cd /scratch/aob2x/dest/dgn/rawData/CLARK/CLARK_Chr2L
+    cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr2L
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
