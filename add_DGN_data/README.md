@@ -43,9 +43,9 @@
   > the reference geome is one line longer than the DGN data but that is due to a trailing empty line. No prob. <br/>
 
   ### 3. Make per-population SYNC file
-  > RUN: `ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | sort | uniq | awk '{print NR"\t"$0}' > /scratch/aob2x/dest/dgn/pops.delim`
-  > RUN: `nJobs=$( echo "$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )*5-1" | bc )`
-  > RUN: `sbatch --array=0-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh`
+  > RUN: `ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | sort | uniq | awk '{print NR"\t"$0}' > /scratch/aob2x/dest/dgn/pops.delim` <br/>
+  > RUN: `nJobs=$( echo "$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )*5-1" | bc )` <br/>
+  > RUN: `sbatch --array=0-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh` <br/>
 
 
 
