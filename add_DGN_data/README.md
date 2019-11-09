@@ -27,7 +27,7 @@
   > OUT: /scratch/aob2x/dest/dgn/wideData/<br/>
 
   ### 2. Wide to long
-  > should be 4725 jobs
+  > should be 4725 jobs <br/>
   > RUN: `cd /scratch/aob2x/dest/dgn/wideData/; ls * | tr '\t' '\n' | awk '{print NR"\t"$0}' > /scratch/aob2x/dest/dgn/dgn_wideFiles.delim` <br/>
   > RUN: `sbatch --array=1-$( tail -n1 /scratch/aob2x/dest/dgn/dgn_wideFiles.delim | cut -f1 ) /scratch/aob2x/dest/DEST/add_DGN_data/wide2long.sh` <br/>
   > A quick check to make sure things look good:

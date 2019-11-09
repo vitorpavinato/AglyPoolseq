@@ -33,12 +33,15 @@ elif [ ${chr_i} == "5" ]; then
   chr="X"
 fi
 
+echo $pop
+echo $chr
+
 ############################
 ### paste per chromosome ###
 ############################
 
 paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long > \
-/scratch/aob2x/dest/dgn/csvData/${pop}_*_Chr${chr}*.csv
+/scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv
 
 
 ##########################
@@ -47,7 +50,7 @@ paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long > \
 
 paste -d' ' \
 /scratch/aob2x/dest/referenceGenome/r5/${chr}.long \
-/scratch/aob2x/dest/dgn/csvData/${pop}_*_Chr${chr}*.csv | head -n 10000 | \
+/scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv | \
 awk -F' ' -v chr=${chr} '
 {
 nN=gsub(/N/,"",$2)"\t"
@@ -63,7 +66,7 @@ if((nA/nObs > 0 && nA/nObs < 1) || (nC/nObs > 0 && nC/nObs < 1) || (nT/nObs > 0 
 print chr"\t"NR"\t"toupper($1)"\t"nN"\t"nA"\t"nC"\t"nT"\t"nG
 }
 }
-}' > /scratch/aob2x/dest/dgn/syncData/${pop}_*_Chr${chr}*.sync
+}' > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.sync
 
 
 
