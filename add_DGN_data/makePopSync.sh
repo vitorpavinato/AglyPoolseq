@@ -12,43 +12,63 @@
 
 
 
+#####################
+### get jobs task ###
+#####################
+
+#SLURM_ARRAY_TASK_ID=100
+chr_i=$( echo "${SLURM_ARRAY_TASK_ID}%5+1" | bc )
+pop_i=$( echo "${SLURM_ARRAY_TASK_ID}%35+1" | bc )
+
+pop=$( grep ${pop_i} /scratch/aob2x/dest/dgn/pops.delim | cut -f2 )
+if [ ${chr_i} == "1" ]; then
+  chr="2L"
+elif [ ${chr_i} == "2" ]; then
+  chr="2R"
+elif [ ${chr_i} == "3" ]; then
+  chr="3L"
+elif [ ${chr_i} == "4" ]; then
+  chr="3R"
+elif [ ${chr_i} == "5" ]; then
+  chr="X"
+fi
+
 ############################
 ### paste per chromosome ###
 ############################
 
-paste_per_chr () {
-	paste -d','  ${2}/${3}*${1}*long > \
-	${2}/${3}_${1}.csv
-}
-export -f paste_per_chr
-
-#nohup parallel --gnu -j1 paste_per_chr ::: 2L 2R 3L 3R X ::: /mnt/spicy_2/dest/african/dpgp3_sequences_temp ::: dpgp3 &
-nohup parallel --gnu -j1 paste_per_chr ::: 2L 2R 3L 3R X ::: /mnt/spicy_2/dest/african/dpgp2_sequences_temp ::: CO GA GU NG &
-
-
-
-
-################################
-### tack in reference genome ###
-################################
-
-w2l_ref () {
-	#echo ${1}
-
-	grep -v ">" ${1} | sed 's/\(.\)/\1\n/g' | grep -v '^$' > ${1}.long
-}
-export -f w2l_ref
-
-
-#parallel --gnu -j1 w2l_ref ::: /mnt/spicy_2/dest/reference/chr2L.fa /mnt/spicy_2/dest/reference/chr2R.fa /mnt/spicy_2/dest/reference/chr3L.fa /mnt/spicy_2/dest/reference/chr3R.fa /mnt/spicy_2/dest/reference/chrX.fa
+paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long > \
+/scratch/aob2x/dest/dgn/csvData/${pop}_*_Chr${chr}*.csv
 
 
 ##########################
 ### csv to sync format ###
 ##########################
 
-csv2sync () {
+paste -d' ' \
+/scratch/aob2x/dest/referenceGenome/r5/${chr}.long \
+/scratch/aob2x/dest/dgn/csvData/${pop}_*_Chr${chr}*.csv | head -n 10000 | \
+awk -F' ' -v chr=${chr} '
+{
+nN=gsub(/N/,"",$2)"\t"
+nA=gsub(/A/,"",$2)"\t"
+nC=gsub(/C/,"",$2)"\t"
+nT=gsub(/T/,"",$2)"\t"
+nG=gsub(/G/,"",$2)"\t"
 
+nObs=nA+nC+nT+nG
+
+if(nObs>0) {
+if((nA/nObs > 0 && nA/nObs < 1) || (nC/nObs > 0 && nC/nObs < 1) || (nT/nObs > 0 && nT/nObs < 1) || (nG/nObs > 0 && nG/nObs<1)) {
+print chr"\t"NR"\t"toupper($1)"\t"nN"\t"nA"\t"nC"\t"nT"\t"nG
+}
+}
+}' > /scratch/aob2x/dest/dgn/syncData/${pop}_*_Chr${chr}*.sync
+
+
+
+
+csv2sync () {
 
 fn=${1}
 #chr=$( echo ${fn} | rev | cut -f1 -d'/' | rev | sed 's/dpgp3_//g' | sed 's/.csv//g' )
