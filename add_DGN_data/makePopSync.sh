@@ -16,11 +16,13 @@
 ### get jobs task ###
 #####################
 
-#SLURM_ARRAY_TASK_ID=100
+#SLURM_ARRAY_TASK_ID=1
 chr_i=$( echo "${SLURM_ARRAY_TASK_ID}%5+1" | bc )
 pop_i=$( echo "${SLURM_ARRAY_TASK_ID}%35+1" | bc )
 
-pop=$( grep ${pop_i} /scratch/aob2x/dest/dgn/pops.delim | cut -f2 )
+pop=$( grep  "^${pop_i}[[:space:]]" /scratch/aob2x/dest/dgn/pops.delim | cut -f2 )
+
+
 if [ ${chr_i} == "1" ]; then
   chr="2L"
 elif [ ${chr_i} == "2" ]; then
