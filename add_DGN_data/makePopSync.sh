@@ -67,34 +67,3 @@ print chr"\t"NR"\t"toupper($1)"\t"nN"\t"nA"\t"nC"\t"nT"\t"nG
 }
 }
 }' > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.sync
-
-
-
-
-csv2sync () {
-
-fn=${1}
-#chr=$( echo ${fn} | rev | cut -f1 -d'/' | rev | sed 's/dpgp3_//g' | sed 's/.csv//g' )
-chr=$( echo ${fn} | grep -oE '_2L|_2R|_3L|_3R|_X' | sed 's/_//g' )
-
-paste -d' ' /mnt/spicy_2/dest/reference/chr${chr}.fa.long ${fn} | awk -F' ' -v chr=${chr} '
-{
-nN=gsub(/N/,"",$2)"\t"
-nA=gsub(/A/,"",$2)"\t"
-nC=gsub(/C/,"",$2)"\t"
-nT=gsub(/T/,"",$2)"\t"
-nG=gsub(/G/,"",$2)"\t"
-
-nObs=nA+nC+nT+nG
-
-if(nObs>0) {
-if((nA/nObs > 0 && nA/nObs < 1) || (nC/nObs > 0 && nC/nObs < 1) || (nT/nObs > 0 && nT/nObs < 1) || (nG/nObs > 0 && nG/nObs<1)) {
-print chr"\t"NR"\t"toupper($1)"\t"nN"\t"nA"\t"nC"\t"nT"\t"nG
-}
-}
-}' > ${1}.sync
-}
-export -f csv2sync
-
-#nohup parallel --gnu -j1 csv2sync ::: $( ls /mnt/spicy_2/dest/african/dpgp3_sequences_temp/dpgp3_*.csv ) &
-nohup parallel --gnu -j1 csv2sync ::: $( ls /mnt/spicy_2/dest/african/dpgp2_sequences_temp/*.csv ) &
