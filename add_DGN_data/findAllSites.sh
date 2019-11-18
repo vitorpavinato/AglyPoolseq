@@ -12,15 +12,15 @@
 
 #SLURM_ARRAY_TASK_ID=2
 
-if [ ${SLURM_ARRAY_TASK_ID}=1 ]; then
+if [ ${SLURM_ARRAY_TASK_ID} -eq 1 ]; then
   chr=2L
-elif [ ${SLURM_ARRAY_TASK_ID}=2 ]; then
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 2 ]; then
   chr=2R
-elif [ ${SLURM_ARRAY_TASK_ID}=3 ]; then
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 3 ]; then
   chr=3L
-elif [ ${SLURM_ARRAY_TASK_ID}=4 ]; then
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 4 ]; then
   chr=3R
-elif [ ${SLURM_ARRAY_TASK_ID}=5 ]; then
+elif [ ${SLURM_ARRAY_TASK_ID} -eq 5 ]; then
   chr=X
 fi
 
