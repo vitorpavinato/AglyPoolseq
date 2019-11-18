@@ -12,5 +12,5 @@
 
 
 ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | sort | uniq | \
-awk '{print "2L\t"$0"\n2R\t"$0"\n3L\t"$0"\n3R\t"$0"\nX\t"$0"\n"}' | awk '{print NF"\t"$0}' > \
+awk '{print "2L\t"$0"\n2R\t"$0"\n3L\t"$0"\n3R\t"$0"\nX\t"$0}' | awk '{print NR"\t"$0}' > \
 /scratch/aob2x/dest/dgn/pops.delim
