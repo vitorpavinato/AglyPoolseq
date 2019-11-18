@@ -44,7 +44,7 @@ echo $chr
 ### paste per chromosome ###
 ############################
 
-paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long > \
+paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long  \
 /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv
 
 

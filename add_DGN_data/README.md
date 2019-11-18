@@ -48,11 +48,8 @@
   > RUN: `nJobs=$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )` <br/>
   > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh` <br/>
 
-
-sbatch --array=1-10 /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh
-
-  ### 4. Identify the positions of all polymorphic sites
-  > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/findAllSites.sh`
+  ### 4. Identify the positions of all polymorphic sites <br/>
+  > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/findAllSites.sh` <br/>
 
 
 
