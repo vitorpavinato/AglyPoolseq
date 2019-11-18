@@ -43,11 +43,16 @@
   > the reference geome is one line longer than the DGN data but that is due to a trailing empty line. No prob. <br/>
 
   ### 3. Make per-population SYNC file
-  > RUN: `ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | sort | uniq | awk '{print NR"\t"$0}' > /scratch/aob2x/dest/dgn/pops.delim` <br/>
-  > RUN: `nJobs=$( echo "$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )*5-1" | bc )` <br/>
-  > RUN: `sbatch --array=0-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh` <br/>
+  ~~> RUN: `ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | sort | uniq | awk '{print "2L\t"$0"\n2R\t"$0"\n3L\t"$0"\n3R\t"$0"\nX\t"$0"\n"}' > /scratch/aob2x/dest/dgn/pops.delim` <br/>~~
+  > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/pop_chr_maker.sh`
+  > RUN: `nJobs=$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )` <br/>
+  > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh` <br/>
 
 
+sbatch --array=1-10 /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh
+
+  ### 4. Identify the positions of all polymorphic sites
+  > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/findAllSites.sh`
 
 
 
