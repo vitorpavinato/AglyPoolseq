@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
 #SBATCH -t 1:00:00 ### 1 hours
-#SBATCH --mem 8G
+#SBATCH --mem 12G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/getSNP_list_drosRTEC.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/getSNP_list_drosRTEC.%A_%a.err # Standard error
 #SBATCH -p standard
@@ -12,7 +12,7 @@
 
 #SLURM_ARRAY_TASK_ID=2
 
-module load gcc/7.1.0  openmpi/3.1.4 R/3.6.1; R
+module load gcc/7.1.0  openmpi/3.1.4 R/3.6.1
 
 Rscript /scratch/aob2x/dest/DEST/add_DGN_data/getSNP_list_drosRTEC.R
 
