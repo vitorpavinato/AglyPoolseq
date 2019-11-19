@@ -16,15 +16,15 @@
   > Each tarball is a bit different so unpack script plays differently for each 1-8 (minus 4), from above. <br/>
   > `sbatch --array=1-8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
   >
-  > These are only for debugging: <br/>
-  > DPGP2 RUN & DONE: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  > DPGP3 RUN & DONE: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  > DGRP RUN & DONE: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  > CLARK RUN & DONE: `sbatch --array=5 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  > NUZHDIN RUN & DONE: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  > POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  > SIMULANS RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  > OUT: /scratch/aob2x/dest/dgn/wideData/<br/>
+  ~~> These are only for debugging: <br/> ~~
+  ~~> DPGP2 RUN & DONE: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
+  ~~> DPGP3 RUN & DONE: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
+  ~~> DGRP RUN & DONE: `sbatch --array=3 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
+  ~~> CLARK RUN & DONE: `sbatch --array=5 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
+  ~~> NUZHDIN RUN & DONE: `sbatch --array=6 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
+  ~~> POOL RUN: `sbatch --array=7 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
+  ~~> SIMULANS RUN & DONE: `sbatch --array=8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
+  ~~> OUT: /scratch/aob2x/dest/dgn/wideData/<br/> ~~
 
   ### 2. Wide to long
   > should be 4725 jobs <br/>
@@ -52,8 +52,12 @@
   > RUN: `sbatch --array=1-5 /scratch/aob2x/dest/DEST/add_DGN_data/findAllSites.sh` <br/>
 
   ### 5. Liftover sites to R6 <br/>
+  > Need to install 'liftOver' first from : `wget -P ~ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver`
   > RUN: `wget -P /scratch/aob2x/dest/dgn/liftoverChains/ http://hgdownload.soe.ucsc.edu/goldenPath/dm6/liftOver/dm6ToDm3.over.chain.gz` <br/>
   > RUN: `wget -P /scratch/aob2x/dest/dgn/liftoverChains/ http://hgdownload.soe.ucsc.edu/goldenPath/dm3/liftOver/dm3ToDm6.over.chain.gz` <br/>
+  > RUN:
 
+
+  
 http://hgdownload.soe.ucsc.edu/goldenPath/dm3/liftOver/dm3ToDm6.over.chain.gz
 ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | awk '{A[$1]++}END{for(i in A)print i,A[i]}' | sort -k2,2n
