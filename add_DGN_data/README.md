@@ -49,9 +49,11 @@
   > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh` <br/>
 
   ### 4. Identify the positions of all polymorphic sites <br/>
-  > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/findAllSites.sh` <br/>
+  > RUN: `sbatch --array=1-5 /scratch/aob2x/dest/DEST/add_DGN_data/findAllSites.sh` <br/>
 
+  ### 5. Liftover sites to R6 <br/>
+  > RUN: `wget -P /scratch/aob2x/dest/dgn/liftoverChains/ http://hgdownload.soe.ucsc.edu/goldenPath/dm6/liftOver/dm6ToDm3.over.chain.gz` <br/>
+  > RUN: `wget -P /scratch/aob2x/dest/dgn/liftoverChains/ http://hgdownload.soe.ucsc.edu/goldenPath/dm3/liftOver/dm3ToDm6.over.chain.gz` <br/>
 
-
-
+http://hgdownload.soe.ucsc.edu/goldenPath/dm3/liftOver/dm3ToDm6.over.chain.gz
 ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | awk '{A[$1]++}END{for(i in A)print i,A[i]}' | sort -k2,2n
