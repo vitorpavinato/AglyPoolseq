@@ -12,11 +12,12 @@
 
 #SLURM_ARRAY_TASK_ID=2
 
+module load gcc/7.1.0  openmpi/3.1.4 R/3.6.1; R
 
+Rscript /scratch/aob2x/dest/DEST/add_DGN_data/getSNP_list_drosRTEC.R
 
-  ### in bash
-/mnt/spicy_1/sin/liftOver \
-/mnt/spicy_2/dest/drosRTEC_sites.dm3.bed \
-/mnt/spicy_1/sin/dm3ToDm6.over.chain \
-/mnt/spicy_2/dest/drosRTEC_sites.dm6.bed \
-/mnt/spicy_2/dest/drosRTEC_sites.unmapped.bed
+~/liftOver \
+/scratch/aob2x/dest/drosRTEC/drosRTEC_sites.dm3.bed \
+/scratch/aob2x/dest/dgn/liftoverChains/dm3ToDm6.over.chain \
+/scratch/aob2x/dest/drosRTEC/drosRTEC_sites.dm6.bed \
+/scratch/aob2x/dest/drosRTEC/drosRTEC_sites.unmapped.bed
