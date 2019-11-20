@@ -24,7 +24,7 @@ module load gcc/7.1.0 bedops/2.4.1
  } else if(NF==4) {
    print $0
  }
-}' |head > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed.tmp
+}' > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed.tmp
 
 rm /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed
 mv  /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed.tmp  /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed
