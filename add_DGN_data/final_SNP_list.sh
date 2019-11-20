@@ -20,7 +20,7 @@ module load gcc/7.1.0 bedops/2.4.1
  cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed | \
  awk '{
  if(NF==3) {
-   print $0"\tdm6_"$1":"$2"-"$3
+   print $0"\tdm6_"$1":"$2
  } else if(NF==4) {
    print $0
  }
