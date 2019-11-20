@@ -17,14 +17,14 @@
 module load gcc/7.1.0 bedops/2.4.1
 
 ### First do a bit of modification to the bed file
-# cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed | \
-# awk '{
-# if(NF==3) {
-#   print $0"\tdm6_"$1":"$2"-"$3
-# } else if(NF==4) {
-#   print $0
-# }
-# }' > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed.tmp
+ cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed | \
+ awk '{
+ if(NF==3) {
+   print $0"\tdm6_"$1":"$2"-"$3
+ } else if(NF==4) {
+   print $0
+ }
+ }' > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed.tmp
 
 # rm /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed
 # mv  /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed.tmp  /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed
