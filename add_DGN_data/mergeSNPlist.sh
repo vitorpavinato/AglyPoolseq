@@ -10,7 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-module load bedops
+module load gcc/7.1.0 bedops/2.4.1
 
 bedops -u \
 /scratch/aob2x/dest/dgn/sitesData/dgn_sites.dm6.bed \
