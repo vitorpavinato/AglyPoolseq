@@ -69,6 +69,7 @@
   > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/getSNP_list_drosEU.sh` <br/>
 
   ### 8. Merge DGN, DrosEU, DrosRTEC snp lists
+  > Also filters down to 2,3,X <br/>
   > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/mergeSNPlist.sh`
 
   ### 9. Compare with older version of DEST snp list; tidy uyp
