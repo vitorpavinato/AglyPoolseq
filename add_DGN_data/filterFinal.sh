@@ -21,3 +21,9 @@ bedops -n \
 - \
 /scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed >
 /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed
+
+~/liftOver \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed \
+/scratch/aob2x/dest/dgn/liftoverChains/dm6ToDm3.over.chain \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.bed \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.unmapped.bed
