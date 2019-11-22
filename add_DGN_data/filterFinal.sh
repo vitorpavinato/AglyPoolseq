@@ -19,7 +19,7 @@ bedops -n \
 /scratch/aob2x/dest/referenceGenome/r6/dm6.rep.bed |
 bedops -n \
 - \
-/scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed >
+/scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed > \
 /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed
 
 ~/liftOver \
