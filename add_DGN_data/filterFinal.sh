@@ -26,4 +26,4 @@ bedops -n \
 /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed \
 /scratch/aob2x/dest/dgn/liftoverChains/dm6ToDm3.over.chain \
 /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.bed \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.unmapped.bed
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.unmapped.noRep.bed
