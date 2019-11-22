@@ -79,13 +79,11 @@
   > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/final_SNP_list.sh`
 
   ### 10. Generate filtered set based on Repbase for R6
-  > RepeatMasker file: `wget -P /scratch/aob2x/dest/referenceGenome/r6 /scratch/aob2x/dest/reference http://hgdownload.soe.ucsc.edu/goldenPath/dm6/bigZips/dm6.fa.out.gz`
-  > TRF file: `wget -P /scratch/aob2x/dest/referenceGenome/r6/ /scratch/aob2x/dest/reference http://hgdownload.soe.ucsc.edu/goldenPath/dm6/bigZips/dm6.trf.bed.gz`
+  > RepeatMasker file: `wget -P /scratch/aob2x/dest/referenceGenome/r6 http://hgdownload.soe.ucsc.edu/goldenPath/dm6/bigZips/dm6.fa.out.gz`
+  > TRF file: `wget -P /scratch/aob2x/dest/referenceGenome/r6/ http://hgdownload.soe.ucsc.edu/goldenPath/dm6/bigZips/dm6.trf.bed.gz`
 
-  > A little parsing:<br/>
-  >> `zcat
+  > A little parsing of the RepeatMasker file:<br/>
+  > `zcat /scratch/aob2x/dest/referenceGenome/r6/dm6.fa.out.gz | sed '1,3d' | sed -E 's/( ){1,}/,/g'| cut -d',' -f6,7,8 | tr ',' '\t' | grep 'chr' - > /scratch/aob2x/dest/referenceGenome/r6/dm6.rep.bed` <br/>
+  > `gunzip /scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed.gz` <br/>
 
-
-
-http://hgdownload.soe.ucsc.edu/goldenPath/dm3/liftOver/dm3ToDm6.over.chain.gz
-ls /scratch/aob2x/dest/dgn/longData/* | rev | cut -f1 -d'/' | rev | cut -f1 -d'_' | awk '{A[$1]++}END{for(i in A)print i,A[i]}' | sort -k2,2n
+  > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/filterFinal.sh`
