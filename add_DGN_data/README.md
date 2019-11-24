@@ -72,11 +72,11 @@
   > Also filters down to 2,3,X <br/>
   > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/mergeSNPlist.sh`
 
-  ### 9. Compare with older version of DEST snp list; tidy up
-  > The previous iteration of the DEST dataset used a SNP list generated from DrosEU2014 + DrosRTEC + DGN{DPGP3/CO/GA/GU/NG}. That list has 14M sites. The goal here
-  > is to generate the new master list of SNPs for DEST (25M) in both dm3 and dm6 and to pull out the 11M new SNPs identified with this pipeline.</br>
-  > The SNP list (/scratch/aob2x/dest/dest/drosRTEC_DrosEU_DGRP_SNPs_filtered.pos.dm6.bed) for the previous version was generated with `DEST/add_DGN_data/get_dpgp_workstation.sh` <br/>
-  > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/final_SNP_list.sh`
+  ~~### 9. Compare with older version of DEST snp list; tidy up~~
+  ~~> The previous iteration of the DEST dataset used a SNP list generated from DrosEU2014 + DrosRTEC + DGN{DPGP3/CO/GA/GU/NG}. That list has 14M sites. The goal here~~
+  ~~> is to generate the new master list of SNPs for DEST (15.7M) in both dm3 and dm6 and to pull out the 11M new SNPs identified with this pipeline.</br>~~
+  ~~> The SNP list (/scratch/aob2x/dest/dest/drosRTEC_DrosEU_DGRP_SNPs_filtered.pos.dm6.bed) for the previous version was generated with `DEST/add_DGN_data/get_dpgp_workstation.sh` <br/>~~
+  ~~> RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/final_SNP_list.sh``~~
 
   ### 10. Generate filtered set based on Repbase for R6
   > RepeatMasker file: `wget -P /scratch/aob2x/dest/referenceGenome/r6 http://hgdownload.soe.ucsc.edu/goldenPath/dm6/bigZips/dm6.fa.out.gz`
@@ -87,3 +87,7 @@
   > `gunzip /scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed.gz` <br/>
 
   > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/filterFinal.sh`
+
+  ### 11. Compress and copy to http pass through directory
+  `gzip /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed -c > \
+  /project/berglandlab/DEST/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed.gz`

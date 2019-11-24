@@ -16,7 +16,8 @@ module load gcc/7.1.0 bedops/2.4.1
 
 bedops -n \
 /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed \
-/scratch/aob2x/dest/referenceGenome/r6/dm6.rep.bed |
+/scratch/aob2x/dest/referenceGenome/r6/dm6.rep.bed > \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRepMasker.bed |
 bedops -n \
 - \
 /scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed > \
