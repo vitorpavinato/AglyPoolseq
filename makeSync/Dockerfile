@@ -1,4 +1,4 @@
-
+FROM broadinstitute/gatk:4.1.2.0
 
 # packaging dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
