@@ -44,8 +44,12 @@ echo $chr
 ### paste per chromosome ###
 ############################
 
-paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long  \
-/scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv
+if [ ! -f /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv ]; then
+
+    paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long  \
+    /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv
+
+fi
 
 
 ##########################
@@ -57,17 +61,17 @@ paste -d' ' \
 /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv | \
 awk -F' ' -v chr=${chr} '
 {
-nN=gsub(/N/,"",$2)"\t"
-nA=gsub(/A/,"",$2)"\t"
-nC=gsub(/C/,"",$2)"\t"
-nT=gsub(/T/,"",$2)"\t"
-nG=gsub(/G/,"",$2)"\t"
+nN=gsub(/N/,"",$2)
+nA=gsub(/A/,"",$2)
+nT=gsub(/T/,"",$2)
+nC=gsub(/C/,"",$2)
+nG=gsub(/G/,"",$2)
 
-nObs=nA+nC+nT+nG
+nObs=nA+nT+nC+nG
 
 if(nObs>0) {
 if((nA/nObs > 0 && nA/nObs < 1) || (nC/nObs > 0 && nC/nObs < 1) || (nT/nObs > 0 && nT/nObs < 1) || (nG/nObs > 0 && nG/nObs<1)) {
-print chr"\t"NR"\t"toupper($1)"\t"nN"\t"nA"\t"nC"\t"nT"\t"nG
+print chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
 }
 }
-}' > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.sync
+}' | less -S  > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.sync

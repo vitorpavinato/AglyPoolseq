@@ -1,7 +1,7 @@
-# Various scripts to get DGN data incorporated into DrosEU, DrosRTEC data
+# Scripts to get DGN data incorporated into DrosEU, DrosRTEC data
 
 ## Description
->
+> This first set of scripts downloads DGN data, identifies the set of polymorphic sites, and then merges that with the list of sites DrosRETC & DrosEU.
 
 ## File structure set up
 
