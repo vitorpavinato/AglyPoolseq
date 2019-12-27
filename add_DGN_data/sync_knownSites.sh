@@ -40,17 +40,6 @@ chr=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" /scratch/aob2x/dest/dgn/pops.d
 echo $pop
 echo $chr
 
-############################
-### paste per chromosome ###
-############################
-
-if [ ! -f /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv ]; then
-
-    paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long  \
-    /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv
-
-fi
-
 
 ##########################
 ### csv to sync format ###
@@ -69,9 +58,22 @@ nG=gsub(/G/,"",$2)
 
 nObs=nA+nT+nC+nG
 
-if(nObs>0) {
-if((nA/nObs > 0 && nA/nObs < 1) || (nC/nObs > 0 && nC/nObs < 1) || (nT/nObs > 0 && nT/nObs < 1) || (nG/nObs > 0 && nG/nObs<1)) {
-print chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
+print chr"_"NR"\t"chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
 }
+}' | sort -k1b,1 > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort
+
+
+#### intersect with known sites
+
+join -a1 \
+/mnt/spicy_2/dest/drosRTEC_DrosEU_DGRP_SNPs_filtered.pos.dm3.bed.sort.${chr} \
+/scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort |
+cut -f4,7,8 -d' ' | awk -F' ' '{
+split($1, sp, "-")
+split(sp[1], sp2, ":")
+split(sp2[1], sp3, "_")
+print sp3[2]" "sp2[2]" "$2" "$3
+}' | sort -k1,1b -k2,2g > ${1}.dm6.use
+
 }
-}' | less -S  > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.sync
+export -f mergeFun
