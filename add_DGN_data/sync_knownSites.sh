@@ -10,7 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-
+#ijob -c1 -p standard -A berglandlab
 
 #####################
 ### get jobs task ###
@@ -41,6 +41,8 @@ echo $pop
 echo $chr
 
 
+#pop=SIM; chr=2L
+
 ##########################
 ### csv to sync format ###
 ##########################
@@ -58,22 +60,14 @@ nG=gsub(/G/,"",$2)
 
 nObs=nA+nT+nC+nG
 
-print chr"_"NR"\t"chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
-}
+print "chr"chr"_"NR"\t"chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
+
 }' | sort -k1b,1 > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort
 
 
 #### intersect with known sites
 
 join -a1 \
-/mnt/spicy_2/dest/drosRTEC_DrosEU_DGRP_SNPs_filtered.pos.dm3.bed.sort.${chr} \
-/scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort |
-cut -f4,7,8 -d' ' | awk -F' ' '{
-split($1, sp, "-")
-split(sp[1], sp2, ":")
-split(sp2[1], sp3, "_")
-print sp3[2]" "sp2[2]" "$2" "$3
-}' | sort -k1,1b -k2,2g > ${1}.dm6.use
-
-}
-export -f mergeFun
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed.dm3IDsort \
+/scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort | grep "chr"${chr}"_" |
+cut -f5,8,9 -d' ' | sed 's/dm6_chr//g' | sed 's/_/ /g' | sort -k1,1b -k2,2g > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.dm6.sync

@@ -48,6 +48,7 @@
   > RUN: `nJobs=$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )` <br/>
   > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopSync.sh` <br/>
 
+## Identify polymorphic sites and merge those with DrosRTEC & DrosEU data
   ### 4. Identify the positions of all polymorphic sites <br/>
   > RUN: `sbatch --array=1-5 /scratch/aob2x/dest/DEST/add_DGN_data/findAllSites.sh` <br/>
 
@@ -91,3 +92,11 @@
   ### 11. Compress and copy to http pass through directory
   `gzip /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed -c > \
   /project/berglandlab/DEST/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed.gz`
+
+## DGN SYNC files for full list of SNPs
+  ### 12. Convert full site list back to dm3
+  > This is done in step 10. Generates file `/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed`
+  > generate dm3 id sorted file: `cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed | awk '{print $1"_"$2"\t"$0}' | sort -k1b,1 > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed.dm3IDsort`
+
+  ### 13. Remake population SYNC files at full set of known sites
+  > RUN: `sbatch --array=1-XYZ /scratch/aob2x/dest/add_DGN_data/sync_knownSites.slurm`

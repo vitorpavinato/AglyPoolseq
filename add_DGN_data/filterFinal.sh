@@ -23,8 +23,12 @@ bedops -n \
 /scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed > \
 /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed
 
+
+cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed | \
+awk '{print $0"\tdm6_"$1"_"$2}' > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.dm6Tag.bed
+
 ~/liftOver \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.dm6Tag.bed \
 /scratch/aob2x/dest/dgn/liftoverChains/dm6ToDm3.over.chain \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.bed \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.unmapped.noRep.bed
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.unmapped.noRep.dm6Tag.bed
