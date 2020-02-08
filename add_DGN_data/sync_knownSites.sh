@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
 #SBATCH -t 0:60:00 ### 1 hour
-#SBATCH --mem 1G
+#SBATCH --mem 4G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/sync_knownSites.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/sync_knownSites.%A_%a.err # Standard error
 #SBATCH -p standard
