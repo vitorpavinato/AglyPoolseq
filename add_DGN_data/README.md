@@ -99,4 +99,8 @@
   > generate dm3 id sorted file: `cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed | awk '{print $1"_"$2"\t"$0}' | sort -k1b,1 > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed.dm3IDsort`
 
   ### 13. Remake population SYNC files at full set of known sites
-  > RUN: `sbatch --array=1-XYZ /scratch/aob2x/dest/add_DGN_data/sync_knownSites.slurm`
+  > RUN: `nJobs=$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )`
+  > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/sync_knownSites.sh`
+
+  ### 14. Check dimensions
+  > RUN: 
