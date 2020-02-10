@@ -1,7 +1,7 @@
 # Scripts to get DGN data incorporated into DrosEU, DrosRTEC data
 
 ## Description
-> This first set of scripts downloads DGN data, identifies the set of polymorphic sites, and then merges that with the list of sites DrosRETC & DrosEU.
+> This set of scripts downloads DGN data, identifies the set of polymorphic sites, merges that with the list of sites DrosRETC & DrosEU, then generates a single SYNC file for the DGN data.
 
 ## File structure set up
 
@@ -13,7 +13,7 @@
   > OUT: /scratch/aob2x/dest/dgn/rawData<br/>
 
   ### 1. Unpack
-  > Each tarball is a bit different so unpack script plays differently for each 1-8 (minus 4), from above. <br/>
+  > Each tarball is a bit different so the unpack scripts are different for each 1-8 (minus 4), from above. <br/>
   > `sbatch --array=1-8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
   >
   ~~> These are only for debugging: <br/> ~~
@@ -101,6 +101,23 @@
   ### 13. Remake population SYNC files at full set of known sites
   > RUN: `nJobs=$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )`
   > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/sync_knownSites.sh`
+  > RUN: `wc -l /scratch/aob2x/dest/dgn/syncData/*2L.dm6.sync | grep -v "total"| sed -e 's/[[:space:]]\+/,/g' | cut -f2 -d',' | sort | uniq`
+         `wc -l /scratch/aob2x/dest/dgn/syncData/*2R.dm6.sync | grep -v "total"| sed -e 's/[[:space:]]\+/,/g' | cut -f2 -d',' | sort | uniq`
+         `wc -l /scratch/aob2x/dest/dgn/syncData/*3L.dm6.sync | grep -v "total"| sed -e 's/[[:space:]]\+/,/g' | cut -f2 -d',' | sort | uniq`
+         `wc -l /scratch/aob2x/dest/dgn/syncData/*3R.dm6.sync | grep -v "total"| sed -e 's/[[:space:]]\+/,/g' | cut -f2 -d',' | sort | uniq`
+         `wc -l /scratch/aob2x/dest/dgn/syncData/*X.dm6.sync | grep -v "total"| sed -e 's/[[:space:]]\+/,/g' | cut -f2 -d',' | sort | uniq`
 
-  ### 14. Check dimensions
-  > RUN: 
+  ### 14. Merge
+  > RUN: `nJobs=$( ls /scratch/aob2x/dest/dgn/syncData/*dm6.sync | cut -f1 -d'_' | rev | cut -f1 -d'/' | rev | sort | uniq | wc -l )`
+  > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/rbindSync.sh`
+  > ~~ijob -c1 -p standard -A berglandlab~~
+  > RUN: ` paste  -d'\t' /scratch/aob2x/dest/dgn/syncData/*_genome.dm6.sync | \
+          awk '{printf $1"\t"$2"\t"$3"\t"
+                for(i=4; i<=NF; i=i+4) {
+                  printf $i
+                  if(i<NF) printf"\t"
+                  if(i==NF) printf"\n"
+                }
+                }' > /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync `
+
+  > cat /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync | awk '{if(NF!=38) print NR"\t"NF}'
