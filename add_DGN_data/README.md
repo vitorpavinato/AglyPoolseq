@@ -112,12 +112,18 @@
   > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/rbindSync.sh`
   > ~~ijob -c1 -p standard -A berglandlab~~
   > RUN: ` paste  -d'\t' /scratch/aob2x/dest/dgn/syncData/*_genome.dm6.sync | \
-          awk '{printf $1"\t"$2"\t"$3"\t"
-                for(i=4; i<=NF; i=i+4) {
-                  printf $i
-                  if(i<NF) printf"\t"
-                  if(i==NF) printf"\n"
+          awk '{if(NF==140) {
+                  printf $1"\t"$2"\t"$3"\t"
+                  for(i=4; i<=NF; i=i+4) {
+                    printf $i
+                    if(i<NF) printf"\t"
+                    if(i==NF) printf"\n"
+                  }
                 }
                 }' > /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync `
 
   > cat /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync | awk '{if(NF!=38) print NR"\t"NF}'
+
+
+cut -f 1-4 /scratch/aob2x/dest/drosRTEC/DrosRTEC.sync.new | head
+cut -f 1-4 /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync | head
