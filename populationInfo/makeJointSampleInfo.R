@@ -181,5 +181,8 @@
 				mean(samps$dist_km<75, na.rm=T)
 				mean(samps$dist_km<100, na.rm=T)
 
+			### the far stations are mostly in Africa
+				table(samps$set, samps$dist_km<20)
+
 	### save
-		write.csv(samps, "./DEST/populationInfo/samps.csv", quote=F, row.names=F)
+		write.csv(samps, "./DEST/populationInfo/sample_info.csv", quote=F, row.names=F)
