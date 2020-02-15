@@ -47,27 +47,28 @@ echo $chr
 ### csv to sync format ###
 ##########################
 
-paste -d' ' \
-/scratch/aob2x/dest/referenceGenome/r5/${chr}.long \
-/scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv | \
-awk -F' ' -v chr=${chr} '
-{
-nN=gsub(/N/,"",$2)
-nA=gsub(/A/,"",$2)
-nT=gsub(/T/,"",$2)
-nC=gsub(/C/,"",$2)
-nG=gsub(/G/,"",$2)
+if [ ! -f /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort ]; then
+  paste -d' ' \
+  /scratch/aob2x/dest/referenceGenome/r5/${chr}.long \
+  /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv | \
+  awk -F' ' -v chr=${chr} '
+  {
+  nN=gsub(/N/,"",$2)
+  nA=gsub(/A/,"",$2)
+  nT=gsub(/T/,"",$2)
+  nC=gsub(/C/,"",$2)
+  nG=gsub(/G/,"",$2)
 
-nObs=nA+nT+nC+nG
+  nObs=nA+nT+nC+nG
 
-print "chr"chr"_"NR"\t"chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
+  print "chr"chr"_"NR"\t"chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
 
-}' | sort -k1b,1 > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort
-
+  }' | sort -k1b,1 > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort
+fi
 
 #### intersect with known sites
 
 join -a1 \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed.dm3IDsort \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm3.dm6Tag.bed.dm3IDsort \
 /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.long.sync.sort | grep "chr"${chr}"_" |
 cut -f5,8,9 -d' ' | sed 's/dm6_chr//g' | sed 's/_/ /g' | sort -k1,1b -k2,2g > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.dm6.sync
