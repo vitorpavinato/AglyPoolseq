@@ -4,16 +4,14 @@
   library(plyr)
   library(ggmap)
   library(ggplot2)
-​
-
+  
 ### set working directory
 	setwd("/scratch/aob2x/dest")
-
 
 ### load data
   Data=read.table("DEST/populationInfo/output.txt",header=T,na.string="AL")
   DataSum =ddply(Data, c("latitude","longitude","X","Y"), summarise, N=length(latitude))
-​
+
 world=map_data("world")
 #shapes=c(15,16,17,18)
 shapes=c(18,15,17,16)

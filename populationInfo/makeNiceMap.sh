@@ -10,7 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-module load gcc/5.4.0  openmpi/3.1.4 python/2.7.16
+module load gcc/5.4.0  openmpi/3.1.4 python/2.7.16 R/3.6.0
 
 wd=/scratch/aob2x/dest
 
@@ -22,3 +22,5 @@ head -n1 ${wd}/DEST/populationInfo/samps.csv | tr ',' '\n' | nl | grep -E "lat|l
 cut -f 6,7,8,14 -d',' ${wd}/DEST/populationInfo/samps.csv | sed '1d' | sed '$d' | tr ',' '\t' | grep -v "NA$" > ${wd}/DEST/populationInfo/input.txt
 
 python2.7 ${wd}/DEST/populationInfo/makeNiceMap.py ${wd}/DEST/populationInfo/input.txt > ${wd}/DEST/populationInfo/output.txt
+
+Rscript ${wd}/DEST/populationInfo/makeNiceMap.R
