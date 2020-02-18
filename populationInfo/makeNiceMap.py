@@ -1,13 +1,13 @@
 import sys
 from collections import defaultdict as d
 import random
-​
+
 dist=5
 Ycol=["white","lightblue","black","brown","grey","cyan","red","green","magenta","yellow","darkgreen","orange","darkblue"]
 Sp={"spring":0,"fall":0.6,"frost":-0.6,"NA":-1.2}
 Nh=d(list)
 Y=[]
-​
+
 for l in open(sys.argv[1],"r"):
     if l.startswith("latitude"):
         continue
@@ -16,11 +16,11 @@ for l in open(sys.argv[1],"r"):
         Year=0
     Nh[latitude+"_"+longitude].append((int(Year),Season))
     Y.append(int(Year))
-​
+
 Yc=dict(zip(sorted(list(set(Y))),Ycol))
-​
+
 print "latitude\tlongitude\tYear\tSeason\tX\tY\tspacing_x\tspacing_y\tcolors"
-​
+
 for k,v in sorted(Nh.items()):
     Lat,Lon=map(float,k.split("_"))
     Years=list(set(zip(*v)[0]))
