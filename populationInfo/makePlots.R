@@ -52,8 +52,41 @@
 
 		ggsave(multi_sample, file="./DEST/populationInfo/multiSample.pdf")
 
+
 ### world map plot
-	
+
+	world <- as.data.table(map_data("world"))
+
+	samps.ag.ag <- samps.ag[,list(n=sum(nTime), lat=mean(lat), long=mean(long)), list(locality)]
+
+### make maps
+
+	min.lat.eu <- 35
+	max.lat.eu <- 55
+	min.long.eu <- -10
+	max.long.eu <- 37
+	# [long>=min.long.eu & long<= max.long.eu][lat>=min.lat.eu & lat<=max.lat.eu]
+	#[longitude>=min.long.eu & longitude<= max.long.eu][latitude>=min.lat.eu & latitude<=max.lat.eu]
+
+
+	world <- 	ggplot() +
+				geom_polygon(data = world,
+							aes(x=long, y = lat, group = group), fill="lightgrey") +
+				geom_point(data = samps.ag.ag,
+							aes(x=long, y=lat, size=I((n-1)/2 + 4)), alpha=.5) +
+				xlab("Longitude") + ylab("Latitude") + scale_fill_manual(values="black")
+
+	ggsave(world, file="./DEST/populationInfo/worldPlot.pdf")
+
+
+	## north america
+	min.lat.na <- 25
+	max.lat.na <- 50
+	min.long.na <- -130
+	max.long.na <- -65
+
+
+
 
 
 

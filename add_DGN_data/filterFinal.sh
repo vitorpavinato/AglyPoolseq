@@ -15,20 +15,20 @@ module load gcc/7.1.0 bedops/2.4.1
 ### remove regions in RepeatMasker & TRF output
 
 bedops -n \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.bed \
-/scratch/aob2x/dest/referenceGenome/r6/dm6.rep.bed > \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRepMasker.bed |
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.dm6.bed \
+/scratch/aob2x/dest/referenceGenome/r6/dm6.rep.bed | #> \
+#/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRepMasker.bed |
 bedops -n \
 - \
 /scratch/aob2x/dest/referenceGenome/r6/dm6.trf.bed > \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.bed
 
 
-cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed | \
-awk '{print $0"\tdm6_"$1"_"$2}' > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.dm6Tag.bed
+cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.bed | \
+awk '{print $0"\tdm6_"$1"_"$2}' > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.dm6Tag.bed
 
 ~/liftOver \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.dm6Tag.bed \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.dm6Tag.bed \
 /scratch/aob2x/dest/dgn/liftoverChains/dm6ToDm3.over.chain \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed \
-/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.unmapped.noRep.dm6Tag.bed
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm3.dm6Tag.bed \
+/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.unmaped.dm6Tag.bed

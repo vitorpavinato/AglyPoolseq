@@ -72,6 +72,8 @@
   ### 8. Merge DGN, DrosEU, DrosRTEC snp lists
   > Also filters down to 2,3,X <br/>
   > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/mergeSNPlist.sh`
+  > Any duplicates? Double check: `/scratch/aob2x/dest/DEST/add_DGN_data/check4dups.R`
+  > Okay, all checks out. ~19.5M sites
 
   ~~### 9. Compare with older version of DEST snp list; tidy up~~
   ~~> The previous iteration of the DEST dataset used a SNP list generated from DrosEU2014 + DrosRTEC + DGN{DPGP3/CO/GA/GU/NG}. That list has 14M sites. The goal here~~
@@ -90,13 +92,13 @@
   > RUN: `sbatch /scratch/aob2x/dest/DEST/add_DGN_data/filterFinal.sh`
 
   ### 11. Compress and copy to http pass through directory
-  `gzip /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed -c > \
-  /project/berglandlab/DEST/dgn_drosRTEC_drosEU.sites.dm6.noRep.bed.gz`
+  `gzip /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.dm6Tag.bed -c > \
+  /project/berglandlab/DEST/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.dm6Tag.bed.gz`
 
 ## DGN SYNC files for full list of SNPs
   ### 12. Convert full site list back to dm3
-  > This is done in step 10. Generates file `/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed`
-  > generate dm3 id sorted file: `cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed | awk '{print $1"_"$2"\t"$0}' | sort -k1b,1 > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.dm3.noRep.dm6Tag.bed.dm3IDsort`
+  > This is done in step 10. Generates file `/scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm3.dm6Tag.bed`
+  > generate dm3 id sorted file: `cat /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm3.dm6Tag.bed | awk '{print $1"_"$2"\t"$0}' | sort -k1b,1 > /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm3.dm6Tag.bed.dm3IDsort`
 
   ### 13. Remake population SYNC files at full set of known sites
   > RUN: `nJobs=$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )`
@@ -123,4 +125,46 @@
                 }' > /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync`
 
 
-  > RUN:
+  > RUN: ls /scratch/aob2x/dest/dgn/syncData/*dm6.sync | cut -f1 -d'_' | rev | cut -f1 -d'/' | rev | sort | uniq | wc -l > /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync.meta
+
+
+  ### 15. Merge DGN, DrosRTEC, DrosEU datasets
+  RUN: `wc -l /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.dm6Tag.bed` 18467033
+  RUN: `wc -l /scratch/aob2x/dest/drosRTEC/DrosRTEC.sync.new` : 14561208
+  RUN: `wc -l /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync` : 18437133
+  RUN: `wc -l /scratch/aob2x/dest/drosEU/2020_jan/DrosEU_dgn_drosRTEC_drosEU.sites.dm6.noRep.sync` 18471704
+
+  what?
+
+  cut -f 5 /scratch/aob2x/dest/drosEU/2020_jan/DrosEU_dgn_drosRTEC_drosEU.sites.dm6.noRep.sync | head -n1000000 | \
+  awk -F':' '{
+    pm=0
+    for(i=1; i<=NF; i++) {
+      if($i>0) pm++
+    }
+    print pm
+  }' | sort | uniq -c
+
+
+  zcat DrosEU.sync.gz | head -n1000000 | cut -f 5 | \
+  awk -F':' '{
+    pm=0
+    for(i=1; i<=NF; i++) {
+      if($i>0) pm++
+    }
+    print pm
+  }' | sort | uniq -c
+
+
+  cut -f 4 /scratch/aob2x/dest/drosRTEC/DrosRTEC.sync.new | head -n1000000 | \
+  awk -F':' '{
+    pm=0
+    for(i=1; i<=NF; i++) {
+      if($i>0) pm++
+    }
+    print pm
+  }' | sort | uniq -c
+
+
+cut -f 3 /scratch/aob2x/dest/drosRTEC/DrosRTEC.sync.new | head
+cut -f 3 /scratch/aob2x/dest/drosEU/2020_jan/DrosEU_dgn_drosRTEC_drosEU.sites.dm6.noRep.sync | head
