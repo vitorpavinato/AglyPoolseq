@@ -170,7 +170,7 @@ UA_Yal_16_61,UA_Yal_16_61,Ukraine,Yalta,2016/08/20,44.5015,34.1661,spring,UA_Yal
 UA_Cho_16_62,UA_Cho_16_62,Ukraine,Chornobyl Yaniv,2016/09/04,51.38691667,30.07330556,spring,UA_Cho,pooled,Europe,DrosEU,40,2016,248,UPM00033231,16.0475348527614
 PA_li_11_spring,PA_07_2011,USA,Linvilla,2011/07/15,39.88,-75.41,spring,PA_li,pooled,NorthAmerica,DrosRTEC,75,2011,196,USC00365390,6.27214919870319
 WA_se_14_spring,mel14TWA7_SPT,USA,Seattle,2014/07/15,47.61,-122.33,spring,WA_se,pooled,NorthAmerica,DrosRTEC,70,2014,196,USW00024234,9.12960049032531
-NC_ra_03_n,NC,USA,Raleigh,NA,35.77,-78.63,n,NC_ra,pooled,NorthAmerica,DrosRTEC,92,NA,NA,NA,NA
+NC_ra_03_n,NC,USA,Raleigh,NA,35.77,-78.63,NA,NC_ra,pooled,NorthAmerica,DrosRTEC,92,NA,NA,NA,NA
 GA_ha_08_spring,GA,USA,Hahia,2008/07/15,30.99,-83.37,spring,GA_ha,pooled,NorthAmerica,DrosRTEC,51,2008,197,USR0000GCOO,14.3396334629695
 ME_bo_09_fall.r1,ME_sample1,USA,Bowdoin,2009/10/15,44,-69.96,fall,ME_bo,pooled,NorthAmerica,DrosRTEC,86,2009,288,USC00172048,10.9401886047322
 ME_bo_09_fall.r2,ME_sample2,USA,Bowdoin,2009/10/15,44,-69.96,fall,ME_bo,pooled,NorthAmerica,DrosRTEC,75,2009,288,USC00172048,10.9401886047322
