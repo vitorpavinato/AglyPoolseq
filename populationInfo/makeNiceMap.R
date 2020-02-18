@@ -4,6 +4,7 @@
   library(plyr)
   library(ggmap)
   library(ggplot2)
+
 ### set working directory
 	setwd("/scratch/aob2x/dest")
 
@@ -14,28 +15,6 @@
 world=map_data("world")
 #shapes=c(15,16,17,18)
 shapes=c(18,15,17,16)
-​
-# svg("~/Dropbox/ScientificData-WhitePaper/SupportingDocuments/MapSuggestion.svg",width=22,height=15)
-# col <- as.character(Data$colors)
-# names(col) <- as.character(Data$Year)
-# P=ggplot() + geom_polygon(data = world, aes(x=long, y = lat,group=group),fill="grey90",color="black",size=0.2) +
-#   coord_fixed(1.3)+
-#   geom_segment(data = DataSum
-#                , mapping=aes(x=longitude
-#                              , y=latitude
-#                              , xend=longitude + X
-#                              , yend=latitude + Y)
-#                , size=0.5, color="black"
-#                , alpha = 0.9) +
-#   geom_point(data = Data
-#              , aes(x = longitude+spacing_x
-#                    , y = latitude+spacing_y, color=as.factor(Year),shape=Season)
-#              , alpha = 1, size = 3
-#              )+
-#   scale_shape_manual(values=shapes)+
-#   scale_color_manual(values=col)
-#
-# P+theme_classic()
 ​
 pdf("DEST/populationInfo/MapSuggestion2.pdf",width=16,height=10)
 P <- ggplot() + geom_polygon(data = world, aes(x=long, y = lat,group=group),fill="grey90",color="black",size=0.2) +
