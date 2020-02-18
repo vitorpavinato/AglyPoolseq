@@ -11,6 +11,7 @@ Y=[]
 for l in open(sys.argv[1],"r"):
     if l.startswith("latitude"):
         continue
+    print l
     latitude,longitude,Season,Year=l.rstrip().split()
     if Year=="NA":
         Year=0
