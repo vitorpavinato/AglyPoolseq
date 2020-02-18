@@ -15,7 +15,7 @@
 world=map_data("world")
 #shapes=c(15,16,17,18)
 shapes=c(18,15,17,16)
-​
+
 pdf("DEST/populationInfo/MapSuggestion2.pdf",width=16,height=10)
 P <- ggplot() + geom_polygon(data = world, aes(x=long, y = lat,group=group),fill="grey90",color="black",size=0.2) +
     coord_fixed(1.3) +
@@ -32,4 +32,3 @@ P <- ggplot() + geom_polygon(data = world, aes(x=long, y = lat,group=group),fill
 
 P+theme_classic()
 dev.off()
-#Coll
