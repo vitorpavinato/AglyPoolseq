@@ -11,7 +11,6 @@ Y=[]
 for l in open(sys.argv[1],"r"):
     if l.startswith("latitude"):
         continue
-    print l
     latitude,longitude,Season,Year=l.rstrip().split()
     if Year=="NA":
         Year=0
@@ -51,3 +50,4 @@ for k,v in sorted(Nh.items()):
         spacingX=Lonoff+(Yh[Year]*2)
         spacingY=Latoff+(Sp[Season]*3)
         print "\t".join(map(str,[Lat,Lon,Year,Season,Lonoff,Latoff,spacingX,spacingY,Yc[Year]]))
+        
