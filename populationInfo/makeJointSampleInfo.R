@@ -131,6 +131,9 @@
 		samps[grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}", collectionDate),yday := yday(as.POSIXct(collectionDate))]
 		samps[,nFlies := as.numeric(as.character(nFlies))]
 
+		samps[season=="n", season:=NA]
+		samps[,season:=factor(season, levels=c("spring", "fall", "frost"))]
+
 	### get GHCND site
 		### the problem is that the closest GHCND site to the lat/long does not necessarily have the full climate data for the preceeding year.
 		### This is a function to identify the closest station with the most information
@@ -185,4 +188,4 @@
 				table(samps$set, samps$dist_km<20)
 
 	### save
-		write.csv(samps, "./DEST/populationInfo/sample_info.csv", quote=F, row.names=F)
+		write.csv(samps, "./DEST/populationInfo/samps.csv", quote=F, row.names=F)
