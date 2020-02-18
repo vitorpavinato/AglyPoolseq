@@ -4,7 +4,6 @@
   library(plyr)
   library(ggmap)
   library(ggplot2)
-  
 ### set working directory
 	setwd("/scratch/aob2x/dest")
 
