@@ -49,5 +49,5 @@ for k,v in sorted(Nh.items()):
     for Year,Season in v:
         spacingX=Lonoff+(Yh[Year]*2)
         spacingY=Latoff+(Sp[Season]*3)
-        print "\t".join(map(str,[Lat,Lon,Year,Season,Lonoff,Latoff,spacingX,spacingY,Yc[Year]]))
-        
+        print "\t".join(map(str,[Lat,Lon,Year,Season,Lonoff,Latoff,spacingX,spacingY,"black"]))
+        #print "\t".join(map(str,[Lat,Lon,Year,Season,Lonoff,Latoff,spacingX,spacingY,Yc[Year]]))
