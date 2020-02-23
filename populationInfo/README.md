@@ -6,9 +6,12 @@
 ## File structure set up
 
 ## Make meta-data file ###
+  > ~~ijob -c1 -p standard -A berglandlab~~
   > RUN: `makeJointSampleInfo.R`
   > Outputs `DEST/populationInfo/samps.csv`
 
 ## Make figures
   ## Map figure
-  > input.txt is tab-delimited with four columns (Lat,Lon,Season[spring,fall,frost,NA] and Year) \br
+  > RUN: `sbatch makeNiceMap.sh`
+
+  python2.7 makeNiceMap.py input.txt > output.txt` <br/>

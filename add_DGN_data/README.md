@@ -128,6 +128,8 @@
   > RUN: ls /scratch/aob2x/dest/dgn/syncData/*dm6.sync | cut -f1 -d'_' | rev | cut -f1 -d'/' | rev | sort | uniq | wc -l > /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync.meta
 
 
+
+
   ### 15. Merge DGN, DrosRTEC, DrosEU datasets
   RUN: `wc -l /scratch/aob2x/dest/dest/dgn_drosRTEC_drosEU.sites.noMerge.noDups.noRep.dm6.dm6Tag.bed` 18467033
   RUN: `wc -l /scratch/aob2x/dest/drosRTEC/DrosRTEC.sync.new` : 14561208
