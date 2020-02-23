@@ -71,4 +71,4 @@ nObs=nA+nT+nC+nG
 
 print chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
 
-}' | bgzip -c > /scratch/aob2x/dest/dgn/compressedSyncData/${pop}_Chr${chr}.sync.bgz
+}' | bgzip -c > /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
