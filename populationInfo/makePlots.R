@@ -76,7 +76,7 @@
 							aes(x=long, y=lat, size=I((n-1)/2 + 4)), alpha=.5) +
 				xlab("Longitude") + ylab("Latitude") + scale_fill_manual(values="black")
 
-	ggsave(world, file="./DEST/populationInfo/worldPlot.pdf")
+	ggsave(world, file="./DEST/populationInfo/worldPlot.pdf", height=4, width=6)
 
 
 	## north america
@@ -84,11 +84,6 @@
 	max.lat.na <- 50
 	min.long.na <- -130
 	max.long.na <- -65
-
-
-
-
-
 
 
 ### num. flies plot

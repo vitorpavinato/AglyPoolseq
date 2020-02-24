@@ -74,4 +74,4 @@ if((nA/nObs > 0 && nA/nObs < 1) || (nC/nObs > 0 && nC/nObs < 1) || (nT/nObs > 0 
 print chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
 }
 }
-}' | less -S  > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.sync
+}' less -S  > /scratch/aob2x/dest/dgn/syncData/${pop}_Chr${chr}.sync

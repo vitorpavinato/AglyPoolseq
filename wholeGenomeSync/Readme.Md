@@ -12,7 +12,6 @@
   ### 1. Unpack
   > Each tarball is a bit different so the unpack scripts are different for each 1-8 (minus 4), from above. <br/>
   > `sbatch --array=1-8 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/>
-  >
   ~~> These are only for debugging: <br/> ~~
   ~~> DPGP2 RUN & DONE: `sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
   ~~> DPGP3 RUN & DONE: `sbatch --array=2 /scratch/aob2x/dest/DEST/add_DGN_data/unpack.sh` <br/> ~~
@@ -45,16 +44,12 @@
   > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopGenomeSync.sh` <br/>
 
 
-
-> `cp /scratch/aob2x/dest/dgn/compressedSyncData/* /scratch/aob2x/dest/dest/wholeGenomeSyncData`
-> `for f in *.bgz; do
-    mv -- "$f" "${f%.txt}.gz"
-   done`
-
-
-rename 's/bgz/gz/' /scratch/aob2x/dest/dest/wholeGenomeSyncData/*`
 ## Pooled data:
 ### TBD
+
+
+
+
 
 ## Tools
 ### 1. Extract polymorphic sites for chr%in%pop

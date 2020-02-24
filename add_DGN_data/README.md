@@ -109,7 +109,7 @@
          `wc -l /scratch/aob2x/dest/dgn/syncData/*3R.dm6.sync | grep -v "total"| sed -e 's/[[:space:]]\+/,/g' | cut -f2 -d',' | sort | uniq`
          `wc -l /scratch/aob2x/dest/dgn/syncData/*X.dm6.sync | grep -v "total"| sed -e 's/[[:space:]]\+/,/g' | cut -f2 -d',' | sort | uniq`
 
-  ### 14. Merge
+  ### 14. Merge DGN data
   > RUN: `nJobs=$( ls /scratch/aob2x/dest/dgn/syncData/*dm6.sync | cut -f1 -d'_' | rev | cut -f1 -d'/' | rev | sort | uniq | wc -l )`
   > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/rbindSync.sh`
   > ~~ijob -c1 -p standard -A berglandlab~~
@@ -124,6 +124,10 @@
                 }
                 }' > /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync`
 
+  ### 15. BGzip compress whole genome, per population SYNC datasets
+  ### borrows code from step #3
+  > RUN: `nJobs=$( tail -n1 /scratch/aob2x/dest/dgn/pops.delim | cut -f1 )` <br/>
+  > RUN: `sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/makePopGenomeSync.sh` <br/>
 
   > RUN: ls /scratch/aob2x/dest/dgn/syncData/*dm6.sync | cut -f1 -d'_' | rev | cut -f1 -d'/' | rev | sort | uniq | wc -l > /scratch/aob2x/dest/dgn/finalSync/dgn.dm6.sync.meta
 
