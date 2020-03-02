@@ -3,8 +3,13 @@
 ## Description
 > This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data
 
-### 0. Download data from SRA
+### 0. Define working directory
+> RUN AS: `wd=/scratch/aob2x/dest`
 
+### 1. Download data from SRA
+```bash
+   sbatch --array=1-$( wc -l ${wd}/DEST/populationInfo/samps.csv | cut -f1 ) ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
+```
 
 
 
