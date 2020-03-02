@@ -8,7 +8,8 @@
 
 ### 1. Download data from SRA
 ```bash
-   sbatch --array=1-$( wc -l ${wd}/DEST/populationInfo/samps.csv | cut -f1 ) ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
+   sbatch --array=1-$( wc -l ${wd}/DEST/populationInfo/samps.csv | cut -f1 ) \
+   ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 ```
 
 
