@@ -144,7 +144,7 @@ for l in load_data(options.m):
 
     CHR,POS,REF = a[:3]
 
-    ## test if POS = INDEX+1, i.e. the next position, other fill the gaps
+    ## test if POS = INDEX+1, i.e. the next position, otherwise fill the gaps
     if int(POS)>INDEX+1:
         while(INDEX<int(POS)):
             print("\t".join([CHR,str(INDEX),"0:0:0:0:0:0"]))
@@ -205,6 +205,8 @@ for l in load_data(options.m):
     ## write output
     print(CHR+"\t"+POS+"\t"+"\t".join(syncL))
     INDEX+=1
+
+## finish last chromosome
 if int(POS)<ChrLen[CHR]:
     INDEX=int(POS)+1
     while(INDEX<=ChrLen[CHR]):
