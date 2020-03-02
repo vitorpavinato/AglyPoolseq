@@ -26,8 +26,8 @@ cat S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_201
 rm -r S288C_reference_genome_R64-2-1_20150113
 
 
-# download genomes for microbes known to be associated with D. melanogaster from NCBI 
-# if necessary, combine multi-contig draft assemblies into single fasta file 
+# download genomes for microbes known to be associated with D. melanogaster from NCBI
+# if necessary, combine multi-contig draft assemblies into single fasta file
 # rename fasta headers to include species name
 
 # Wolbachia pipientis

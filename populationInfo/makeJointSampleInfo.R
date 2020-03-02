@@ -44,13 +44,26 @@
 		dat.drosEU.dt[,lat:=as.numeric(as.character(lat))]
 		dat.drosEU.dt[,long:=as.numeric(as.character(long))]
 
+		### change the spelling of 5 Ukranian samples to correct for differences in spelling
+		dat.drosEU.dt[grepl("UA_Cho_14", sampleId), gsub("UA_Cho_14", "UA_Che_14")]
+		dat.drosEU.dt[grepl("UA_Pyr_14", sampleId), gsub("UA_Pyr_14", "UA_Pir_14")]
+
+
+		### add in SRA accession numbers from separate file
+			drosEU.sra <- fread("./DEST/populationInfo/drosEU_SraRunInfo.csv")
+			setnames(drosEU.sra, c("LibraryName", "Experiment"), c("sampleId", "SRA_accession"))
+
+			dat.drosEU.dt <- merge(dat.drosEU.dt, drosEU.sra[,c("sampleId", "SRA_accession"),with=F], by="sampleId", all=T)
+			dat.drosEU.dt <- dat.drosEU.dt[!is.na(set)]
+
+
 	### load in DrosRTEC data
 		dat.drosRTEC <- read.xls("./DEST/populationInfo/vcf_popinfo_Oct2018.xlsx")
 
-		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 9, 7, 12, 10, 11, 6, 16, 3)])
+		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 9, 7, 12, 10, 11, 6, 16, 3, 27)])
 		setnames(dat.drosRTEC.dt,
 				names(dat.drosRTEC.dt),
-				c("sampleId", "sequenceId", "country", "city", "collectionDate", "lat", "long", "season", "nFlies", "locality"))
+				c("sampleId", "sequenceId", "country", "city", "collectionDate", "lat", "long", "season", "nFlies", "locality", "SRA_accession"))
 		dat.drosRTEC.dt[,type:="pooled"]
 		#dat.drosRTEC.dt[,collectionDate := as.POSIXct(collectionDate)]
 		dat.drosRTEC.dt[long>0,continent:="Europe"]
@@ -122,7 +135,7 @@
 			dat.dpgp.dt[,long:=as.numeric(as.character(long))]
 
 			dat.dpgp.dt[!is.na(lat), continent:=gsub(" ", "_", as.character(coords2continent(na.omit(as.matrix(dat.dpgp.dt[,c("long", "lat"),with=F])))))]
-
+			dat.dpgp.dt[,SRA_accession:=NA]
 
 	### combine
 		samps <- rbind(rbind(dat.drosEU.dt, dat.drosRTEC.dt), dat.dpgp.dt)
