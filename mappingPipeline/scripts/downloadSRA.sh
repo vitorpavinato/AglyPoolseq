@@ -10,7 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# run as: sbatch --array=1-$( wc -l ./DEST/populationInfo/samps.csv | cut -f1 ) ./DEST/mappingPipeline/scripts/downloadSRA.sh
+# run as: sbatch --array=1-$( wc -l ${wd}/DEST/populationInfo/samps.csv | cut -f1 ) ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 # demo as: sbatch --array=1-5 ./DEST/mappingPipeline/scripts/downloadSRA.sh
 
 
@@ -20,6 +20,7 @@ module load sratoolkit
 cd /scratch/aob2x/dest/
 
 ### define a few paths
+wd=/scratch/aob2x/dest
 fastq_directory=/scratch/aob2x/dest/fastq
 
 # SLURM_ARRAY_TASK_ID=4
