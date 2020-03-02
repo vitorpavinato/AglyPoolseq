@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 #
 #SBATCH -J download_SRA # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
