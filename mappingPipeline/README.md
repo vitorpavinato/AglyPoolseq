@@ -1,3 +1,29 @@
+# Scripts to download, map, call polymorphism in pooled sequencing data-sets for Drosophila
+
+## Description
+> This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data
+
+### 0. Download data from SRA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### notes for using Docker
 
   docker pull alanbergland/dest_mapping ### pull from dockerhub
