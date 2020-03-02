@@ -29,8 +29,7 @@ sra_col=$( cat DEST/populationInfo/samps.csv | head -n1 | tr ',' '\n' | awk '{pr
 sra_num=$( cat DEST/populationInfo/samps.csv | awk -v samp=${SLURM_ARRAY_TASK_ID} -v sraCol=${sra_col} -F, '{if((NR-1)==samp) print $sraCol}' )
 
 
-if( sra_num -ne NA ) {
-
+if [ ${sra_num}!=NA ]; then
   fastq-dump \
   --split-files \
   -O ${fastq_directory} \
@@ -39,5 +38,4 @@ if( sra_num -ne NA ) {
   --disable-multithreading \
   -X 5 \
   ${sra_num}
-
 fi
