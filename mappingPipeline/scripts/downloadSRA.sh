@@ -10,8 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# run as: sbatch --array=1-$( wc -l ${wd}/DEST/populationInfo/samps.csv | cut -f1 ) ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
-# demo as: sbatch --array=1-5 ./DEST/mappingPipeline/scripts/downloadSRA.sh
+# run as: sbatch --array=1-$( wc -l < ${wd}/DEST/populationInfo/samps.csv ) ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
+# demo as: sbatch --array=1-5 ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 
 
 module load sratoolkit
