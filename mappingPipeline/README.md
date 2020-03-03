@@ -10,10 +10,20 @@
 
 ### 1. Download data from SRA
 ```bash
-   sbatch --array=1-$( wc -l < ${wd}/DEST/populationInfo/samps.csv ) ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
+   sbatch --array=1-$( wc -l < ${wd}/DEST/populationInfo/samps.csv ) \
+   ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 ```
+A few timed out, restart. <br/>
+``` bash
+  sbatch --array=$( sacct -u aob2x -j 9199377 | grep "TIMEOUT" | cut -f1 -d' ' | cut -f2 -d'_' | tr '\n' ',' ) \
+  ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
+```
+Submitted batch job 9213810
 
-
+Double check that all downloaded data are in Fastq33. Uses script from [here](https://github.com/brentp/bio-playground/blob/master/reads-utils/guess-encoding.py). </br>
+```bash
+  sbatch ${wd}/DEST/mappingPipeline/scripts/check_fastq_encoding.sh
+```
 
 
 
