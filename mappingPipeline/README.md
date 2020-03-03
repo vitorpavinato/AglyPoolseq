@@ -23,6 +23,7 @@ Submitted batch job 9213810
 Double check that all downloaded data are in Fastq33. Uses script from [here](https://github.com/brentp/bio-playground/blob/master/reads-utils/guess-encoding.py). </br>
 ```bash
   sbatch ${wd}/DEST/mappingPipeline/scripts/check_fastq_encoding.sh
+  grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 ```
 
 

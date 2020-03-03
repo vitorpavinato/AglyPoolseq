@@ -24,7 +24,7 @@ fi
 
 for f in ${wd}/fastq/*fastq.gz; do
   ### f=/scratch/aob2x/dest/fastq/SRX2885350_2.fastq.gz
-  zcat $f | head -n 100 | awk 'NR % 4 == 0' | \
+  zcat $f | head -n 5000 | awk 'NR % 4 == 0' | \
   ${wd}/DEST/mappingPipeline/scripts/guess_encoding.py | grep -v "#" |
   sed -E "s|^|${f}\t|g" >> ${wd}/fastq/qualEncodings.delim
 done
