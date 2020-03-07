@@ -20,6 +20,16 @@ A few timed out, restart. <br/>
 ```
 sacct -u aob2x -j 9213810
 
+A few more timed out again, restart those. Now up to 36 hour time limit. Plus Maine samples get fixed.
+``` bash
+  sbatch --array=$( sacct -u aob2x -j 9213810 | grep "TIMEOUT" | cut -f1 -d' ' | cut -f2 -d'_' | tr '\n' ',' ) \
+  ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
+
+)
+
+
+
+### 2. Check that data are in the correct FASTQ format
 Double check that all downloaded data are in Fastq33. Uses script from [here](https://github.com/brentp/bio-playground/blob/master/reads-utils/guess-encoding.py). </br>
 ```bash
   sbatch ${wd}/DEST/mappingPipeline/scripts/check_fastq_encoding.sh

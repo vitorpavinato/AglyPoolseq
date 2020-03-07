@@ -3,7 +3,7 @@
 #SBATCH -J download_SRA # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 12:00:00 ### 1 hours
+#SBATCH -t 36:00:00 ### 36 hours
 #SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/download_SRA.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/download_SRA.%A_%a.err # Standard error

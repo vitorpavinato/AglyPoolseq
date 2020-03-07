@@ -73,6 +73,10 @@
 		dat.drosRTEC.dt[,long:=as.numeric(as.character(long))]
 		dat.drosRTEC.dt[,collectionDate:=gsub("-", "/", collectionDate)]
 
+		### fix issue with SRA_accession numbers for a few Maine populations
+			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r1", SRA_accession:="SRX661844"]
+			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r2", SRA_accession:="SRX661845"]
+
 	### load in DPGP data
 		###http://johnpool.net/TableS2_populations.xls
 		dat.dpgp <- read.xls("./DEST/populationInfo/TableS2_populations.xls")
