@@ -24,9 +24,8 @@ A few more timed out again, restart those. Now up to 36 hour time limit. Plus Ma
 ``` bash
   sbatch --array=$( sacct -u aob2x -j 9213810 | grep "TIMEOUT" | cut -f1 -d' ' | cut -f2 -d'_' | tr '\n' ',' ) \
   ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
-
-)
-
+```
+sacct -u aob2x -j 9248781
 
 
 ### 2. Check that data are in the correct FASTQ format

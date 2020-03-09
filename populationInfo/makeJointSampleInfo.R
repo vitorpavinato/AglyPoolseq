@@ -75,7 +75,7 @@
 
 		### fix issue with SRA_accession numbers for a few Maine populations
 			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r1", SRA_accession:="SRX661844"]
-			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r2", SRA_accession:="SRX661845"]
+			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r2", SRA_accession:="SRR2006283"]
 
 	### load in DPGP data
 		###http://johnpool.net/TableS2_populations.xls
