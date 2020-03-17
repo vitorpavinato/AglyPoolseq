@@ -8,11 +8,35 @@
    wd=/scratch/aob2x/dest
 ```
 
-### 1. Download data from SRA
+### 1. Download data from SRA (specify 72 hour time limit)
 ```bash
    sbatch --array=1-$( wc -l < ${wd}/DEST/populationInfo/samps.csv ) \
    ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 A few timed out, restart. <br/>
 ``` bash
   sbatch --array=$( sacct -u aob2x -j 9199377 | grep "TIMEOUT" | cut -f1 -d' ' | cut -f2 -d'_' | tr '\n' ',' ) \
@@ -38,6 +62,8 @@ Ack! They keep timing out! now up to 72 hours.
   sbatch --array=$( sacct -u aob2x -j 9248781 | grep "TIMEOUT" | cut -f1 -d' ' | cut -f2 -d'_' | tr '\n' ',' ) \
   ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 ```
+sacct -u aob2x -j 9362168
+
 
 
 
