@@ -16,9 +16,7 @@ usage="""python %prog \
       --min-count 10 \
       --min-freq 0.01 \
       --mis-frac 0.1 \
-      --base-quality-threshold 15 \
-      --names Kib32,Tam10 \
-      --coding 1.8 \
+      --names sample1,sample2 \
       > output.vcf"""
 parser = OptionParser(usage=usage)
 helptext="""
