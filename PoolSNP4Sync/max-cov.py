@@ -83,9 +83,13 @@ for l in load_data(options.sync):
 
     #print coverage
     for i in range(libl):
+        AlleleString=sync2string(a[i+3])
         covh[i][0]
-        covh[i][len(sync2string(a[i+3]))]+=1
-        covh[i][-1]+=1
+        if AlleleString=="na":
+            continue
+        else:
+            covh[i][len(sync2string(a[i+3]))]+=1
+            covh[i][-1]+=1
 #print covh
 maximumcov=[]
 out=open(options.out,"w")
