@@ -7,8 +7,6 @@ import gzip
 
 #Author: Martin Kapun
 
-# version 1.0 # 27/06/18
-
 #########################################################   HELP   #########################################################################
 usage="python %prog --mpileup data.mpileup --base-quality-threshold 25 --ref reference.fa > output.sync"
 parser = OptionParser(usage=usage)
