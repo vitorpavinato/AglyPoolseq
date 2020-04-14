@@ -117,9 +117,14 @@ for l in load_data(options.Ref):
 # parse mpileup and store alternative alleles:
 
 FL=0
+NUM=""
 
 for l in load_data(options.m):
-    a=l.rstrip().split()
+    if l.rstrip()=="":
+        continue
+    a=l.rstrip().split("\t")
+    if NUM=="":
+        NUM=int(len(a)/3)-1
 
     ## test if first line:
     if FL==0:
@@ -128,7 +133,7 @@ for l in load_data(options.m):
         if POS>1:
             INDEX=1
             while(INDEX<POS):
-                print("\t".join([CHR,str(INDEX),"0:0:0:0:0:0"]))
+                print("\t".join([CHR,str(INDEX),"\t".join(["0:0:0:0:0:0"]*NUM)]))
                 INDEX+=1
         FL=1
 
@@ -136,7 +141,7 @@ for l in load_data(options.m):
     if CHR!=a[0] and int(POS)<ChrLen[CHR]:
         INDEX=int(POS)
         while(INDEX<=ChrLen[CHR]):
-            print("\t".join([CHR,str(INDEX),"0:0:0:0:0:0"]))
+            print("\t".join([CHR,str(INDEX),"\t".join(["0:0:0:0:0:0"]*NUM)]))
             INDEX+=1
         INDEX=1
 
@@ -145,18 +150,22 @@ for l in load_data(options.m):
     ## test if POS = INDEX+1, i.e. the next position, otherwise fill the gaps
     if int(POS)>INDEX+1:
         while(INDEX<int(POS)):
-            print("\t".join([CHR,str(INDEX),"0:0:0:0:0:0"]))
+            print("\t".join([CHR,str(INDEX),"\t".join(["0:0:0:0:0:0"]*NUM)]))
             INDEX+=1
-
-    div = list(splitter(a,3))
-    libraries=div[1:]
 
     # loop through libraries
 
     alleles=d(lambda:d(int))
+    div = list(splitter(a,3))
+    libraries=div[1:]
 
     for j in range(len(libraries)):
+
         alleles[j]
+
+        if len(libraries[j])!=3:
+            continue
+
         nuc = libraries[j][1]
         qualities = libraries[j][2]
 
@@ -208,5 +217,5 @@ for l in load_data(options.m):
 if int(POS)<ChrLen[CHR]:
     INDEX=int(POS)+1
     while(INDEX<=ChrLen[CHR]):
-        print("\t".join([CHR,str(INDEX),"0:0:0:0:0:0"]))
+        print("\t".join([CHR,str(INDEX),"\t".join(["0:0:0:0:0:0"]*NUM)]))
         INDEX+=1
