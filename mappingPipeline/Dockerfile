@@ -1,4 +1,4 @@
-
+FROM ubuntu:18.04
 
 # packaging dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -21,8 +21,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libopenblas-dev \
         libbz2-dev \
         liblzma-dev \
-        zlib1g-dev
-
+        zlib1g-dev \
+        bash-completion \
+        vim \
+        less \
+        curl \
+        git
 
 # install Python
 RUN apt-get install -y --no-install-recommends \
@@ -46,24 +50,23 @@ ARG DEBIAN_FRONTEND=noninteractive
 #    apt install -y --no-install-recommends \
 #        apt-transport-https software-properties-common \
 RUN apt install -y --no-install-recommends \
-        r-base \
-        r-recommended && \
-
+    r-base \
+    r-recommended && \
     rm -rf /var/lib/apt/lists/*
 
-
+#Have not used
 # install bam2fastq
-ARG BAM2FASTQ_VERSION=1.1.0
-WORKDIR /opt
-RUN wget https://gsl.hudsonalpha.org/static/software/bam2fastq-${BAM2FASTQ_VERSION}.tgz && \
-    tar xzf bam2fastq-${BAM2FASTQ_VERSION}.tgz && \
-    mkdir bam2fastq && \
-    mv bam2fastq-${BAM2FASTQ_VERSION} bam2fastq/${BAM2FASTQ_VERSION} && \
-    cd bam2fastq/${BAM2FASTQ_VERSION} && \
-    make && \
-    cd ../.. && \
-    rm bam2fastq-${BAM2FASTQ_VERSION}.tgz
-ENV PATH="/opt/bam2fastq/${BAM2FASTQ_VERSION}:${PATH}"
+#ARG BAM2FASTQ_VERSION=1.1.0
+#WORKDIR /opt
+#RUN wget https://gsl.hudsonalpha.org/static/software/bam2fastq-${BAM2FASTQ_VERSION}.tgz && \
+#    tar xzf bam2fastq-${BAM2FASTQ_VERSION}.tgz && \
+#    mkdir bam2fastq && \
+#    mv bam2fastq-${BAM2FASTQ_VERSION} bam2fastq/${BAM2FASTQ_VERSION} && \
+#    cd bam2fastq/${BAM2FASTQ_VERSION} && \
+#    make && \
+#    cd ../.. && \
+#    rm bam2fastq-${BAM2FASTQ_VERSION}.tgz
+#ENV PATH="/opt/bam2fastq/${BAM2FASTQ_VERSION}:${PATH}"
 
 
 # install bwa
@@ -82,7 +85,7 @@ RUN echo $BWA_VERSION && \
 ENV PATH="/opt/bwa/${BWA_VERSION}:${PATH}"
 
 
-# install HTSlib
+# install HTSlib (may not need all this)
 ARG HTSLIB_VERSION=1.9
 WORKDIR /opt
 RUN wget https://github.com/samtools/htslib/archive/${HTSLIB_VERSION}.tar.gz && \
@@ -134,7 +137,71 @@ RUN mkdir -p /opt/picard/${PICARD_VERSION} && \
 ENV CLASSPATH="/opt/picard/${PICARD_VERSION}/picard.jar:$CLASSPATH"
 ENV PICARD="/opt/picard/${PICARD_VERSION}/picard.jar"
 
+#install FastQC
+ARG FASTQC_VERSION=0.11.9
+WORKDIR /opt
+RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${FASTQC_VERSION}.zip && \
+    unzip fastqc_v${FASTQC_VERSION}.zip && \
+    rm fastqc_v${FASTQC_VERSION}.zip && \
+    cd FastQC && \
+    chmod 755 fastqc
+WORKDIR /opt
+ENV PATH="/opt/FastQC:${PATH}"
+
+#install Trimmomatic
+#ARG TRIM_VERSION=0.36
+#WORKDIR /opt
+#RUN wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-${TRIM_VERSION}.zip && \
+#    unzip Trimmomatic-${TRIM_VERSION}.zip && \
+#    rm Trimmomatic-${TRIM_VERSION}.zip && \
+#    cd Trimmomatic-${TRIM_VERSION}
+#WORKDIR /opt
+#ENV TRIMMOMATIC="/opt/Trimmomatic-${TRIM_VERSION}/trimmomatic-${TRIM_VERSION}.jar"
+
+#install BBmap
+
+ARG BBMAP_VERSION=38.80
+
+WORKDIR /opt
+RUN wget https://sourceforge.net/projects/bbmap/files/BBMap_${BBMAP_VERSION}.tar.gz/download -O BBMap_${BBMAP_VERSION}.tar.gz && \
+    tar -xvzf BBMap_${BBMAP_VERSION}.tar.gz && \
+    rm BBMap_${BBMAP_VERSION}.tar.gz
+ENV PATH="/opt/bbmap:${PATH}"
 
 # install GenomeAnalysisTK
-ARG GATK_VERSION=3.8-1
-WORKDIR /opt/gatk/
+
+#ARG GATK_VERSION=3.8.1 Changing this will only work for version 4, which is the RUN command associated with the github releases link commented out below
+
+WORKDIR /opt
+#RUN wget https://github.com/broadinstitute/gatk/releases/download/${GATK_VERSION}/gatk-${GATK_VERSION}.zip && \
+#    unzip gatk-${GATK_VERSION}.zip && \
+#    rm gatk-${GATK_VERSION}.zip && \
+#    mv gatk-${GATK_VERSION} gatk
+RUN wget https://storage.googleapis.com/gatk-software/package-archive/gatk/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2 && \
+    tar -xvf GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2 && \
+    mv GenomeAnalysisTK-3.8-1-0-gf15c1c3ef gatk && \
+    rm GenomeAnalysisTK-3.8-1-0-gf15c1c3ef.tar.bz2
+ENV CLASSPATH="/opt/gatk/GenomeAnalysisTK.jar:$CLASSPATH"
+ENV GATK="/opt/gatk/GenomeAnalysisTK.jar"
+
+ENV PATH="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:${PATH}"
+
+#Clone the repo
+RUN git clone https://github.com/itsyosef/DEST.git
+ENV PATH="/opt/DEST/mappingPipeline/scripts:${PATH}"
+
+#Setup the hologenome
+RUN /opt/DEST/mappingPipeline/scripts/hologene_gen.sh
+RUN bwa index /opt/hologenome/holo_dmel_6.12.fa && \
+    samtools faidx /opt/hologenome/raw/D_melanogaster_r6.12.fasta && \
+    samtools faidx /opt/hologenome/holo_dmel_6.12.fa && \
+    java -jar $PICARD CreateSequenceDictionary \
+              R=/opt/hologenome/holo_dmel_6.12.fa \
+              O=/opt/hologenome/holo_dmel_6.12.dict
+
+
+#Command to execute on "docker run" of this image
+ENTRYPOINT ["/bin/bash", "/opt/DEST/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
+
+#Default parameters passed to the above function call. Can be overridden by supplying parameters after image name in "docker run"
+CMD ["mounted_input_folder/*1*", "mounted_input_folder/*2*", "default_sample", "mounted_output_folder"]
