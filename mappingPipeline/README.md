@@ -1,7 +1,7 @@
 # Scripts to download, map, call polymorphism in pooled sequencing data-sets for Drosophila
 
 ## Description
-> This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data
+> This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data and defines a Dockerfile to build a docker image which can act as a standalone tool to run the pipeline.
 
 ### 0. Define working directory
 ```bash
@@ -13,6 +13,30 @@
    sbatch --array=1-$( wc -l < ${wd}/DEST/populationInfo/samps.csv ) \
    ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 ```
+
+### 2. Build singularity container from docker image
+```bash
+    module load singularity
+    singularity pull docker://jho5ze/dmelsync:latest
+```
+
+### 3. Run the singularity container
+```bash
+    singularity run dmelsync_latest.sif <read_1> <read_2> <sample_name> <output_folder>
+```
+#### Input
+* read_1 full path
+* read_2 full path
+* name of sample
+* full path of output directory
+
+#### Output contained in the output directory under a folder named for the sample name
+* directory of fastq analysis for trimmed and untrimmed reads
+* intervals file used for GATK IndelRealigner
+* original bam file containing all reads (original.bam)
+* simulans contaminants bam file (sim.bam)
+* melanogaster reads (mel.bam)
+* genomewide SYNC file (genomewide.sync)
 
 
 

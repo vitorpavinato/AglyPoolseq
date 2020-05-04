@@ -1,0 +1,8 @@
+#!/bin/bash
+#SBATCH -A nssac_students
+#SBATCH -p bii
+#SBATCH -t 48:00:00
+#SBATCH -o test_sync_time.txt
+#SBATCH --mem=30GB
+
+singularity run dmelsync_latest.sif /scratch/jho5ze/DEST_docker/singularity/SRX5246551_1.fastq /scratch/jho5ze/DEST_docker/singularity/SRX5246551_2.fastq test_sub test_out
