@@ -76,6 +76,7 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 * ToDo: Create team on Docker to allow collaborative editing of containers
 
 * Comment out the lines in the Dockerfile defining the ```ENTRYPOINT``` and ```CMD```
+  * An alternative to commenting out these lines is using the flag ```--entrypoint "/bin/bash"``` after the ```-it``` in the ```docker run``` command
 
 * Build the docker on your personal computer using ```docker build -t <image_name> .``` in the directory containing the Dockerfile (same as this README)
 
@@ -91,6 +92,6 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 
 * Uncomment the ```ENTRYPOINT``` and ```CMD``` lines
 
-* Run the build process again, and then push to docker hub (currently you will have to make your own repo for this)
+* Run the build process again, and test to make sure it works with ```docker run -v <local_path_to_fq_files>:/opt/data /opt/data/<sample_1> /opt/data/<sample_2> test_sample /opt/data/test_output <num_cores_to_use>```. Check the output, then push to docker hub (currently you will have to make your own repo for this)
 
 * Use ```singularity pull docker://<user>/<image_name>:<version>``` to get the updated image on your cluster

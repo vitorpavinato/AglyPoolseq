@@ -98,7 +98,7 @@ if [ -f "$read1" ]; then
     python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py --mpileup $output/$sample/mel_mpileup.txt --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/genomewide.sync
 
     for contig in {2L,2R,3L,3R,4,X,Y,mitochondrion_genome}; do
-        python /opt/DEST/PoolSNP4Sync/max-cov.py --sync $output/$sample/genomewide.sync --contig $contig --cutoff 0.95 --out $output/$sample/data_${contig}.cov
+        python3 /opt/DEST/PoolSNP4Sync/max-cov.py --sync $output/$sample/genomewide.sync --contig $contig --cutoff 0.95 --out $output/$sample/data_${contig}.cov
     done
 
   fi
