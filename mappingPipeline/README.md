@@ -71,14 +71,14 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 * melanogaster reads (mel.bam)
 * genomewide SYNC file (genomewide.sync)
 
-### How to edit the pipeline
+### How to edit the pipeline script
 
 * ToDo: Create team on Docker to allow collaborative editing of containers
 
 * Comment out the lines in the Dockerfile defining the ```ENTRYPOINT``` and ```CMD```
   * An alternative to commenting out these lines is using the flag ```--entrypoint "/bin/bash"``` after the ```-it``` in the ```docker run``` command
 
-* Build the docker on your personal computer using ```docker build -t <image_name> .``` in the directory containing the Dockerfile (same as this README)
+* Build the docker on your personal computer using ```docker build -t <repo_name>/<image_tag>:<image_tag_version> .``` in the directory containing the Dockerfile (same as this README)
 
 * Modify the pipeline script
 
@@ -92,6 +92,15 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 
 * Uncomment the ```ENTRYPOINT``` and ```CMD``` lines
 
-* Run the build process again, and test to make sure it works with ```docker run -v <local_path_to_fq_files>:/opt/data /opt/data/<sample_1> /opt/data/<sample_2> test_sample /opt/data/test_output <num_cores_to_use>```. Check the output, then push to docker hub (currently you will have to make your own repo for this)
+* Run the build process again, and test to make sure it works with ```docker run -v <local_path_to_fq_files>:/opt/data /opt/data/<sample_1> /opt/data/<sample_2> test_sample /opt/data/test_output <num_cores_to_use>```.
 
-* Use ```singularity pull docker://<user>/<image_name>:<version>``` to get the updated image on your cluster
+* Check the output, then push to docker hub with ```docker push <repo_name>/<image_tag>:<image_tag_version> (e.g. docker push jho5ze/dmelsync:hpc)``` (currently you will have to make your own repo for this)
+  * Sometimes, you may need to give the image a new ```image_tag_version``` identifier in order for the push to reflect all the changes you made to the image.
+
+* Use ```singularity pull docker://<user>/<image_name>:<image_tag_version>``` to get the updated image on your cluster
+
+### How to edit the Docker image or tools used by the pipeline
+
+* Edit the Dockerfile to reflect your desired changes or install necessary software (using the unix syntax and apt tool)
+
+* Build and push the image as described above
