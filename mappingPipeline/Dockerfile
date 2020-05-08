@@ -421,7 +421,7 @@ RUN rm -rf /opt/DEST/ && \
 ENV PATH="/opt/DEST/mappingPipeline/scripts:${PATH}"
 
 #Command to execute on "docker run" of this image
-ENTRYPOINT ["/bin/bash", "/opt/DEST/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
+#ENTRYPOINT ["/bin/bash", "/opt/DEST/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
 
 #Default parameters passed to the above function call. Can be overridden by supplying parameters after image name in "docker run"
-CMD ["mounted_input_folder/*1*", "mounted_input_folder/*2*", "default_sample", "mounted_output_folder", "2"]
+#CMD ["mounted_input_folder/*1*", "mounted_input_folder/*2*", "default_sample", "mounted_output_folder", "2"]

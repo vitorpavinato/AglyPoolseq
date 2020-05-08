@@ -55,7 +55,7 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 
 ### 4. Run the singularity container
 ```bash
-    singularity run dmelsync_latest.sif <read_1> <read_2> <sample_name> <output_folder>
+    singularity run dmelsync_latest.sif <read_1> <read_2> <sample_name> <output_folder> <num_cores_to_use>
 ```
 #### Input
 * read_1 full path
@@ -75,6 +75,8 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 
 * ToDo: Create team on Docker to allow collaborative editing of containers
 
+* Comment out the lines in the Dockerfile defining the ```ENTRYPOINT``` and ```CMD```
+
 * Build the docker on your personal computer using ```docker build -t <image_name> .``` in the directory containing the Dockerfile (same as this README)
 
 * Modify the pipeline script
@@ -86,6 +88,8 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 * Push your changes to https://github.com/alanbergland/DEST.git
 
 * Reassign the ARG CACHE_BUST line in the Dockerfile to the current month, day, year, and time so that the build process knows to rerun the following lines and repull the repo with the updated scripts.
+
+* Uncomment the ```ENTRYPOINT``` and ```CMD``` lines
 
 * Run the build process again, and then push to docker hub (currently you will have to make your own repo for this)
 
