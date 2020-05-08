@@ -71,51 +71,22 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 * melanogaster reads (mel.bam)
 * genomewide SYNC file (genomewide.sync)
 
+### How to edit the pipeline
 
+* ToDo: Create team on Docker to allow collaborative editing of containers
 
+* Build the docker on your personal computer using ```docker build -t <image_name> .``` in the directory containing the Dockerfile (same as this README)
 
+* Modify the pipeline script
 
+* Run the docker using volumes (-v flag) to bind any desired directories (including the one in which you are modifying the pipeline script) to the image instance and -it to make it interactive: ```docker run -v <local_path>:<docker_path> -it <image_name>```
 
+* Run the pipeline script, or any modifications you mean to make to the script, in this interactive version of the docker to debug, repeating the last two steps (or simply modifying the script within the interactive shell with vim) until you are satisfied with the changes.
 
+* Push your changes to https://github.com/alanbergland/DEST.git
 
+* Reassign the ARG CACHE_BUST line in the Dockerfile to the current month, day, year, and time so that the build process knows to rerun the following lines and repull the repo with the updated scripts.
 
+* Run the build process again, and then push to docker hub (currently you will have to make your own repo for this)
 
-
-
-
-
-
-
-### notes for using Docker
-
-  docker pull alanbergland/dest_mapping ### pull from dockerhub
-  docker images  ### see what I have
-  docker ps ### gives list of docker images running
-  docker run -it NAME ### interactive
-  docker run -v /PATH_TO_FASTQ/:/data/ NAME ./mapping.sh /data/fastq1 /data/fastq2
-
-
-### for singularity on Rivanna
-  module load singularity
-
-  ### pull and convert to singularity file
-  singularity pull -n dest_mapping.simg \
-  docker://alanbergland/dest_mapping
-
-  singularity exec dest_mapping.simg samtools -t ${SLURM_CPUS_PER_TASK}
-
-  ### pull and run basic command
-  singularity exec \
-  docker://alanbergland/dest_mapping ls /opt
-
-
-
-  singularity exec -c -B /PATH_TO_FASTQ:/data \
-  docker://alanbergland/dest_mapping \
-  /DIR/mapping.sh /data/fastq1.fq /data/fastq2.fq
-
-  $( echo ${SLURM_CPUS_PER_TASK} )
-
-  singularity exec -c -B /PATH_TO_FASTQ:/data \
-  docker://alanbergland/dest_mapping \
-  /DIR/mapping.sh /data/fastq1.fq /data/fastq2.fq ${SLURM_CPUS_PER_TASK}
+* Use ```singularity pull docker://<user>/<image_name>:<version>``` to get the updated image on your cluster

@@ -4,6 +4,7 @@ read1=$1
 read2=$2
 sample=$3
 output=$4
+threads=$5
 
 if [ -f "$read1" ]; then
   if [ -f "$read2" ]; then
@@ -23,24 +24,26 @@ if [ -f "$read1" ]; then
     -B CAAGCAGAAGACGGCATACGAGAT \
     -O 15 \
     -n 3 \
+    --cores=$threads \
     $read1 $read2
 
     fastqc $output/$sample/trimmed1.fq.gz $output/$sample/trimmed2.fq.gz -o $output/$sample/fastqc/trimmed
 
+    #Automatically uses all available cores
     bbmerge.sh in1=$output/$sample/trimmed1.fq.gz in2=$output/$sample/trimmed2.fq.gz out=$output/$sample/merged.fq.gz outu1=$output/$sample/1_un.fq.gz outu2=$output/$sample/2_un.fq.gz
 
     rm $output/$sample/trimmed*
 
-    bwa mem -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/1_un.fq.gz $output/$sample/2_un.fq.gz | samtools view -Sbh -q 20 -F 0x100 - > $output/$sample/merged_un.bam
+    bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/1_un.fq.gz $output/$sample/2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/merged_un.bam
 
     rm $output/$sample/1_un.fq.gz
     rm $output/$sample/2_un.fq.gz
 
-    bwa mem -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/merged.fq.gz | samtools view -Sbh -q 20 -F 0x100 - > $output/$sample/merged.bam
+    bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/merged.bam
 
     rm $output/$sample/merged.fq.gz
 
-    java -jar $PICARD MergeSamFiles I=$output/$sample/merged.bam I=$output/$sample/merged_un.bam SO=coordinate O=$output/$sample/sorted_merged.bam
+    java -jar $PICARD MergeSamFiles I=$output/$sample/merged.bam I=$output/$sample/merged_un.bam SO=coordinate USE_THREADING=true O=$output/$sample/sorted_merged.bam
 
     rm $output/$sample/merged.bam
     rm $output/$sample/merged_un.bam
@@ -57,6 +60,7 @@ if [ -f "$read1" ]; then
     samtools index $output/$sample/dedup.bam
 
     java -jar $GATK -T RealignerTargetCreator \
+    -nt $threads \
     -R /opt/hologenome/holo_dmel_6.12.fa \
     -I $output/$sample/dedup.bam \
     -o $output/$sample/hologenome.intervals
@@ -80,8 +84,8 @@ if [ -f "$read1" ]; then
     mel_chromosomes="2L 2R 3L 3R 4 X Y mitochondrion_genome"
     sim_chromosomes="sim_2L sim_2R sim_3L sim_3R sim_4 sim_X sim_mtDNA"
 
-    samtools view $output/$sample/contaminated_realigned.bam $mel_chromosomes -b > $output/$sample/mel.bam
-    samtools view $output/$sample/contaminated_realigned.bam $sim_chromosomes -b > $output/$sample/sim.bam
+    samtools view -@ $threads $output/$sample/contaminated_realigned.bam $mel_chromosomes -b > $output/$sample/mel.bam
+    samtools view -@ $threads $output/$sample/contaminated_realigned.bam $sim_chromosomes -b > $output/$sample/sim.bam
 
     # python /opt/DEST/mappingPipeline/scripts/fix_bam.py --contaminated $output/$sample/contaminated_realigned.bam --detect $output/$sample/mel_and_sim.sam --prefix sim_ --output $output/$sample/filtered
 
