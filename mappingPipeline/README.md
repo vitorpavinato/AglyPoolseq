@@ -55,7 +55,7 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 
 ### 4. Run the singularity container
 ```bash
-    singularity run dmelsync_latest.sif <read_1> <read_2> <sample_name> <output_folder> <num_cores_to_use>
+    singularity run dmelsync_hpc.sif <read_1> <read_2> <sample_name> <output_folder> <num_cores_to_use>
 ```
 #### Input
 * read_1 full path
