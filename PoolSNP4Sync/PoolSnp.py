@@ -17,7 +17,8 @@ usage="""python %prog \
       --min-freq 0.01 \
       --mis-frac 0.1 \
       --names sample1,sample2 \
-      > output.vcf"""
+      > output.vcf
+      """
 parser = OptionParser(usage=usage)
 helptext="""
 
@@ -76,19 +77,11 @@ def keywithmaxvalue(x):
 ################################## parameters ########################################
 
 data=options.m
-minimumcov=int(options.minc)
 minimumcount=int(options.mint)
+minimumcov=int(options.minc)
 minimumfreq=float(options.minf)
 missfrac=float(options.mis)
 
-############################ get MAX coverage threshold  #############################
-maximumcov=d(list)
-for l in open(options.max,"r"):
-    if l.startswith("#") or l.startswith("calculating"):
-        continue
-    k,v=l.split("\t")
-    maximumcov[k]=[int(x) for x in v.split(",")]
-#print maximumcov
 ############################ parse sync ###########################################
 
 # parse sync and store alternative alleles:
@@ -99,8 +92,9 @@ dateTimeObj = datetime.now()
 print("##fileDate="+str(dateTimeObj.day)+"/"+str(dateTimeObj.month)+"/"+str(dateTimeObj.year))
 print("##Source=PoolSnp")
 print("##Parameters=<ID=MinCov,Number="+options.minc+",Type=Integer,Description=\"Minimum coverage per sample\">")
+print("##Parameters=<ID=MaxCov,Number="+options.max+",Type=Float,Description=\"Max coverage percentile per chromosome and sample\">")
 print("##Parameters=<ID=MinCount,Number="+options.mint+",Type=Integer,Description=\"Minimum alternative allele count across all samples pooled\">")
-print("##Parameters=<ID=MinFreq,Number="+options.minf+",Type=Integer,Description=\"Minimum alternative allele frequency across all samples pooled\">")
+print("##Parameters=<ID=MinFreq,Number="+options.minf+",Type=Float,Description=\"Minimum alternative allele frequency across all samples pooled\">")
 print("##Parameters=<ID=MaximumMissingFraction,Number="+options.mis+",Type=Float,Description=\"Maximum fraction of samples allowed that are not fullfilling all parameters\">")
 print("""##INFO=<ID=ADP,Number=1,Type=Integer,Description=\"Average per-sample depth of bases\">
 ##INFO=<ID=NC,Number=1,Type=Integer,Description=\"Number of samples not called\">
@@ -116,16 +110,15 @@ for l in load_data(data):
 
     CHR,POS,REF = a[:3]
 
-    ## only keep chromosomal arms with maximum coverage threshold
-    if CHR not in maximumcov:
-        #print CHR
+    libraries=a[3:]
+
+    ## test if missing fraction of samples smaller than threshold
+    if libraries.count(".:.:.:.:.:.")/float(len(libraries)) > missfrac:
         continue
 
-    libraries=a[3:]
     # loop through libraries
     totalalleles=d(int)
     alleles=d(lambda:d(int))
-    covtest=d(int)
 
     for j in range(len(libraries)):
         alleles[j]
@@ -133,15 +126,7 @@ for l in load_data(data):
 
         # test if seq-string is empty
         if nuc=="na":
-            covtest[j]=1
             continue
-
-        # ignore if coverage is below or above thresholds after filtering for 1) InDels and 2) base-quality
-        if len(nuc)<minimumcov or len(nuc)>maximumcov[CHR][j]:
-            covtest[j]=1
-            continue
-        else:
-            covtest[j]=0
 
         # read all alleles
         for i in range(len(nuc)):
@@ -161,7 +146,6 @@ for l in load_data(data):
         continue
 
     ## create output for VCF
-    ADP=sum(totalalleles.values())/len(libraries)
     ALT=[]
     ## set alternative allele order:
     for i in ["A","T","C","G"]:
@@ -177,18 +161,15 @@ for l in load_data(data):
     samplelist=[]
     co=0
     miss=0
+    missN=0
+    NC=0
 
     for j in range(len(libraries)):
         ## make empty entry if no allele counts for sample
-        if j not in alleles:
+        if libraries[j] == ".:.:.:.:.:.":
             samplelist.append("./.:.:.:.:.")
             miss+=1
-            continue
-
-        ## make empty entry if sample not fullfilling min/max coverage threshold
-        if covtest[j]==1:
-            samplelist.append("./.:.:.:.:.")
-            miss+=1
+            NC+=1
             continue
 
         alleleh = alleles[j]
@@ -196,13 +177,8 @@ for l in load_data(data):
         for k,v in alleleh.items():
             if k != REF and k not in ALT:
                 del alleleh[k]
-        GT,AD,RD,FREQ,NC=[],[],0,[],0
+        GT,AD,RD,FREQ=[],[],0,[]
         DP=sum(alleleh.values())
-
-        ## test if mincoverage is still reached when removing alleles that do not fullfill criteria
-        if DP<minimumcov:
-            samplelist.append("./.:.:.:.:.")
-            continue
 
         ## test if sample empty:
         if len(alleleh)==0:
@@ -245,7 +221,6 @@ for l in load_data(data):
     if miss/float(len(libraries))>missfrac:
         #print CHR,POS,"missing fraction",miss/float(len(libraries))
         continue
-
-
+    ADP=sum(totalalleles.values())/(len(libraries)-miss)
     ## write output
     print(CHR+"\t"+POS+"\t.\t"+REF+"\t"+",".join(ALT)+"\t.\t.\tADP="+str(ADP)+";NC="+str(NC)+"\tGT:RD:AD:DP:FREQ\t"+"\t".join(samplelist))

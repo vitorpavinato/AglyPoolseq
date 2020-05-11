@@ -1,24 +1,23 @@
 ### Make joint popInfo file for DEST
 ### Final data has columsn: sampleId, country, city, collectionDate, lat, long, season, nFlies, locality, type (inbred/pooled), continent
-### Alan Bergland, Oct 3, 2018
+
 
 ### ijob -c1 -p standard -A berglandlab
-### module load gcc/7.1.0  openmpi/3.1.4 R/3.6.0; R
+### module load intel/18.0 intelmpi/18.0 R/3.6.0; R
 
 
 ### libraries
 	library(data.table)
 	library(gdata)
-	library(cowplot)
-	library(data.table)
+	#library(cowplot)
 	library(foreach)
-	library(ggplot2)
-	library(ggmap)
-	library(maps)
-	library(mapdata)
+	#library(ggplot2)
+	#library(ggmap)
+	#library(maps)
+	#library(mapdata)
 	library(rnoaa)
 	library(sp)
-	library(rworldmap)
+	#library(rworldmap)
 
 ### set working directory
 	setwd("/scratch/aob2x/dest")
@@ -45,13 +44,13 @@
 		dat.drosEU.dt[,long:=as.numeric(as.character(long))]
 
 		### change the spelling of 5 Ukranian samples to correct for differences in spelling
-		dat.drosEU.dt[grepl("UA_Cho_14", sampleId), gsub("UA_Cho_14", "UA_Che_14")]
-		dat.drosEU.dt[grepl("UA_Pyr_14", sampleId), gsub("UA_Pyr_14", "UA_Pir_14")]
+			dat.drosEU.dt[grepl("UA_Cho_14", sampleId), sampleId:=gsub("UA_Cho_14", "UA_Che_14", sampleId)]
+			dat.drosEU.dt[grepl("UA_Pyr_14", sampleId), sampleId:=gsub("UA_Pyr_14", "UA_Pir_14", sampleId)]
 
 
 		### add in SRA accession numbers from separate file
 			drosEU.sra <- fread("./DEST/populationInfo/drosEU_SraRunInfo.csv")
-			setnames(drosEU.sra, c("LibraryName", "Experiment"), c("sampleId", "SRA_accession"))
+			setnames(drosEU.sra, c("LibraryName", "Run"), c("sampleId", "SRA_accession"))
 
 			dat.drosEU.dt <- merge(dat.drosEU.dt, drosEU.sra[,c("sampleId", "SRA_accession"),with=F], by="sampleId", all=T)
 			dat.drosEU.dt <- dat.drosEU.dt[!is.na(set)]
@@ -76,6 +75,14 @@
 		### fix issue with SRA_accession numbers for a few Maine populations
 			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r1", SRA_accession:="SRX661844"]
 			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r2", SRA_accession:="SRR2006283"]
+
+
+
+
+
+
+
+
 
 	### load in DPGP data
 		###http://johnpool.net/TableS2_populations.xls
