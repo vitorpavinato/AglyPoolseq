@@ -1,8 +1,10 @@
-# call SNPs on joined sync file based on minimum allele count (across all samples) or minimum allele frequency (across all samples).
+# SNP calling with PoolSNP based on SYNC file format
 
-# Note, that only positions with a proportion of missing data <= than the miss-frac threshold are retained.
+## call SNPs on joined sync file based on minimum allele count (across all samples) or minimum allele frequency (across all samples).
 
-# The max-cov argument is only used for the header.
+## Note, that only positions with a proportion of missing data <= than the miss-frac threshold are retained.
+
+## The max-cov argument is only used for the header.
 
 ```bash
 python /Users/mkapun/Documents/GitHub/DEST/PoolSNP4Sync/PoolSnp.py \
