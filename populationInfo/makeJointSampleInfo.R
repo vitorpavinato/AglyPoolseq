@@ -1,6 +1,6 @@
 ### Make joint popInfo file for DEST
 ### Final data has columsn: sampleId, country, city, collectionDate, lat, long, season, nFlies, locality, type (inbred/pooled), continent
-### Alan Bergland, Oct 3, 2018
+
 
 ### ijob -c1 -p standard -A berglandlab
 ### module load gcc/7.1.0  openmpi/3.1.4 R/3.6.0; R
