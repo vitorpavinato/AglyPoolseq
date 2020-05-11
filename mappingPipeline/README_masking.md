@@ -11,7 +11,7 @@ do
 
 # convert mpileup to sync file and preserve Indel positions and the coverage distribution as python objects
 
-python Mpileup2Sync_onSteroids.py \
+python Mpileup2Sync.py \
 --mpileup testMpileup2Sync/test${i}.txt \
 --ref testMpileup2Sync/ref.fa.txt \
 --output testMpileup2Sync/out${i}
