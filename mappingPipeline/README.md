@@ -50,7 +50,7 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 ### 3. Build singularity container from docker image
 ```bash
     module load singularity
-    singularity pull docker://jho5ze/dmelsync:latest
+    singularity pull docker://jho5ze/dmelsync:hpc
 ```
 
 ### 4. Run the singularity container
@@ -69,6 +69,7 @@ Double check that all downloaded data are in Fastq33. Uses script from [here](ht
 * original bam file containing all reads (original.bam)
 * simulans contaminants bam file (sim.bam)
 * melanogaster reads (mel.bam)
+* set of files containing the output from max-cov.py on all chromosomes (data_<chromosome_name>.cov)
 * genomewide SYNC file (genomewide.sync)
 
 ### How to edit the pipeline script
