@@ -1,6 +1,6 @@
 # README
 
-## This is a test examples how to run the pipeline to convert an mpileup file to SYNC format and mask positions based on (1) coverage thresholds, (2) proximity to indels and (3) repetitive elements
+## This is a test example, which is showing how to run the pipeline to convert an mpileup file to SYNC format and mask positions based on (1) coverage thresholds, (2) proximity to indels and (3) repetitive elements
 
 cd /Users/mkapun/Documents/GitHub/DEST/mappingPipeline/scripts
 
