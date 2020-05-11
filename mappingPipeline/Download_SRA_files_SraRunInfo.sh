@@ -31,5 +31,5 @@ cd ~/mapping/${LibraryName}
 gzip ~/mapping/${LibraryName}/${LibraryName}\_1.fastq &
 gzip ~/mapping/${LibraryName}/${LibraryName}\_2.fastq
 
-done < /Users/mkapun/Documents/GitHub/DEST/populationInfo/drosEU_SraRunInfo.csv
+done < ~/GitHub/DEST/populationInfo/drosEU_SraRunInfo.csv
 
