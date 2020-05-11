@@ -3,7 +3,7 @@
 ### This is an example script, which is showing how to run the pipeline to convert an mpileup file to sync format and mask positions based on (1) coverage thresholds, (2) proximity to indels and (3) repetitive elements
 
 ```bash
-cd /Users/mkapun/Documents/GitHub/DEST/mappingPipeline/scripts
+cd ~/GitHub/DEST/mappingPipeline/scripts
 
 for i in 1 2
 
