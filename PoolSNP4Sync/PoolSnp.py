@@ -180,13 +180,6 @@ for l in load_data(data):
         GT,AD,RD,FREQ=[],[],0,[]
         DP=sum(alleleh.values())
 
-        ## test if mincoverage is still reached when removing alleles that do not fullfill criteria
-        if DP<minimumcov:
-            samplelist.append("./.:.:.:.:.")
-            missN+=1
-            NC+=1
-            continue
-
         ## test if sample empty:
         if len(alleleh)==0:
             NC+=1
