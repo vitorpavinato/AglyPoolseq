@@ -59,10 +59,10 @@
 	### load in DrosRTEC data
 		dat.drosRTEC <- read.xls("./DEST/populationInfo/vcf_popinfo_Oct2018.xlsx")
 
-		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 4, 9, 7, 12, 10, 11, 6, 16, 3, 27)])
+		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 9, 7, 12, 10, 11, 6, 16, 3)])
 		setnames(dat.drosRTEC.dt,
 				names(dat.drosRTEC.dt),
-				c("sampleId", "InternalName", "sequenceId", "country", "city", "collectionDate", "lat", "long", "season", "nFlies", "locality", "Experiment"))
+				c("sampleName", "sra_sampleName", "country", "city", "collectionDate", "lat", "long", "season", "nFlies", "locality"))
 		dat.drosRTEC.dt[,type:="pooled"]
 		#dat.drosRTEC.dt[,collectionDate := as.POSIXct(collectionDate)]
 		dat.drosRTEC.dt[long>0,continent:="Europe"]
@@ -73,25 +73,26 @@
 		dat.drosRTEC.dt[,collectionDate:=gsub("-", "/", collectionDate)]
 
 		### fix issue with SRA_accession numbers for a few Maine populations
-			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r1", SRA_accession:="SRX661844"]
-			dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r2", SRA_accession:="SRR2006283"]
+			#dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r1", SRA_accession:="SRX661844"]
+			#dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r2", SRA_accession:="SRR2006283"]
 
 		### add in SRA accession numbers from separate file
 			### from two bio-projects:
 			### set1: https://www.ncbi.nlm.nih.gov/bioproject/PRJNA256231
 			### set2: https://www.ncbi.nlm.nih.gov/bioproject/PRJNA308584
-			drosRTEC.sra <- fread("./DEST/populationInfo/drosRTEC_set1_SraRunInfo.txt")
+			drosRTEC.sra.1 <- fread("./DEST/populationInfo/drosRTEC_set1_SraRunInfo.txt")
+			drosRTEC.sra.2 <- fread("./DEST/populationInfo/drosRTEC_set2_SraRunInfo.txt")
 
-			setnames(drosRTEC.sra, c("Sample Name", "Run"), c("InternalName", "SRA_accession"))
+			setnames(drosRTEC.sra.1, c("Sample Name", "Run"), c("sra_sampleName", "SRA_accession"))
+			setnames(drosRTEC.sra.2, c("Sample Name", "Run"), c("sra_sampleName", "SRA_accession"))
 
-			dat.drosRTEC.dt <- merge(dat.drosRTEC.dt, drosRTEC.sra[,c("InternalName", "SRA_accession", "Experiment"),with=F], by="InternalName", all=T)
+			drosRTEC.sra.1[SRA_accession=="SRR1525694", sra_sampleName:="FL_rep2"]
+			drosRTEC.sra.2 <- drosRTEC.sra.2[sra_sampleName!="VI_2012_FAT"]
 
-			dat.drosRTEC.dt[,c("InternalName", "SRA_accession.y"), with=F]
+			drosRTEC.sra <- rbind(drosRTEC.sra.1[,c("sra_sampleName", "SRA_accession"),with=F],
+														drosRTEC.sra.2[,c("sra_sampleName", "SRA_accession"),with=F])
 
-
-
-
-
+			dat.drosRTEC.dt <- merge(dat.drosRTEC.dt, drosRTEC.sra, by="sra_sampleName", all=T)
 
 
 	### load in DPGP data
