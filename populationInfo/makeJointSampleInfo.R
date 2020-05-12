@@ -97,8 +97,18 @@
 			dat.drosRTEC.dt
 
 
-
 	### load in DPGP data
+		### first parse Individuals file to select which individuals; modified with population tag
+			dpgp.ind <- as.data.table(read.xls("./DEST/populationInfo/TableS1_individuals.xls", skip=5, header=T))
+			dpgp.ind <- dpgp.ind[Focal.Genome.Represented=="X,2L,2R,3L,3R"][,c("Stock.ID", "Genome.Type", "Mean.Depth")]
+
+			dpgp.ind[,pop:=tstr]
+
+			system("ls ./DEST/populationInfo/TableS1_individuals.xls")
+
+
+
+
 		###http://johnpool.net/TableS2_populations.xls
 		dat.dpgp <- read.xls("./DEST/populationInfo/TableS2_populations.xls")
 
