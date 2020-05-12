@@ -11,25 +11,21 @@ do
 test $i -eq 1 && ((i=i+1)) && continue
 
 ## make data folder
-mkdir -p ~/mapping/${LibraryName}
-cd ~/mapping/${LibraryName}
+mkdir -p ~/Desktop/mapping/${LibraryName}
+cd ~/Desktop/mapping/${LibraryName}
 
-## download with prefetch
-~/scripts/sratoolkit.2.10.5-mac64/bin/prefetch -O ~/mapping/${LibraryName} ${Run}
 
-## validate
-~/scripts/sratoolkit.2.10.5-mac64/bin/vdb-validate -v ~/mapping/${LibraryName}/${Run}/${Run}.sra
+/Volumes/MartinResearch1/NewInvMarkers/scripts/sratoolkit.2.10.5-mac64/bin/prefetch -O ~/Desktop/mapping/${LibraryName} ${Run}
 
-## convert to FASTQ with 10 threads
-~/scripts/sratoolkit.2.10.5-mac64/bin/fasterq-dump \
+/Volumes/MartinResearch1/NewInvMarkers/scripts/sratoolkit.2.10.5-mac64/bin/fasterq-dump \
 --split-files \
---outfile ~/mapping/${LibraryName}/${LibraryName} \
+--outfile ~/Desktop/mapping/${LibraryName}/${LibraryName} \
 -e 10 \
-~/mapping/${LibraryName}/${Run}/${Run}.sra
+~/Desktop/mapping/${LibraryName}/${Run}/${Run}.sra
 
-# gzip
-gzip ~/mapping/${LibraryName}/${LibraryName}\_1.fastq &
-gzip ~/mapping/${LibraryName}/${LibraryName}\_2.fastq
+
+gzip ~/Desktop/mapping/${LibraryName}/${LibraryName}\_1.fastq
+gzip ~/Desktop/mapping/${LibraryName}/${LibraryName}\_2.fastq
 
 done < ~/GitHub/DEST/populationInfo/drosEU_SraRunInfo.csv
 
