@@ -59,7 +59,7 @@
 	### load in DrosRTEC data
 		dat.drosRTEC <- read.xls("./DEST/populationInfo/vcf_popinfo_Oct2018.xlsx")
 
-		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 9, 7, 12, 10, 11, 6, 16, 3)])
+		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 10, 8, 13, 11, 12, 7, 17, 4)])
 		setnames(dat.drosRTEC.dt,
 				names(dat.drosRTEC.dt),
 				c("sampleName", "sra_sampleName", "country", "city", "collectionDate", "lat", "long", "season", "nFlies", "locality"))
@@ -87,12 +87,15 @@
 			setnames(drosRTEC.sra.2, c("Sample Name", "Run"), c("sra_sampleName", "SRA_accession"))
 
 			drosRTEC.sra.1[SRA_accession=="SRR1525694", sra_sampleName:="FL_rep2"]
-			drosRTEC.sra.2 <- drosRTEC.sra.2[sra_sampleName!="VI_2012_FAT"]
+			drosRTEC.sra.2 <- drosRTEC.sra.2[!sra_sampleName%in%c("PA_2012_FAT", "VI_2012_FAT", "mel14TWA7_SPT")]
 
 			drosRTEC.sra <- rbind(drosRTEC.sra.1[,c("sra_sampleName", "SRA_accession"),with=F],
 														drosRTEC.sra.2[,c("sra_sampleName", "SRA_accession"),with=F])
 
 			dat.drosRTEC.dt <- merge(dat.drosRTEC.dt, drosRTEC.sra, by="sra_sampleName", all=T)
+
+			dat.drosRTEC.dt
+
 
 
 	### load in DPGP data
