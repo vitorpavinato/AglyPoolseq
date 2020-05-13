@@ -41,6 +41,7 @@ singularity run dmelsync_hpc.sif <read_1> <read_2> <sample_name> <output_folder>
 * read_2 full path
 * name of sample
 * full path of output directory
+* number of cores to use (try 6 or 20 depending on you system)
 
 #### Output contained in the output directory under a folder named for the sample name
 * directory of fastq analysis for trimmed and untrimmed reads

@@ -200,7 +200,7 @@ RUN bwa index /opt/hologenome/holo_dmel_6.12.fa && \
               R=/opt/hologenome/holo_dmel_6.12.fa \
               O=/opt/hologenome/holo_dmel_6.12.dict
 
-ARG CACHE_BUST=05:08:2020:1200
+ARG CACHE_BUST=05:11:2020:1700
 
 WORKDIR /opt
 RUN rm -rf /opt/DEST/ && \
