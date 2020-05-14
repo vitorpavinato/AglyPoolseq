@@ -96,6 +96,8 @@
 
 			setnames(dat.drosRTEC.dt, "sampleName", "sampleId")
 
+			### strip out duplicate Maine library
+				dat.drosRTEC.dt <- dat.drosRTEC.dt[SRA_accession!="SRR2006283"]
 
 	### load in DPGP data
 		### first parse Individuals file to select which individuals; modified with population tag

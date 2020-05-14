@@ -54,7 +54,8 @@ sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
 ```
 
 
-
+76,77,78,79,80,116,117,118,119,120
+#sacct -j 12282717
 
 
 
