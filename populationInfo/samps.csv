@@ -255,10 +255,7 @@ EF,Ethiopia,Fiche,2011/12,9.81,38.63,NA,EF,inbred_line,Africa,dgn,63,NA,2011,NA,
 EG,Egypt,Cairo,2011/1,30.1,31.32,NA,EG,inbred_line,Africa,dgn,29,NA,2011,NA,EGM00062318,178.081211466086
 ER,Ethiopia,Debre Birhan,2011/12,9.68,39.53,NA,ER,haploid_embryo,Africa,dgn,5,NA,2011,NA,ET000063450,111.633065196712
 FR,France,Lyon,2010/7,45.77,4.86,NA,FR,inbred_line,Europe,dgn,87,NA,2010,NA,FR069029001,17.6270552387667
-FR_,France,Montpellier,2010/8,43.6,3.88,NA,FR_,inbred_line,Europe,dgn,20,NA,2010,NA,FRE00106207,7.19302273805817
 GA,Gabon,Franceville,2002/3,-1.65,13.6,NA,GA,haploid_embryo,Africa,dgn,9,NA,2002,NA,GBM00064570,22.3338769175649
-GA_,United States,Athens GA,2009/8,33.96,-83.37,NA,GA_,inbred_line,North_America,dgn,14,NA,2009,NA,USW00013873,4.14429155931638
-GH,Ghana,Accra,2010/1,5.55,-0.2,NA,GH,inbred_line,Africa,dgn,15,NA,2010,NA,GHM00065472,7.0964618404285
 GU,Guinea,Dondé,2005/6,10.7,-12.25,NA,GU,haploid_embryo,Africa,dgn,5,NA,2005,NA,GV000001820,40.97046013875
 I,United States,Ithaca NY,2004,42.35,-76.57,NA,I,inbred_line,North_America,dgn,19,NA,2004,NA,USC00304174,14.8437926710233
 KN,Kenya,Nyahururu,2009/1,0.04,36.36,NA,KN,haploid_embryo,Africa,dgn,5,NA,2009,NA,KEM00063686,131.117998715073
