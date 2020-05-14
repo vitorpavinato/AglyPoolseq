@@ -50,7 +50,7 @@ sbatch --array=1-8 ${wd}/DEST/add_DGN_data/downloadDGN.sh
 sbatch ${wd}/DEST/add_DGN_data/pop_chr_maker.sh
 nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
 rm ${wd}/dgn/confirm_files
-sbatch --array=1-${nJobs} ${wd}/dest/DEST/add_DGN_data/makePopGenomeSync.sh
+sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
 ```
 
 

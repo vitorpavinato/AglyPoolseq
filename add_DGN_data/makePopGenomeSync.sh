@@ -59,23 +59,29 @@ nFiles_exp=$( grep "^"${pop}"," < ${wd}/DEST/populationInfo/dpgp.ind.use.csv | c
 
 echo ${pop}","${chr}","${nFiles_obs}","${nFiles_exp} >> /scratch/aob2x/dest/dgn/confirm_files
 
+paste -d',' $( ls /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long | grep -E "${samps}" ) > \
+/scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv
+
+
 ##########################
 ### csv to sync format ###
 ##########################
 
-#paste -d' ' \
-#/scratch/aob2x/dest/referenceGenome/r5/${chr}.long \
-#/scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv | \
-#awk -F' ' -v chr=${chr} '
-#{
-#nN=gsub(/N/,"",$2)
-#nA=gsub(/A/,"",$2)
-#nT=gsub(/T/,"",$2)
-#nC=gsub(/C/,"",$2)
-#nG=gsub(/G/,"",$2)
-#
-#nObs=nA+nT+nC+nG
-#
-#print chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
-#
-#}' | bgzip -c > /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
+paste -d' ' \
+/scratch/aob2x/dest/referenceGenome/r5/${chr}.long \
+/scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv | \
+awk -F' ' -v chr=${chr} '
+{
+nN=gsub(/N/,"",$2)
+nA=gsub(/A/,"",$2)
+nT=gsub(/T/,"",$2)
+nC=gsub(/C/,"",$2)
+nG=gsub(/G/,"",$2)
+
+nObs=nA+nT+nC+nG
+
+print chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
+
+}' | bgzip -c > /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
+
+tabix -f -b 2 -s 1 -e 2 /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
