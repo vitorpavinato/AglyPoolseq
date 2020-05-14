@@ -11,13 +11,13 @@
 	library(gdata)
 	#library(cowplot)
 	library(foreach)
-	#library(ggplot2)
-	#library(ggmap)
-	#library(maps)
-	#library(mapdata)
+	library(ggplot2)
+	library(ggmap)
+	library(maps)
+	library(mapdata)
 	library(rnoaa)
 	library(sp)
-	#library(rworldmap)
+	library(rworldmap)
 
 ### set working directory
 	setwd("/scratch/aob2x/dest")
@@ -94,41 +94,54 @@
 
 			dat.drosRTEC.dt <- merge(dat.drosRTEC.dt, drosRTEC.sra, by="sra_sampleName", all=T)
 
-			dat.drosRTEC.dt
+			setnames(dat.drosRTEC.dt, "sampleName", "sampleId")
 
 
 	### load in DPGP data
 		### first parse Individuals file to select which individuals; modified with population tag
 			dpgp.ind <- as.data.table(read.xls("./DEST/populationInfo/TableS1_individuals.xls", skip=5, header=T))
 			dpgp.ind <- dpgp.ind[Focal.Genome.Represented=="X,2L,2R,3L,3R"][,c("population", "Stock.ID", "Genome.Type", "Mean.Depth", "Data.Group")]
+			setnames(dpgp.ind, "population", "sampleId")
 
-			dpgp.ind[,list(n=.N), list(population, Data.Group, Genome.Type)][n>=5]
-
-
-
-		###http://johnpool.net/TableS2_populations.xls
-		dat.dpgp <- read.xls("./DEST/populationInfo/TableS2_populations.xls")
+			dpgp.ind[,dgn_set:=paste(sampleId, Data.Group, sep="/")]
 
 
-		dat.dpgp.dt <- as.data.table(dat.dpgp[-c(1:4),c(1,1, 2,3,4,6,7,9,10,11)])
-		setnames(dat.dpgp.dt,
-				names(dat.dpgp.dt),
-				c("sampleId", "sequenceId", "country", "city", "collectionDate", "lat", "long", "haploidGenomes", "inbredGenomes", "extractionGenomes"))
+			dpgp.pop.use <- dpgp.ind[,list(n=.N), list(sampleId, Data.Group, Genome.Type, dgn_set)][n>=5]
 
-		dat.dpgp.dt[,nFlies:=as.numeric(as.character(haploidGenomes)) + as.numeric(as.character(inbredGenomes)) + as.numeric(as.character(extractionGenomes))]
-		dat.dpgp.dt[,type:=c("haploidGenomes", "inbredGenomes", "extractionGenomes")[apply(dat.dpgp.dt[,c("haploidGenomes", "inbredGenomes", "extractionGenomes"), with=F], 1, which.max)]]
-		dat.dpgp.dt <- dat.dpgp.dt[,-c("haploidGenomes", "inbredGenomes", "extractionGenomes"), with=F]
+			dpgp.pop.use <- dpgp.pop.use[!dgn_set%in%c("DSPR/DSRP", "FR/DPGP2", "EA/AGES", "EF/AGES", "FR/DPGP2", "SP/DPGP2", "FR_/BERGMAN", "GA_/BERGMAN", "GH/BERGMAN")]
 
-		### get the DPGP populations that are being used in this biuld of the data
-		### the script which makes this file is here: DEST/add_DGN_data/pop_chr_maker.sh
-			current.dpgp.pops <- fread("/scratch/aob2x/dest/dgn/pops.delim")
-			current.dpgp.pops <- unique(current.dpgp.pops$V3)
+			setkey(dpgp.ind, sampleId, Data.Group)
+			setkey(dpgp.pop.use, sampleId, Data.Group)
 
-			###these samples need to be dealt with directly.
-			current.dpgp.pops[!sapply(current.dpgp.pops, function(x) x%in%as.character(dat.dpgp.dt$sampleId))]
+			dpgp.ind.use <- dpgp.ind[J(dpgp.pop.use)]
+
+			write.csv(dpgp.ind.use, "./DEST/populationInfo/dpgp.ind.use.csv", quote=F, row.names=F)
+
+		### Get population metadata
+		### http://johnpool.net/TableS2_populations.xls
+			dat.dpgp <- read.xls("./DEST/populationInfo/TableS2_populations.xls", skip=4)
 
 
-		dat.dpgp.dt <- dat.dpgp.dt[sampleId%in%current.dpgp.pops]
+			dat.dpgp.dt <- as.data.table(dat.dpgp[,c(1,1, 2,3,4,6,7)])
+			setnames(dat.dpgp.dt,
+					names(dat.dpgp.dt),
+					c("sampleId", "sequenceId", "country", "city", "collectionDate", "lat", "long"))
+
+			setkey(dat.dpgp.dt, sampleId)
+			setkey(dpgp.ind.use, sampleId)
+			dat.dpgp.dt <- merge(dat.dpgp.dt, dpgp.pop.use)
+
+	### get the DPGP populations that are being used in this biuld of the data
+	### the script which makes this file is here: DEST/add_DGN_data/pop_chr_maker.sh
+		#current.dpgp.pops <- fread("/scratch/aob2x/dest/dgn/pops.delim")
+		#current.dpgp.pops <- unique(current.dpgp.pops$V3)
+
+		###these samples need to be dealt with directly.
+		#current.dpgp.pops[!sapply(current.dpgp.pops, function(x) x%in%as.character(dat.dpgp.dt$sampleId))]
+
+
+		#dat.dpgp.dt <- dat.dpgp.dt[sampleId%in%current.dpgp.pops]
+
 		dat.dpgp.dt[,collectionDate := paste(tstrsplit(collectionDate, "/")[[2]], tstrsplit(collectionDate, "/")[[1]], sep="/")]
 		dat.dpgp.dt[grepl("NA", collectionDate), collectionDate:=tstrsplit(collectionDate, "/")[[2]]]
 		#dat.dpgp.dt[,collectionDate := as.POSIXct(collectionDate)]
@@ -138,10 +151,9 @@
 		dat.dpgp.dt[,locality:=sampleId]
 		dat.dpgp.dt[,set:="dgn"]
 
-		### tack in lost populatiosn
+		### tack in simulans
 			dat.dpgp.dt <- rbind(dat.dpgp.dt,
-						rbind(data.table(sampleId="MW", sequenceId="MW", country="Malawi", city="Mwanza", collectionDate="2001", lat="-15.5998", long="34.5141", nFlies=5, season=NA, locality="MW", type="extractionGenomes", set="dgn"),
-								 data.table(sampleId="SIM", sequenceId="SIM", country="w501", city="w501", collectionDate=NA, lat=NA, long=NA, nFlies=1, season=NA, locality="w501", type="inbredGenomes", set="dgn")))
+								 data.table(sampleId="SIM", sequenceId="SIM", country="w501", city="w501", collectionDate=NA, lat=NA, long=NA, n=1, season=NA, locality="w501", set="dgn", Data.Group="SIMULANS", Genome.Type="inbred_line", dgn_set="SIMULANS/SIM"), fill=T)
 
 		### get continents
 			coords2continent = function(points) {
@@ -168,9 +180,18 @@
 
 			dat.dpgp.dt[!is.na(lat), continent:=gsub(" ", "_", as.character(coords2continent(na.omit(as.matrix(dat.dpgp.dt[,c("long", "lat"),with=F])))))]
 			dat.dpgp.dt[,SRA_accession:=NA]
+			setnames(dat.dpgp.dt, "n", "nFlies")
+			setnames(dat.dpgp.dt, "Genome.Type", "type")
 
-	### combine
-		samps <- rbind(rbind(dat.drosEU.dt, dat.drosRTEC.dt), dat.dpgp.dt)
+	### combine,
+		columns2use <- c("sampleId", "country", "city", "collectionDate", "lat", "long", "season", "locality", "type", "continent", "set", "nFlies", "SRA_accession")
+
+
+		samps <- rbindlist(list(dat.drosEU.dt[,columns2use,with=F],
+												 		dat.drosRTEC.dt[,columns2use,with=F],
+														dat.dpgp.dt[,columns2use,with=F]))
+
+
 		samps[,year := as.numeric(tstrsplit(collectionDate, "/")[[1]])]
 
 		samps[grepl("[0-9]{4}/[0-9]{2}/[0-9]{2}", collectionDate),yday := yday(as.POSIXct(collectionDate))]
@@ -179,18 +200,21 @@
 		samps[season=="n", season:=NA]
 		samps[,season:=factor(season, levels=c("spring", "fall", "frost"))]
 
+		samps[sampleId=="NC_ra_03_n", collectionDate:="2003"]
+		samps[sampleId=="NC_ra_03_n", year:=2003]
+
 	### get GHCND site
 		### the problem is that the closest GHCND site to the lat/long does not necessarily have the full climate data for the preceeding year.
 		### This is a function to identify the closest station with the most information
 
 		### first, pull the list of statsions
-			stations <- ghcnd_stations()
+			stations <- ghcnd_stations(refresh=FALSE)
 			stations <- as.data.table(stations)
 
 		### function to identify best station to use
 
 			getBestStation <- function(lat, long, year, threshold=2) {
-				### i <- which(samps$sampleId=="PA_li_14_spring"); i<-281
+				### i <- which(samps$sampleId=="PA_li_14_spring"); i<-180
 				### lat <- samps$lat[i]; long <- samps$long[i]; threshold=3; year=samps$year[i]
 
 				if(!is.na(lat)) {
@@ -209,14 +233,14 @@
 			}
 
 
-			o <- foreach(i=1:dim(samps)[1])%do%{
+			o <- foreach(i=1:dim(samps)[1])%dopar%{
 				print(i)
 				getBestStation(lat=samps[i]$lat, long=samps[i]$long, year=samps[i]$year, threshold=4)
 
 			}
 			o <- rbindlist(o)
 
-			samps <- cbind(samps, o[,-"i",with=F])
+			samps <- cbind(samps, o)
 
 			### all of the collections (except DGRP & SIM have id)
 				table(!is.na(samps$stationId))
