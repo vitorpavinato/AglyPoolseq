@@ -6,7 +6,7 @@
 
 ## -1. specify working directory
 >  ```bash
->wd="/scratch/aob2x/dest"
+wd="/scratch/aob2x/dest"
 >  ```
 
 ## 0. Download all DGN data
@@ -21,21 +21,21 @@ sbatch --array=1-8 ${wd}/DEST/add_DGN_data/downloadDGN.sh
 ## 1. Unpack
 > Each tarball is a bit different so the unpack scripts are different for each 1-8 (minus 4), from above. <br/>
 > ```bash
->sbatch --array=1-8 ${wd}/DEST/add_DGN_data/unpack.sh
+sbatch --array=1-8 ${wd}/DEST/add_DGN_data/unpack.sh
 >```
 
 ## 2. Wide to long
 > should be 4725 jobs <br/>
 >```bash
->cd ${wd}/dgn/wideData/; ls * | tr '\t' '\n' | awk '{print >NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
->sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | >cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
+cd ${wd}/dgn/wideData/; ls * | tr '\t' '\n' | awk '{print >NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
+sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | >cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
 >```
 > A quick check to make sure things look good:
 > `w2l_check.R`
 
 ## 3. Format reference genome
 >```bash
->sbatch ${wd}/DEST/add_DGN_data/getRefGenome.sh
+sbatch ${wd}/DEST/add_DGN_data/getRefGenome.sh
 >```
 
 > Check that length of reference geomes are the same as the DGP long files: <br/>
