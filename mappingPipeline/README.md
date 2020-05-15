@@ -27,8 +27,8 @@ grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 
 ### 3. Build singularity container from docker image
 ```bash
-module load singularity
-singularity pull docker://jho5ze/dmelsync:latest
+    module load singularity
+    singularity pull docker://jho5ze/dmelsync:hpc
 ```
 
 
@@ -36,25 +36,21 @@ singularity pull docker://jho5ze/dmelsync:latest
 ```bash
 singularity run dmelsync_hpc.sif <read_1> <read_2> <sample_name> <output_folder> <num_cores_to_use>
 ```
-> #### Input:
-> * read_1 full path
-> * read_2 full path
-> * name of sample
-> * full path of output directory
-> * num_cores_to_use; try 8 or 20, depending on your system
+#### Input
+* read_1 full path
+* read_2 full path
+* name of sample
+* full path of output directory
+* number of cores to use (try 6 or 20 depending on you system)
 
-> #### Output (\<output_folder\>):
-> * directory of fastq analysis for trimmed and untrimmed reads
-> * intervals file used for GATK IndelRealigner
-> * original bam file containing all reads (original.bam)
-> * simulans contaminants bam file (sim.bam)
-> * melanogaster reads (mel.bam)
-> * genomewide SYNC file (genomewide.sync)
-
-> #### bash script to run all samples:
-> ```bash
-DEST/mappingPipeline/example.txt
-     ```
+#### Output contained in the output directory under a folder named for the sample name
+* directory of fastq analysis for trimmed and untrimmed reads
+* intervals file used for GATK IndelRealigner
+* original bam file containing all reads (original.bam)
+* simulans contaminants bam file (sim.bam)
+* melanogaster reads (mel.bam)
+* set of files containing the output from max-cov.py on all chromosomes (data_<chromosome_name>.cov)
+* genomewide SYNC file (genomewide.sync)
 
 ### How to edit the pipeline script
 
