@@ -11,17 +11,18 @@
 #SBATCH --account berglandlab
 
 
+wd="/scratch/aob2x/dest"
 
 #####################
 ### get jobs task ###
 #####################
 
-#SLURM_ARRAY_TASK_ID=100
+#SLURM_ARRAY_TASK_ID=50
 ##chr_i=$( echo "${SLURM_ARRAY_TASK_ID}%5+1" | bc )
 ##pop_i=$( echo "${SLURM_ARRAY_TASK_ID}%35+1" | bc )
 
-pop=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" /scratch/aob2x/dest/dgn/pops.delim | cut -f3 )
-chr=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" /scratch/aob2x/dest/dgn/pops.delim | cut -f2 )
+pop=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" ${wd}/dgn/pops.delim | cut -f3 )
+chr=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" ${wd}/dgn/pops.delim | cut -f2 )
 
 
 ##if [ ${chr_i} == "1" ]; then
@@ -44,13 +45,13 @@ echo $chr
 ### paste per chromosome ###
 ############################
 
-if [ ! -f /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv ]; then
-
-    paste -d',' /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long  \
-    /scratch/aob2x/dest/dgn/csvData/${pop}_Chr${chr}.csv
-
-fi
-
+#if [ ! -f ${wd}/dgn/csvData/${pop}_Chr${chr}.csv ]; then
+#
+#    paste -d',' ${wd}/dgn/longData/${pop}_*_Chr${chr}*long  \
+#    ${wd}/dgn/csvData/${pop}_Chr${chr}.csv
+#
+#fi
+#
 
 ##########################
 ### csv to sync format ###
