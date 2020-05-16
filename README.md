@@ -8,8 +8,11 @@
   > `mappingPipeline\`: Contains dockerized mapping pipeline. Downloads data, produces bam files, filter files, gSYNC files
 
 ## Incorporate DGN data
-  > `add_DGN_datda\`: Downloads, formats, liftsover DGN data into gSYNC format
+  > `add_DGN_datda\`: Downloads, formats, liftover DGN data into gSYNC format
 
 ## SNP calling
   > `PoolSNP4Sync\`: SNP calling based on gSYNC files </br>
-  > `snape\`: SNP calling based on snape output
+  > `SNAPE\`: SNP calling based on snape output
+
+## Utility scripts
+  > `utility\`: (a) download individual files; (b)
