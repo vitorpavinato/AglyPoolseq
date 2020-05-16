@@ -7,7 +7,7 @@
 #SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/pop_chr_maker.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/pop_chr_maker.%A_%a.err # Standard error
-#SBATCH -p standard
+#SBATCH -p dev
 #SBATCH --account berglandlab
 
 

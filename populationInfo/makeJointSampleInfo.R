@@ -50,9 +50,9 @@
 
 		### add in SRA accession numbers from separate file
 			drosEU.sra <- fread("./DEST/populationInfo/drosEU_SraRunInfo.csv")
-			setnames(drosEU.sra, c("LibraryName", "Run"), c("sampleId", "SRA_accession"))
+			setnames(drosEU.sra, c("LibraryName", "Run", "Experiment"), c("sampleId", "SRA_accession", "SRA_experiment"))
 
-			dat.drosEU.dt <- merge(dat.drosEU.dt, drosEU.sra[,c("sampleId", "SRA_accession"),with=F], by="sampleId", all=T)
+			dat.drosEU.dt <- merge(dat.drosEU.dt, drosEU.sra[,c("sampleId", "SRA_accession", "SRA_experiment"),with=F], by="sampleId", all=T)
 			dat.drosEU.dt <- dat.drosEU.dt[!is.na(set)]
 
 
@@ -83,14 +83,14 @@
 			drosRTEC.sra.1 <- fread("./DEST/populationInfo/drosRTEC_set1_SraRunInfo.txt")
 			drosRTEC.sra.2 <- fread("./DEST/populationInfo/drosRTEC_set2_SraRunInfo.txt")
 
-			setnames(drosRTEC.sra.1, c("Sample Name", "Run"), c("sra_sampleName", "SRA_accession"))
-			setnames(drosRTEC.sra.2, c("Sample Name", "Run"), c("sra_sampleName", "SRA_accession"))
+			setnames(drosRTEC.sra.1, c("Sample Name", "Run", "Experiment"), c("sra_sampleName", "SRA_accession", "SRA_experiment"))
+			setnames(drosRTEC.sra.2, c("Sample Name", "Run", "Experiment"), c("sra_sampleName", "SRA_accession", "SRA_experiment"))
 
 			drosRTEC.sra.1[SRA_accession=="SRR1525694", sra_sampleName:="FL_rep2"]
 			drosRTEC.sra.2 <- drosRTEC.sra.2[!sra_sampleName%in%c("PA_2012_FAT", "VI_2012_FAT", "mel14TWA7_SPT")]
 
-			drosRTEC.sra <- rbind(drosRTEC.sra.1[,c("sra_sampleName", "SRA_accession"),with=F],
-														drosRTEC.sra.2[,c("sra_sampleName", "SRA_accession"),with=F])
+			drosRTEC.sra <- rbind(drosRTEC.sra.1[,c("sra_sampleName", "SRA_accession", "SRA_experiment"),with=F],
+														drosRTEC.sra.2[,c("sra_sampleName", "SRA_accession", "SRA_experiment"),with=F])
 
 			dat.drosRTEC.dt <- merge(dat.drosRTEC.dt, drosRTEC.sra, by="sra_sampleName", all=T)
 
@@ -116,6 +116,10 @@
 			setkey(dpgp.pop.use, sampleId, Data.Group)
 
 			dpgp.ind.use <- dpgp.ind[J(dpgp.pop.use)]
+
+			### tack in Simulans
+				dpgp.ind.use <- rbind(dpgp.ind.use, data.table(sampleId="SIM", Stock.ID="Simulans", Genome.Type="inbred_line", Mean.Depth=NA, Data.Group="SIM", dgn_set="SIM/SIM", i.Genome.Type="inbred_line", i.dgn_set="SIM/SIM", n=1))
+
 
 			write.csv(dpgp.ind.use, "./DEST/populationInfo/dpgp.ind.use.csv", quote=F, row.names=F)
 
@@ -182,11 +186,12 @@
 
 			dat.dpgp.dt[!is.na(lat), continent:=gsub(" ", "_", as.character(coords2continent(na.omit(as.matrix(dat.dpgp.dt[,c("long", "lat"),with=F])))))]
 			dat.dpgp.dt[,SRA_accession:=NA]
+			dat.dpgp.dt[,SRA_experiment:=NA]
 			setnames(dat.dpgp.dt, "n", "nFlies")
 			setnames(dat.dpgp.dt, "Genome.Type", "type")
 
 	### combine,
-		columns2use <- c("sampleId", "country", "city", "collectionDate", "lat", "long", "season", "locality", "type", "continent", "set", "nFlies", "SRA_accession")
+		columns2use <- c("sampleId", "country", "city", "collectionDate", "lat", "long", "season", "locality", "type", "continent", "set", "nFlies", "SRA_accession", "SRA_experiment")
 
 
 		samps <- rbindlist(list(dat.drosEU.dt[,columns2use,with=F],
