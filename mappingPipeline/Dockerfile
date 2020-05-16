@@ -105,6 +105,8 @@ ENV LD_LIBRARY_PATH="/opt/htslib/${HTSLIB_VERSION}/lib:${LD_LIBRARY_PATH}"
 
 
 # install SAMTools
+# LDFLAGS="-Wl,-R$/opt/htslib/${HTSLIB_VERSION}/lib && \
+
 ARG SAMTOOLS_VERSION=1.9
 WORKDIR /opt
 RUN wget https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz && \
@@ -200,7 +202,7 @@ RUN bwa index /opt/hologenome/holo_dmel_6.12.fa && \
               R=/opt/hologenome/holo_dmel_6.12.fa \
               O=/opt/hologenome/holo_dmel_6.12.dict
 
-ARG CACHE_BUST=05:11:2020:1700
+ARG CACHE_BUST=05:15:2020:1800
 
 WORKDIR /opt
 RUN rm -rf /opt/DEST/ && \
