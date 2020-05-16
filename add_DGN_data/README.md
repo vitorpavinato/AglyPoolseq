@@ -5,9 +5,9 @@
 
 
 ## -1. specify working directory
-> ```bash
+```bash
 wd="/scratch/aob2x/dest"
-> ```
+```
 
 ## 0. Download all DGN data
 > Needs a tab delimited file with jobID, prefix, path to DGN bz2 file: `DEST/add_DGN_data/dgn.list` <br/>
@@ -55,14 +55,14 @@ sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | >cut -f1 ) ${wd}/DE
 ```
 
 ## 5. Liftover to dm6 and generate bgzipped gSYNC file
->```bash
+```bash
 nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
 sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
->```
+```
 
-~~ sacct -j 12304118 ~~
+~~sacct -j 12304118~~
 
 ## 6. Move to output directory
-> ```bash
+```bash
 sbatch ${wd}/DEST/add_DGN_data/move.sh
->```
+```
