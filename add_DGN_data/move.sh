@@ -12,6 +12,7 @@
 
 module load parallel
 
+wd="/scratch/aob2x/dest"
 
 moveFile () {
 
@@ -19,12 +20,13 @@ moveFile () {
   #chr=2L
 
   pop=${1}
-  #wd="/scratch/aob2x/dest/"
+  wd="/scratch/aob2x/dest"
 
 
   [ ! -d /project/berglandlab/DEST/dest_mapped/${pop}/ ] && mkdir /project/berglandlab/DEST/dest_mapped/${pop}
 
-  rsync ${wd}/dgn/wholeGenomeSyncData/${pop}_Chr*.gSYNC.gz* /project/berglandlab/DEST/dest_mapped/${pop}/
+  rsync ${wd}/dest/wholeGenomeSyncData/${pop}_Chr*.gSYNC.gz* /project/berglandlab/DEST/dest_mapped/${pop}/
+
   echo $pop
 
 }

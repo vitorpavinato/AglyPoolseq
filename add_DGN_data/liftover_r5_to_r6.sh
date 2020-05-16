@@ -10,13 +10,13 @@
 #SBATCH -p dev
 #SBATCH --account berglandlab
 
-
+module load htslib
 
 ### note: this script uses the ram disk to write temporary files.
 
-wd="/scratch/aob2x/dest/"
+wd="/scratch/aob2x/dest"
 
-#SLURM_ARRAY_TASK_ID=2; SLURM_JOB_ID=4
+#SLURM_ARRAY_TASK_ID=65; SLURM_JOB_ID=4
 tmpdir=/dev/shm/$USER/
 [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
 [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
@@ -55,8 +55,15 @@ elif [ ${chr} = "X" ]; then
 fi
 
 
-cat /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm6.bed |
-awk -v chr=${chr} -v chrLen=${maxLen} '{
+cat /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm6.bed | grep -E "^chrX[[:space:]]"| sort -n -k2 - > ~/sort.bed
+
+head ~/sort.bed
+
+cat ~/sort.bed | awk -v chr=${chr} -v chrLen=${maxLen} '{
+
+  if($2==p) {
+    next
+  }
   if($2!=p+1) {
     for(i=p+1; i<=$2-1; i++) {
       print chr"\t"i"\tN\t0:0:0:0:0:0"
@@ -76,12 +83,20 @@ END{
       print chr"\t"i"\tN\t0:0:0:0:0:0"
     }
   }
-}' | bgzip -c > ${wd}/dgn/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
+}' | bgzip -c > ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
 
-tabix -f -b 2 -s 1 -e 2 /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
+tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
 
 
 ### checks
-#head  ~/${pop}_Chr${chr}.gSYNC
-#tail  ~/${pop}_Chr${chr}.gSYNC
-#awk '$2!=p+1{print p+1"-"$2-1}{p=$2}' ~/${pop}_Chr${chr}.gSYNC > ~/gaps
+
+#zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | wc -l
+#echo $maxLen
+#
+#zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | head
+#zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | tail
+#
+#zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | awk '$2!=p+1{print p"-"$2}{p=$2}'
+
+
+zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | grep -m2 240254

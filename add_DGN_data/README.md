@@ -59,7 +59,7 @@ nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
 sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
 
 sbatch --array=39 ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
-sacct -j 12304046
+sacct -j 12304049
 >```
 
 ## 6. Move to output directory
