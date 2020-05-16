@@ -53,9 +53,19 @@ rm ${wd}/dgn/confirm_files
 sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
 >```
 
-## 5. Liftover to dm6
+## 5. Liftover to dm6 and generate bgzipped gSYNC file
+>```bash
+nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
+sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
 
+sbatch --array=39 ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
+sacct -j 12304046
+>```
 
+## 6. Move to output directory
+> ```bash
+sbatch ${wd}/DEST/add_DGN_data/move.sh
+>```
 
 
 

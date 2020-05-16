@@ -26,7 +26,7 @@ tmpdir=/dev/shm/$USER/
 pop=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" ${wd}/dgn/pops.delim | cut -f3 )
 chr=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" ${wd}/dgn/pops.delim | cut -f2 )
 
-zcat /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz |
+zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz |
 awk '{
   print "chr"$1"\t"$2"\t"$2+1"\t"$3","$4",dm5_"$1"_"$2
 }' > /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm3.bed
@@ -34,7 +34,7 @@ awk '{
 ### do liftover
 ~/liftOver \
 /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm3.bed \
-/scratch/aob2x/dest/dgn/liftoverChains/dm3ToDm6.over.chain \
+${wd}/dgn/liftoverChains/dm3ToDm6.over.chain \
 /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm6.bed \
 /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm6.unmapped.bed
 
@@ -76,7 +76,9 @@ END{
       print chr"\t"i"\tN\t0:0:0:0:0:0"
     }
   }
-}' | bgzip -c > /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
+}' | bgzip -c > ${wd}/dgn/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
+
+tabix -f -b 2 -s 1 -e 2 /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
 
 
 ### checks
