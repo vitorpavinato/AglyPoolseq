@@ -3,11 +3,11 @@
 #SBATCH -J move # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 1:00:00 ### 0.5 hours
+#SBATCH -t 0:20:00 ### 0.5 hours
 ##SBATCH --mem 3G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/move.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/move.%A_%a.err # Standard error
-#SBATCH -p standard
+#SBATCH -p dev
 #SBATCH --account berglandlab
 
 module load parallel
