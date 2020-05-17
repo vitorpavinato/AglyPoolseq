@@ -7,7 +7,7 @@
 #SBATCH --mem 6G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/liftover_r5_to_r6.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/liftover_r5_to_r6.%A_%a.err # Standard error
-#SBATCH -p standard
+#SBATCH -p biol8083
 #SBATCH --account berglandlab
 
 module load htslib
@@ -99,4 +99,4 @@ tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
 #zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | awk '$2!=p+1{print p"-"$2}{p=$2}'
 
 
-zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | grep -m2 240254
+#zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz | grep -m2 240254

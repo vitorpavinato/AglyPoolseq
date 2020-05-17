@@ -59,8 +59,14 @@ sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | >cut -f1 ) ${wd}/DE
 nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
 sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
 ```
-
 ~~sacct -j 12304118~~
+
+
+sbatch --array=130,5,10,15,20,25,45,50,55,60,65,85,90,95,100,115,120,125 ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
+sacct -j 12307363
+
+
+
 
 ## 6. Move to output directory
 ```bash
