@@ -7,7 +7,7 @@
 ##SBATCH --mem 3G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/move.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/move.%A_%a.err # Standard error
-#SBATCH -p dev
+#SBATCH -p biol8083
 #SBATCH --account berglandlab
 
 module load parallel
