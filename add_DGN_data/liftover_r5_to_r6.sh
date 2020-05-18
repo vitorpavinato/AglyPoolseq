@@ -16,7 +16,7 @@ module load htslib
 
 wd="/scratch/aob2x/dest"
 
-#SLURM_ARRAY_TASK_ID=65; SLURM_JOB_ID=4
+#SLURM_ARRAY_TASK_ID=10; SLURM_JOB_ID=4
 tmpdir=/dev/shm/$USER/
 [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
 [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
@@ -55,11 +55,11 @@ elif [ ${chr} = "X" ]; then
 fi
 
 
-cat /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm6.bed | grep -E "^chrX[[:space:]]"| sort -n -k2 - > ~/sort.bed
 
-head ~/sort.bed
-
-cat ~/sort.bed | awk -v chr=${chr} -v chrLen=${maxLen} '{
+cat /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm6.bed | \
+grep -E "^chr${chr}[[:space:]]" | \
+sort -n -k2 - > ~/sort.bed | \
+awk -v chr=${chr} -v chrLen=${maxLen} '{
 
   if($2==p) {
     next

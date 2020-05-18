@@ -63,9 +63,9 @@ sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
 
 
 sbatch --array=130,5,10,15,20,25,45,50,55,60,65,85,90,95,100,115,120,125 ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
-sacct -j 12307363
+sacct -j 12309042
 
-
+cat /scratch/aob2x/dest/slurmOutput/liftover_r5_to_r6.12309042_10.err
 
 
 ## 6. Move to output directory
