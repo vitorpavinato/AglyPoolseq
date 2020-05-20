@@ -15,7 +15,7 @@ usage = """
         --base-quality-threshold 25 \
         --minIndel 5 \
         --coding 1.8 \
-        --ref reference.fa \
+        --ref reference.ref \
         --output output
         """
 parser = OptionParser(usage=usage)
@@ -31,7 +31,7 @@ group=OptionGroup(parser,helptext)
 #########################################################   parameters   #########################################################################
 
 parser.add_option("--mpileup", dest="m", help="A mpileup file")
-parser.add_option("--ref", dest="Ref", help=" The reference genome in FASTA format")
+parser.add_option("--ref", dest="Ref", help=" The reference genome as Python object from PickleRef.py")
 parser.add_option("--base-quality-threshold", dest="b", help="The Base-quality threshold ",default=15)
 parser.add_option("--coding", dest="c", help="the Illumina FASTQ quality coding",default=1.8)
 parser.add_option("--minIndel", dest="mi", help="minimum count of Indel polymorphisms",default=5)
@@ -129,25 +129,21 @@ else:
     pc=33
 
 ############################ parse FASTA ###########################################
-
 ChrLen=d(int)
-REFID=d(list)
+print("****** READING REF ******")
+with open(options.Ref, 'rb') as reffile:
+    REFID = pickle.load(reffile)
 
-for l in load_data(options.Ref):
-    if l.startswith(">"):
-        ID=l.rstrip()[1:]
-        continue
-    for x in l.rstrip():
-        ChrLen[ID]+=1
-        REFID[ID].extend(list(l.rstrip()))
-
+for k,v in REFID.items():
+    ChrLen[k]=len(v)
+print("****** READING REF DONE ******")
 ############################ parse MPILEUP ###########################################
-
+print(" ")
 # parse mpileup and store alternative alleles:
 syncout=gzip.open(options.OUT+".sync.gz","wt")
 FL=0
 NUM=""
-
+print("****** PARSING MPILEUP ******")
 for l in load_data(options.m):
     if l.rstrip()=="":
         continue
@@ -158,11 +154,16 @@ for l in load_data(options.m):
     ## test if first line:
     if FL==0:
         CHR=a[0]
+        if CHR not in REFID:
+            print(CHR+" does not match with Ref database")
+            sys.exit()
+        print(CHR+" started")
+        #REFID[CHR]=list(REFID[CHR])
         POS=int(a[1])
         if POS>1:
             INDEX=1
             while(INDEX<POS):
-                syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
+                syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
                 INDEX+=1
         FL=1
 
@@ -170,11 +171,15 @@ for l in load_data(options.m):
     if CHR!=a[0] and int(POS)<ChrLen[CHR]:
         INDEX=int(POS)+1
         while(INDEX<=ChrLen[CHR]):
-            syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
+            syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
             INDEX+=1
         INDEX=1
+        print(a[0]+" started")
 
     CHR,POS,REF = a[:3]
+    if CHR not in REFID:
+        print(CHR+" does not match with Ref database")
+        sys.exit()
     if CHR not in coverage:
         coverage[CHR]={}
     if CHR not in IndelPos:
@@ -182,7 +187,7 @@ for l in load_data(options.m):
     ## test if POS = INDEX+1, i.e. the next position, otherwise fill the gaps
     if int(POS)>INDEX+1:
         while(INDEX<int(POS)):
-            syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
+            syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
             INDEX+=1
 
     # loop through libraries
@@ -247,14 +252,15 @@ for l in load_data(options.m):
         syncL.append(counth2sync(v))
 
     ## write output
-    syncout.write(CHR+"\t"+POS+"\t"+REFID[CHR][INDEX]+"\t"+"\t".join(syncL)+"\n")
+    syncout.write(CHR+"\t"+POS+"\t"+REFID[CHR][INDEX-1]+"\t"+"\t".join(syncL)+"\n")
     INDEX+=1
 
 ## finish last chromosome
 if int(POS)<ChrLen[CHR]:
     INDEX=int(POS)+1
     while(INDEX<=ChrLen[CHR]):
-        syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
+        print
+        syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
         INDEX+=1
 
 ## write coverage object to file
