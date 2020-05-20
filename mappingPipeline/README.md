@@ -27,34 +27,33 @@ grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 
 ### 3. Build singularity container from docker image
 ```bash
-module load singularity
-singularity pull docker://jho5ze/dmelsync:latest
+    module load singularity
+    singularity pull docker://jho5ze/dmelsync:hpc
 ```
 
 
 ### 4. Run the singularity container
 ```bash
-singularity run dmelsync_hpc.sif <read_1> <read_2> <sample_name> <output_folder> <num_cores_to_use>
+singularity run dmelsync_hpc.sif <read_1> <read_2> <sample_name> <output_folder> --cores <optional> --max_cov <optional> --min_cov <optional>
 ```
-> #### Input:
-> * read_1 full path
-> * read_2 full path
-> * name of sample
-> * full path of output directory
-> * num_cores_to_use; try 8 or 20, depending on your system
+#### Input
+* read_1 full path
+* read_2 full path
+* name of sample
+* full path of output directory
+* optional number of cores to use (try 6 or 20 depending on you system) (--cores/-c, default = 1)
+* optional specification of the maximum coverage for the masking step (--max_cov/-x, default = 0.95)
+* optional specification of the minimum coverage for the masking step (--min_cov/-n, default = 10)
 
-> #### Output (\<output_folder\>):
-> * directory of fastq analysis for trimmed and untrimmed reads
-> * intervals file used for GATK IndelRealigner
-> * original bam file containing all reads (original.bam)
-> * simulans contaminants bam file (sim.bam)
-> * melanogaster reads (mel.bam)
-> * genomewide SYNC file (genomewide.sync)
-
-> #### bash script to run all samples:
-> ```bash
-DEST/mappingPipeline/example.txt
-     ```
+#### Output contained in the output directory under a folder named for the sample name
+* directory of fastq analysis for trimmed and untrimmed reads
+* intervals file used for GATK IndelRealigner
+* original bam file containing all reads (original.bam)
+* simulans contaminants bam file (sim.bam)
+* melanogaster reads (mel.bam)
+* genomewide SYNC file (genomewide.sync) (gzipped)
+* masked genomewide SYNC file (bgzipped and indexed with tabix)
+* mpileup file for the melanogaster reads (gzipped)
 
 ### How to edit the pipeline script
 
