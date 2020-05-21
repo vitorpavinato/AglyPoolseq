@@ -7,7 +7,7 @@ D=$4
 priortype=$5
 fold=$6
 
-awk '{if (last != $1) close(last); print >> $6_mpileup; last = $1}' $mpileup
+awk '{if (last != $1) close(last); print >> $1_mpileup; last = $1}' $mpileup
 
 for chr in {2L,2R,3L,3R,4}; do
   snape-pooled -nchr 2 -theta $theta -D $D -priortype $priortype -fold $fold < ${chr}_mpileup > ${chr}-$sample-SNAPE.txt
