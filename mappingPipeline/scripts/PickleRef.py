@@ -126,28 +126,19 @@ def load_data(x):
 
 ############################ parse FASTA ###########################################
 
-ChrLen=d(int)
-REFID2=d(str)
 REFID=d(list)
 ID=""
 print("****** READING REF ******")
 for l in load_data(options.Ref):
     if l.startswith(">"):
-        if ID!="":
-            REFID2[ID]="".join(REFID[ID])
-            del REFID[ID]
+
         ID=l.rstrip().split()[0][1:]
         print(ID+" started")
         continue
 
-    for x in l.rstrip():
-        ChrLen[ID]+=1
-        REFID[ID].extend(list(l.rstrip()))
-
-REFID2[ID]="".join(REFID[ID])
-del REFID[ID]
+    REFID[ID].extend(list(l.rstrip()))
 
 ## write dictionary object to file
 with open(options.OUT+".ref","wb") as refout:
-    pickle.dump(REFID2, refout)
+    pickle.dump(REFID, refout)
 print("****** REF PICKLED ******")

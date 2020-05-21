@@ -133,7 +133,6 @@ ChrLen=d(int)
 print("****** READING REF ******")
 with open(options.Ref, 'rb') as reffile:
     REFID = pickle.load(reffile)
-
 for k,v in REFID.items():
     ChrLen[k]=len(v)
 print("****** READING REF DONE ******")
