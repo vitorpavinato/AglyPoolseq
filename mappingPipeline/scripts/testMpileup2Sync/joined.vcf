@@ -1,7 +1,7 @@
-##fileDate=11/5/2020
+##fileDate=21/5/2020
 ##Source=PoolSnp
 ##Parameters=<ID=MinCov,Number=4,Type=Integer,Description="Minimum coverage per sample">
-##Parameters=<ID=MaxCov,Number=0.7,Type=Float,Description="Max coverage percentile per chromosome and sample">
+##Parameters=<ID=MaxCov,Number=4,Type=Float,Description="Max coverage percentile per chromosome and sample">
 ##Parameters=<ID=MinCount,Number=4,Type=Integer,Description="Minimum alternative allele count across all samples pooled">
 ##Parameters=<ID=MinFreq,Number=0.01,Type=Float,Description="Minimum alternative allele frequency across all samples pooled">
 ##Parameters=<ID=MaximumMissingFraction,Number=0.5,Type=Float,Description="Maximum fraction of samples allowed that are not fullfilling all parameters">
@@ -13,6 +13,6 @@
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
 ##FORMAT=<ID=FREQ,Number=1,Type=FLoat,Description="Variant allele frequency">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	sample1	sample2
-X	13	.	G	T	.	.	ADP=4.5;NC=0	GT:RD:AD:DP:FREQ	0/1:3:2:5:0.4	0/1:2:2:4:0.5
-X	14	.	A	T,G	.	.	ADP=9.0;NC=1	GT:RD:AD:DP:FREQ	1/2:0:4,5:9:0.44,0.56	./.:.:.:.:.
-Y	13	.	G	A,T	.	.	ADP=20.0;NC=0	GT:RD:AD:DP:FREQ	1/2:0:10,10:20:0.5,0.5	1/2:0:10,10:20:0.5,0.5
+X	13	.	T	G	.	.	ADP=4.5;NC=0	GT:RD:AD:DP:FREQ	0/1:2:3:5:0.6	0/1:2:2:4:0.5
+X	14	.	G	T	.	.	ADP=9.0;NC=1	GT:RD:AD:DP:FREQ	0/1:5:4:9:0.44	./.:.:.:.:.
+Y	13	.	A	T	.	.	ADP=20.0;NC=0	GT:RD:AD:DP:FREQ	0/1:10:10:20:0.5	0/1:10:10:20:0.5

@@ -164,14 +164,18 @@ for l in load_data(options.m):
             while(INDEX<POS):
                 syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
                 INDEX+=1
+        else:
+            INDEX=1
         FL=1
 
     ## test if end of chromosome:
-    if CHR!=a[0] and int(POS)<ChrLen[CHR]:
-        INDEX=int(POS)+1
-        while(INDEX<=ChrLen[CHR]):
-            syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
-            INDEX+=1
+    if CHR!=a[0]:
+        ## fill up if reads not available until the last position
+        if int(POS)<ChrLen[CHR]:
+            INDEX=int(POS)+1
+            while(INDEX<=ChrLen[CHR]):
+                syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
+                INDEX+=1
         INDEX=1
         print(a[0]+" started")
 
@@ -184,7 +188,7 @@ for l in load_data(options.m):
     if CHR not in IndelPos:
         IndelPos[CHR]={}
     ## test if POS = INDEX+1, i.e. the next position, otherwise fill the gaps
-    if int(POS)>INDEX+1:
+    if int(POS)>INDEX:
         while(INDEX<int(POS)):
             syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
             INDEX+=1
