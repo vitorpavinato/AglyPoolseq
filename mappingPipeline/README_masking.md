@@ -5,6 +5,12 @@
 ```bash
 cd ~/GitHub/DEST/mappingPipeline/scripts
 
+# at first pickle the reference in FASTA format to avoid excessive RAM memory usage and to speed things up
+
+python PickleRef.py \
+--ref testMpileup2Sync/ref.fa.txt \
+--output reference
+
 for i in 1 2
 
 do
@@ -13,7 +19,7 @@ do
 
 python Mpileup2Sync.py \
 --mpileup testMpileup2Sync/test${i}.txt \
---ref testMpileup2Sync/ref.fa.txt \
+--ref testMpileup2Sync/reference.ref \
 --output testMpileup2Sync/out${i}
 
 # create masked sync file and BED file with masked positions
