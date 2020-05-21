@@ -215,7 +215,7 @@ RUN bwa index /opt/hologenome/holo_dmel_6.12.fa && \
 
 ARG CACHE_BUST=05:21:2020:1800
 
-RUN python /opt/DEST/mappingPipeline/scripts/PickleRef.py \
+RUN python3 /opt/DEST/mappingPipeline/scripts/PickleRef.py \
     --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta \
     --output /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled
 
