@@ -196,7 +196,6 @@ ENV PATH="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:${PATH}"
 WORKDIR /opt
 RUN git clone https://github.com/EmanueleRaineri/snape-pooled.git && \
     cd snape-pooled && \
-    mv snape-pooled.linux.r19 snape-pooled && \
     make snape-pooled
 
 ENV PATH="/opt/snape-pooled:${PATH}"
