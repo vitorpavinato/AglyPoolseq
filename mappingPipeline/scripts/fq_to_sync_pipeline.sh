@@ -14,6 +14,10 @@ output="."
 threads="1"
 max_cov=0.95
 min_cov=10
+theta=0.005
+D=0.01
+priortype="informative"
+fold="unfolded"
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
@@ -44,6 +48,26 @@ case $key in
     exit 0
     shift # past argument
     ;;
+    -t|--theta)
+    theta=$2
+    shift # past argument
+    shift # past value
+    ;;
+    -D)
+    D=$2
+    shift # past argument
+    shift # past value
+    ;;
+    -p|--priortype)
+    theta=$2
+    shift # past argument
+    shift # past value
+    ;;
+    -f|--fold)
+    fold=$2
+    shift # past argument
+    shift # past value
+    ;;
     *)    # unknown option
     POSITIONAL+=("$1") #save it to an array
     shift
@@ -55,7 +79,7 @@ set -- "${POSITIONAL[@]}"
 
 if [ $# != 4 ]
   then
-    echo "ERROR: Need to supply <fastq_file_1_path> <fastq_file_2_path> <sample_name> <output_dir> as positional arguments"
+    echo "ERROR: Need to supply <fastq_file_1_path> <fastq_file_2_path> <sample_name> <output_dir> as positional arguments, and no others"
     exit 1
 fi
 
@@ -181,11 +205,28 @@ rm $output/$sample/${sample}.contaminated_realigned.bai
 
 samtools mpileup $output/$sample/${sample}.mel.bam -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
+/opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
+  $output/$sample/${sample}.mel_mpileup.txt \
+  $sample \
+  $theta \
+  $D \
+  $priortype \
+  $fold
+
+check_exit_status "SNAPE" $?
+
+python /opt/DEST/SNAPE/SNAPE_to_VCF.py ${sample}_SNAPE.txt
+
+check_exit_status "SNAPE_2_VCF" $?
+
+mv ${sample}_SNAPE.txt $output/$sample/${sample}.SNAPE.txt
+mv ${sample}_SNAPE.vcf $output/$sample/${sample}.SNAPE.vcf
+
 check_exit_status "mpileup" $?
 
 python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
 --mpileup $output/$sample/${sample}.mel_mpileup.txt \
---ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta \
+--ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
 --output $output/$sample/${sample}
 
 check_exit_status "Mpileup2Sync" $?
@@ -196,7 +237,8 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC.py \
 --indel $output/$sample/${sample}.indel \
 --coverage $output/$sample/${sample}.cov \
 --mincov $min_cov \
---maxcov $max_cov
+--maxcov $max_cov \
+--te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff
 
 check_exit_status "MaskSYNC" $?
 
