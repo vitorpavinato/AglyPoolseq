@@ -27,7 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         less \
         curl \
         git \
-        pigz
+        pigz \
+        ocaml-nox
 
 # install Python
 RUN apt-get install -y --no-install-recommends \
@@ -116,7 +117,8 @@ RUN wget https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
     autoreconf -Wno-syntax && \
     ./configure \
        --prefix /opt/samtools/${SAMTOOLS_VERSION} \
-       --with-htslib=/opt/htslib/${HTSLIB_VERSION} && \
+       --with-htslib=/opt/htslib/${HTSLIB_VERSION} \
+       LDFLAGS="-Wl,-R/opt/htslib/${HTSLIB_VERSION}/lib" && \
     make && \
     make install && \
     cd /opt && \
@@ -173,7 +175,7 @@ ENV PATH="/opt/bbmap:${PATH}"
 
 # install GenomeAnalysisTK
 
-#ARG GATK_VERSION=3.8.1 Changing this will only work for version 4, which is the RUN command associated with the github releases link commented out below
+#ARG GATK_VERSION=3.8.1 Changing this will only work for version 4 of GATK, which is the RUN command associated with the github releases link commented out below
 
 WORKDIR /opt
 #RUN wget https://github.com/broadinstitute/gatk/releases/download/${GATK_VERSION}/gatk-${GATK_VERSION}.zip && \
@@ -189,6 +191,16 @@ ENV GATK="/opt/gatk/GenomeAnalysisTK.jar"
 
 ENV PATH="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:${PATH}"
 
+#Install snape-pooled
+
+WORKDIR /opt
+RUN git clone https://github.com/EmanueleRaineri/snape-pooled.git && \
+    cd snape-pooled && \
+    mv snape-pooled.linux.r19 snape-pooled && \
+    make snape-pooled
+
+ENV PATH="/opt/snape-pooled:${PATH}"
+
 #Clone the repo
 
 RUN git clone https://github.com/alanbergland/DEST.git
@@ -202,7 +214,11 @@ RUN bwa index /opt/hologenome/holo_dmel_6.12.fa && \
               R=/opt/hologenome/holo_dmel_6.12.fa \
               O=/opt/hologenome/holo_dmel_6.12.dict
 
-ARG CACHE_BUST=05:15:2020:1800
+ARG CACHE_BUST=05:21:2020:1800
+
+RUN python /opt/DEST/mappingPipeline/scripts/PickleRef.py \
+    --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta \
+    --output /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled
 
 WORKDIR /opt
 RUN rm -rf /opt/DEST/ && \
@@ -214,4 +230,4 @@ ENV PATH="/opt/DEST/mappingPipeline/scripts:${PATH}"
 ENTRYPOINT ["/bin/bash", "/opt/DEST/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
 
 #Default parameters passed to the above function call. Can be overridden by supplying parameters after image name in "docker run"
-CMD ["mounted_input_folder/*1*", "mounted_input_folder/*2*", "default_sample", "mounted_output_folder", "2"]
+CMD ["--help"]

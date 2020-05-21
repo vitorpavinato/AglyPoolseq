@@ -60,9 +60,8 @@ singularity run dmelsync_hpc.sif <read_1> <read_2> <sample_name> <output_folder>
 * ToDo: Create team on Docker to allow collaborative editing of containers
 
 * Comment out the lines in the Dockerfile defining the ```ENTRYPOINT``` and ```CMD```
-  * An alternative to commenting out these lines is using the flag ```--entrypoint "/bin/bash"``` after the ```-it``` in the ```docker run``` command
-
-* Build the docker on your personal computer using ```docker build -t <repo_name>/<image_tag>:<image_tag_version> .``` in the directory containing the Dockerfile (same as this README)
+  * Build the docker on your personal computer using ```docker build -t <repo_name>/<image_tag>:<image_tag_version> .``` in the directory containing the Dockerfile (same as this README)
+  * An alternative to commenting out these lines is using the flag ```--entrypoint "/bin/bash"``` after the ```-it``` in the ```docker run``` command and make modifications/debug inside the container
 
 * Modify the pipeline script
 
