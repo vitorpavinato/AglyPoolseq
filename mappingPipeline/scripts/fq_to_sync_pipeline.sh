@@ -215,7 +215,7 @@ samtools mpileup $output/$sample/${sample}.mel.bam -f /opt/hologenome/raw/D_mela
 
 check_exit_status "SNAPE" $?
 
-python /opt/DEST/SNAPE/SNAPE_to_VCF.py ${sample}_SNAPE.txt
+python /opt/DEST/mappingPipeline/scripts/Snape_to_VCF.py ${sample}_SNAPE.txt
 
 check_exit_status "SNAPE_2_VCF" $?
 

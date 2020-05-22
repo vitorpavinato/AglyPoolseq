@@ -60,5 +60,4 @@ for s in snape:
         mean = (s.split("\t")[10]).split("\n")[0]
         print >> vcf_out, str(chrom) + "\t" + str(pos) + "\t.\t" + str(ref) + "\t" + str(alt) + "\t.\t.\t.\t" +  "RD:AD:RQ:AQ:PROB:P:MEAN" + "\t" + str(ref_count) + ":" + str(alt_count) + ":" + str(ref_qual) + ":" + str(alt_qual) + ":" + str(prob) + ":" + str(pvalue) + ":" + str(mean)
 
-snape.close()
 vcf_out.close()
