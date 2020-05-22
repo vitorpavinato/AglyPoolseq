@@ -256,7 +256,7 @@ gzip $output/$sample/${sample}.mel_mpileup.txt
 
 echo "Read 1: $read1" >> $output/$sample/${sample}.parameters.txt
 echo "Read 2: $read2" >> $output/$sample/${sample}.parameters.txt
-echo "Sample name: $sample" >> >> $output/$sample/${sample}.parameters.txt
+echo "Sample name: $sample" >> $output/$sample/${sample}.parameters.txt
 echo "Output directory: $output" >> $output/$sample/${sample}.parameters.txt
 echo "Number of cores used: $threads" >> $output/$sample/${sample}.parameters.txt
 echo "Max cov: $max_cov" >> $output/$sample/${sample}.parameters.txt
