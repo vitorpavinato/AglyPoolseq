@@ -26,7 +26,7 @@ pop=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | sed "${SLURM_ARRAY_TAS
 ### un-compress
 
 uncomp () {
-  echo uncompressing: ${1}
+  echo "uncompressing:" ${1}
 
   outfn=$( echo ${1} | sed 's/.gz//g' )
   bgzip -@ 5 -c -d ${1} > ${outfn}
@@ -38,7 +38,7 @@ parallel uncomp ::: $( ls ${wd}/dest/wholeGenomeSyncData/${pop}_*.gSYNC.gz )
 
 ### change out missing data annotation
 swapfun() {
-  echo swapping: ${1}
+  echo "swapping:" ${1}
   sed -i 's/0:0:0:0:0:0/.:.:.:.:.:./g' ${1}
 }
 export -f swapfun
@@ -46,6 +46,8 @@ export -f swapfun
 parallel -j 5 swapfun ::: $( ls ${wd}/dest/wholeGenomeSyncData/${pop}_*.gSYNC )
 
 ### concatenate
+echo "concat"
+
 cat \
 ${wd}/dest/wholeGenomeSyncData/${pop}_2L.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_2R.gSYNC \
