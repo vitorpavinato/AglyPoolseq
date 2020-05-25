@@ -27,6 +27,11 @@ echo ${pop}
 
 tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz
 
-rsync ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz* /project/berglandlab/DEST/dest_mapped/${pop}/
+mv ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz ${wd}/dest/wholeGenomeSyncData/${pop}.masked.sync.gz
+mv ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz.tbi ${wd}/dest/wholeGenomeSyncData/${pop}.masked.sync.gz.tbi
+
+rsync ${wd}/dest/wholeGenomeSyncData/${pop}.masked.sync.gz* /project/berglandlab/DEST/dest_mapped/${pop}/
+
+mv
 
 echo $pop
