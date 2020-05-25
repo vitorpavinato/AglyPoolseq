@@ -53,7 +53,7 @@ def load_data(x):
 def process_line(x):
     ''' convert SNAPE output to sync '''
     if len(x) != 11:
-        return "0:0:0:0:0:0"
+        return "0:0:0:0:0:0\t0:0:0:0:0:0"
     else:
         chrom = x[0]
         pos = x[1]
