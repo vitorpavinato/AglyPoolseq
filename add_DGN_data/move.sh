@@ -37,4 +37,4 @@ index_moveFile () {
 }
 export -f index_moveFile
 
-parallel -j 1 index_moveFile ::: $( cat ${wd}/DEST/populationInfo/dpgp.ind.use.csv | sed '1d' | cut -f1 -d',' | sort | uniq )
+parallel -j 1 index_moveFile ::: $( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq )
