@@ -22,7 +22,7 @@ helptext = """
 H E L P :
 _________
 
-Converts an mpileup file to a sync file and adds missing positions based on the reference genome. In addition, this script creates python object files for the chromosome-specific coverage distributions and indel positions, which occur at >= minIndel counts.
+Converts SNAPE output file to a sync file and adds missing positions based on the reference genome.
 
 """
 group=OptionGroup(parser,helptext)
@@ -112,9 +112,9 @@ with open(options.Ref, 'rb') as reffile:
 for k,v in REFID.items():
     ChrLen[k]=len(v)
 print("****** READING REF DONE ******")
-############################ parse MPILEUP ###########################################
+############################ parse SNAPE FILE ###########################################
 print(" ")
-# parse mpileup and store alternative alleles:
+# parse SNAPE file and store alternative alleles:
 syncout=gzip.open(options.OUT+".sync.gz","wt")
 FL=0
 NUM=""
