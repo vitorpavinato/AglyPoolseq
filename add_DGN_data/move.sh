@@ -16,25 +16,17 @@ wd="/scratch/aob2x/dest"
 
 # rm -R -v !("/project/berglandlab/DEST/dest_mapped/example_pipeline_output")
 
+#SLURM_ARRAY_TASK_ID=1
+pop=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
-index_moveFile () {
-
-  #pop=B
-  #chr=2L
-
-  pop=${1}
-  wd="/scratch/aob2x/dest"
+echo ${pop}
 
 
-  [ ! -d /project/berglandlab/DEST/dest_mapped/${pop}/ ] && mkdir /project/berglandlab/DEST/dest_mapped/${pop}
 
-  tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz
+[ ! -d /project/berglandlab/DEST/dest_mapped/${pop}/ ] && mkdir /project/berglandlab/DEST/dest_mapped/${pop}
 
-  rsync ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz* /project/berglandlab/DEST/dest_mapped/${pop}/
+tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz
 
-  echo $pop
+rsync ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz* /project/berglandlab/DEST/dest_mapped/${pop}/
 
-}
-export -f index_moveFile
-
-parallel -j 1 index_moveFile ::: $( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq )
+echo $pop

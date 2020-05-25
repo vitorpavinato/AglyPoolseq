@@ -63,11 +63,11 @@ sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/liftover_r5_to_r6.sh
 ## 6. Concatenate into one file per population, same as pooled; fix missing data fields
 ```bash
 nJobs=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | awk '{print NR}'| tail -n1 )
-sbatch --array=1-${nJobs} /scratch/aob2x/dest/DEST/add_DGN_data/concatenate.sh
+sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/concatenate.sh
 ```
-
 
 ## 7. Move to output directory
 ```bash
-sbatch ${wd}/DEST/add_DGN_data/move.sh
+nJobs=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | awk '{print NR}'| tail -n1 )
+sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/move.sh
 ```
