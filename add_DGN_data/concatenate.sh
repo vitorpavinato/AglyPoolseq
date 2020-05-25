@@ -11,6 +11,7 @@
 #SBATCH --account berglandlab
 
 ### sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/concatenate.sh
+## sacct -j 12449610
 
 module load htslib bcftools parallel
 
@@ -18,10 +19,10 @@ module load htslib bcftools parallel
 
 wd="/scratch/aob2x/dest"
 
-#SLURM_ARRAY_TASK_ID=10
+#SLURM_ARRAY_TASK_ID=1
 pop=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
-
+echo ${pop}
 
 ### un-compress
 
@@ -49,10 +50,10 @@ parallel -j 5 swapfun ::: $( ls ${wd}/dest/wholeGenomeSyncData/${pop}_*.gSYNC )
 echo "concat"
 
 cat \
-${wd}/dest/wholeGenomeSyncData/${pop}_2L.gSYNC \
-${wd}/dest/wholeGenomeSyncData/${pop}_2R.gSYNC \
-${wd}/dest/wholeGenomeSyncData/${pop}_3L.gSYNC \
-${wd}/dest/wholeGenomeSyncData/${pop}_3R.gSYNC \
-${wd}/dest/wholeGenomeSyncData/${pop}_X.gSYNC |
-bgzip -@ 5 -c >
+${wd}/dest/wholeGenomeSyncData/${pop}_Chr2L.gSYNC \
+${wd}/dest/wholeGenomeSyncData/${pop}_Chr2R.gSYNC \
+${wd}/dest/wholeGenomeSyncData/${pop}_Chr3L.gSYNC \
+${wd}/dest/wholeGenomeSyncData/${pop}_Chr3R.gSYNC \
+${wd}/dest/wholeGenomeSyncData/${pop}_ChrX.gSYNC | \
+bgzip -@ 5 -c > \
 ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz
