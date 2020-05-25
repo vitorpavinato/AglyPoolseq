@@ -10,9 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### sbatch --array=1 
-
-
+### sbatch --array=1 /scratch/aob2x/dest/DEST/add_DGN_data/concatenate.sh
 
 module load htslib bcftools parallel
 
@@ -37,6 +35,7 @@ export -f uncomp
 
 parallel uncomp ::: $( ls ${wd}/dest/wholeGenomeSyncData/${pop}_*.gSYNC.gz )
 
+
 ### change out missing data annotation
 swapfun() {
   echo swapping: ${1}
@@ -54,4 +53,4 @@ ${wd}/dest/wholeGenomeSyncData/${pop}_3L.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_3R.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_X.gSYNC |
 bgzip -c >
-${wd}/dest/wholeGenomeSyncData/${pop}_X.sync.gz
+${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz
