@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #SBATCH -J download_DGN # A single job name for the array
-#SBATCH --ntasks-per-node=1 # one core
+#SBATCH --ntasks-per-node=5 # one core
 #SBATCH -N 1 # on one node
 #SBATCH -t 1:00:00 ### 6 hours
 #SBATCH --mem 1G
@@ -29,7 +29,7 @@ uncomp () {
   echo uncompressing: ${1}
 
   outfn=$( echo ${1} | sed 's/.gz//g' )
-  bgzip -c -d ${1} > ${outfn}
+  bgzip -@ 5 -c -d ${1} > ${outfn}
 }
 export -f uncomp
 
@@ -43,7 +43,7 @@ swapfun() {
 }
 export -f swapfun
 
-parallel swapfun ::: $( ls ${wd}/dest/wholeGenomeSyncData/${pop}_*.gSYNC )
+parallel -j 5 swapfun ::: $( ls ${wd}/dest/wholeGenomeSyncData/${pop}_*.gSYNC )
 
 ### concatenate
 cat \
@@ -52,5 +52,5 @@ ${wd}/dest/wholeGenomeSyncData/${pop}_2R.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_3L.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_3R.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_X.gSYNC |
-bgzip -c >
+bgzip -@ 5 -c >
 ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz
