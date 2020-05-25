@@ -88,7 +88,7 @@ def process_line(x):
         if ref == "A":
             a_count = ref_count
         elif ref == "T":
-            a_count = ref_count
+            t_count = ref_count
         elif ref == "C":
             c_count = ref_count
         elif ref == "G":
