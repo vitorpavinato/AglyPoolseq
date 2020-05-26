@@ -15,6 +15,7 @@ usage="""python %prog \
       --max-cov data.cov \
       --min-count 10 \
       --min-freq 0.01 \
+      --posterior-prob 0.9 \
       --mis-frac 0.1 \
       --names sample1,sample2 \
       > output.vcf
@@ -29,12 +30,14 @@ group=OptionGroup(parser,helptext)
 #########################################################   parameters   #########################################################################
 
 parser.add_option("--sync", dest="m", help="A sync file")
-parser.add_option("--min-cov", dest="minc", help="The minimum coverage threshold: e.g. 10",default=10)
-parser.add_option("--max-cov", dest="max", help="An input file with precomputed coverage thresholds")
+parser.add_option("--min-cov", dest="minc", help="The minimum coverage threshold: e.g. 10")
+parser.add_option("--max-cov", dest="max", help="The maximum coverage threshold percentile, e.g. 0.9")
 parser.add_option("--min-count", dest="mint", help="The minimum number of counts of the alternative allele across all samples pooled",default=3)
 parser.add_option("--min-freq", dest="minf", help="The minimum Frequency of the alternative allele across all samples pooled",default=0.01)
 parser.add_option("--miss-frac", dest="mis", help="The minimum Frequency of the alternative allele across all samples pooled",default=0.1)
-parser.add_option("--names", dest="n", help="a comma separted list of thenames of all samples in the sync file")
+parser.add_option("--names", dest="n", help="a comma separated list of names from all samples in the sync file")
+parser.add_option("--SNAPE", dest="snape", help="Set flag if input is from SNAPE",action="store_true")
+parser.add_option("--posterior-prob", dest="pos", help="The threshold for the Posterior Probability calculated from SNAPE for considering a site as truly polymorphic")
 
 parser.add_option_group(group)
 (options, args) = parser.parse_args()
@@ -90,12 +93,18 @@ missfrac=float(options.mis)
 dateTimeObj = datetime.now()
 
 print("##fileDate="+str(dateTimeObj.day)+"/"+str(dateTimeObj.month)+"/"+str(dateTimeObj.year))
-print("##Source=PoolSnp")
-print("##Parameters=<ID=MinCov,Number="+options.minc+",Type=Integer,Description=\"Minimum coverage per sample\">")
-print("##Parameters=<ID=MaxCov,Number="+options.max+",Type=Float,Description=\"Max coverage percentile per chromosome and sample\">")
-print("##Parameters=<ID=MinCount,Number="+options.mint+",Type=Integer,Description=\"Minimum alternative allele count across all samples pooled\">")
-print("##Parameters=<ID=MinFreq,Number="+options.minf+",Type=Float,Description=\"Minimum alternative allele frequency across all samples pooled\">")
-print("##Parameters=<ID=MaximumMissingFraction,Number="+options.mis+",Type=Float,Description=\"Maximum fraction of samples allowed that are not fullfilling all parameters\">")
+if options.snape:
+    print("##Source=SNAPE")
+else:
+    print("##Source=PoolSnp")
+print("##Parameters=<ID=MinCov,Number="+str(options.minc)+",Type=Integer,Description=\"Minimum coverage per sample\">")
+print("##Parameters=<ID=MaxCov,Number="+str(options.max)+",Type=Float,Description=\"Max coverage percentile per chromosome and sample\">")
+if options.snape:
+    print("##Parameters=<ID=PosteriorProb,Number="+str(options.pos)+",Type=Float,Description=\"The threshold for the Posterior Probability calculated from SNAPE for considering a site as truly polymorphic\">")
+else:
+    print("##Parameters=<ID=MinCount,Number="+str(options.mint)+",Type=Integer,Description=\"Minimum alternative allele count across all samples pooled\">")
+    print("##Parameters=<ID=MinFreq,Number="+str(options.minf)+",Type=Float,Description=\"Minimum alternative allele frequency across all samples pooled\">")
+print("##Parameters=<ID=MaximumMissingFraction,Number="+str(options.mis)+",Type=Float,Description=\"Maximum fraction of samples allowed that are not fullfilling all parameters\">")
 print("""##INFO=<ID=ADP,Number=1,Type=Integer,Description=\"Average per-sample depth of bases\">
 ##INFO=<ID=NC,Number=1,Type=Integer,Description=\"Number of samples not called\">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">
@@ -135,10 +144,13 @@ for l in load_data(data):
             totalalleles[nuc[i].upper()]+=1
             alleles[j][nuc[i].upper()]+=1
 
-    ## test if SNPs pass minimum count / minimum frequency threshold:
-    for allele,counts in totalalleles.items():
-        if counts<minimumcount or counts/float(sum(totalalleles.values()))<minimumfreq:
-            del totalalleles[allele]
+    ## only test for min-count and min-freq if raw SYNC input and not SNAPE SYNC
+    if not options.snape:
+
+        ## test if SNPs pass minimum count / minimum frequency threshold:
+        for allele,counts in totalalleles.items():
+            if counts<minimumcount or counts/float(sum(totalalleles.values()))<minimumfreq:
+                del totalalleles[allele]
 
     ## test if site is polymorphic
     if len(totalalleles)<2:

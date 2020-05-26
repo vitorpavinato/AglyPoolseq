@@ -27,7 +27,7 @@ parser.add_option("--output", dest="out", help="Output file prefix")
 parser.add_option("--te", dest="te", help="A GFF file containing the coordinates of TE's (optional) ",default="NA")
 parser.add_option("--indel", dest="indel", help="Python Object file with indel positions in the input.sync")
 parser.add_option("--coverage", dest="cov", help="Python Object file with the coverage distribution of the input.sync")
-parser.add_option("--maxcov", dest="maxcov", help="The maximum coverage threshold percentile, e.g. 0.9 ")
+parser.add_option("--maxcov", dest="maxcov", help="The maximum coverage threshold percentile, e.g. 0.9")
 parser.add_option("--mincov", dest="mincov", help="The minimum coverage threshold: e.g. 10",default=10)
 
 parser.add_option_group(group)
