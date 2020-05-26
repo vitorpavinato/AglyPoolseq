@@ -32,6 +32,7 @@ parser.add_option("--indel", dest="indel", help="Python Object file with indel p
 parser.add_option("--coverage", dest="cov", help="Python Object file with the coverage distribution of the input.sync")
 parser.add_option("--maxcov", dest="maxcov", help="The maximum coverage threshold percentile, e.g. 0.9 ")
 parser.add_option("--mincov", dest="mincov", help="The minimum coverage threshold: e.g. 10",default=10)
+parser.add_option("--SNAPE", action="store_true", default=False, dest="snape", help="Parsing SNAPE sync file")
 
 parser.add_option_group(group)
 (options, args) = parser.parse_args()
@@ -108,23 +109,45 @@ CR=""
 BED=gzip.open(options.out+".bed.gz","wt")
 SO=gzip.open(options.out+"_masked.sync.gz","wt")
 
-for l in load_data(options.sync):
-    C,P,R,S,I=l.split()
-    COV=len(sync2string(S))
-    if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C]:
-        SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
-        if Start=="":
-            Start=int(P)
-            RR=int(P)
-            CR=C
-        elif RR < int(P)-1 or CR!=C:
-            BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
-            Start=int(P)
-            RR=int(P)
-            CR=C
+if options.snape == True:
+    for l in load_data(options.sync):
+        C,P,R,S,I=l.split()
+        COV=len(sync2string(S))
+        if int(P) in exclude[C]:
+            SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
+            if Start=="":
+                Start=int(P)
+                RR=int(P)
+                CR=C
+            elif RR < int(P)-1 or CR!=C:
+                BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
+                Start=int(P)
+                RR=int(P)
+                CR=C
+            else:
+                RR=int(P)
         else:
-            RR=int(P)
-    else:
-        SO.write("\t".join([C,P,R,S,I])+"\n")
+            SO.write("\t".join([C,P,R,S,I])+"\n")
+    if Start!=RR:
+        BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
+else:
+    for l in load_data(options.sync):
+        C,P,R,S=l.split()
+        COV=len(sync2string(S))
+        if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C]:
+            SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
+            if Start=="":
+                Start=int(P)
+                RR=int(P)
+                CR=C
+            elif RR < int(P)-1 or CR!=C:
+                BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
+                Start=int(P)
+                RR=int(P)
+                CR=C
+            else:
+                RR=int(P)
+        else:
+            SO.write("\t".join([C,P,R,S])+"\n")
 if Start!=RR:
     BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
