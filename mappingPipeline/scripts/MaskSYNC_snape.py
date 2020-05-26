@@ -109,7 +109,7 @@ CR=""
 BED=gzip.open(options.out+".bed.gz","wt")
 SO=gzip.open(options.out+"_masked.sync.gz","wt")
 
-if options.snape == True:
+if options.snape:
     for l in load_data(options.sync):
         C,P,R,S,I=l.split()
         COV=len(sync2string(S))
