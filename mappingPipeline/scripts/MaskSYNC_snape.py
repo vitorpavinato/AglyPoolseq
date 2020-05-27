@@ -112,7 +112,7 @@ SO=gzip.open(options.out+"_masked.sync.gz","wt")
 if options.snape:
     for l in load_data(options.sync):
         C,P,R,S,I=l.split()
-        info = I.split(":")[0]
+        info = float(I.split(":")[4])
         COV=len(sync2string(S))
         if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or info <= 0.9 or info >= 0.1:
             SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
