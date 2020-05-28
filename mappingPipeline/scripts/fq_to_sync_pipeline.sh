@@ -205,6 +205,8 @@ rm $output/$sample/${sample}.contaminated_realigned.bai
 
 samtools mpileup $output/$sample/${sample}.mel.bam -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
+check_exit_status "mpileup" $?
+
 /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
   $output/$sample/${sample}.mel_mpileup.txt \
   $sample \
@@ -213,16 +215,16 @@ samtools mpileup $output/$sample/${sample}.mel.bam -f /opt/hologenome/raw/D_mela
   $priortype \
   $fold
 
-check_exit_status "SNAPE" $?
+check_exit_status "Mpileup2SNAPE" $?
 
-python /opt/DEST/mappingPipeline/scripts/Snape_to_VCF.py ${sample}_SNAPE.txt
+python /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
+  --input ${sample}_SNAPE.txt \
+  --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
+  --output $output/$sample/${sample}.SNAPE
 
-check_exit_status "SNAPE_2_VCF" $?
+check_exit_status "SNAPE2SYNC" $?
 
-mv ${sample}_SNAPE.txt $output/$sample/${sample}.SNAPE.txt
-mv ${sample}_SNAPE.vcf $output/$sample/${sample}.SNAPE.vcf
-
-check_exit_status "mpileup" $?
+rm ${sample}_SNAPE.txt
 
 python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
 --mpileup $output/$sample/${sample}.mel_mpileup.txt \
@@ -242,6 +244,15 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC.py \
 
 check_exit_status "MaskSYNC" $?
 
+python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape.py \
+--sync $output/$sample/${sample}.SNAPE.sync.gz \
+--output $output/$sample/${sample}.SNAPE \
+--indel $output/$sample/${sample}.indel \
+--coverage $output/$sample/${sample}.cov \
+--mincov $min_cov \
+--maxcov $max_cov \
+--te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff
+
 # gzip $output/$sample/${sample}.cov
 # gzip $output/$sample/${sample}.indel
 
@@ -249,6 +260,11 @@ mv $output/$sample/${sample}_masked.sync.gz $output/$sample/${sample}.masked.syn
 gunzip $output/$sample/${sample}.masked.sync.gz
 bgzip $output/$sample/${sample}.masked.sync
 tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.masked.sync.gz
+
+mv $output/$sample/${sample}.SNAPE_masked.sync.gz $output/$sample/${sample}.SNAPE.masked.sync.gz
+gunzip $output/$sample/${sample}.SNAPE.masked.sync.gz
+bgzip $output/$sample/${sample}.SNAPE.masked.sync
+tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.masked.sync.gz
 
 check_exit_status "tabix" $?
 
