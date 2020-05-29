@@ -217,7 +217,7 @@ check_exit_status "mpileup" $?
 
 check_exit_status "Mpileup2SNAPE" $?
 
-python /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
+python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
   --input ${sample}_SNAPE.txt \
   --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
   --output $output/$sample/${sample}.SNAPE
