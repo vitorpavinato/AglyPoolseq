@@ -115,10 +115,10 @@ if options.snape:
     for l in load_data(options.sync):
         C,P,R,S,I=l.split()
         info = float(I.split(":")[4])
-        print I
-        print info
-        print str(options.maxsnape)
-        print str(1-options.maxsnape)
+        print(I)
+        print(info)
+        print(str(options.maxsnape))
+        print(str(1-options.maxsnape))
         COV=len(sync2string(S))
         if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or info <= options.maxsnape or info >= (1 - options.maxsnape):
             SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
