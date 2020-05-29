@@ -120,7 +120,7 @@ if options.snape:
         print(str(options.maxsnape))
         print(str(1-options.maxsnape))
         COV=len(sync2string(S))
-        if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or info <= float(options.maxsnape) or info >= float(1 - float(options.maxsnape)):
+        if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or (info <= float(options.maxsnape) and info >= float(1 - float(options.maxsnape))):
             SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
             if Start=="":
                 Start=int(P)
