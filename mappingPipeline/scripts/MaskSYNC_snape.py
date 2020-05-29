@@ -33,6 +33,8 @@ parser.add_option("--coverage", dest="cov", help="Python Object file with the co
 parser.add_option("--maxcov", dest="maxcov", help="The maximum coverage threshold percentile, e.g. 0.9 ")
 parser.add_option("--mincov", dest="mincov", help="The minimum coverage threshold: e.g. 10",default=10)
 parser.add_option("--SNAPE", action="store_true", default=False, dest="snape", help="Parsing SNAPE sync file")
+parser.add_option("--maxsnape", dest="maxsnape", help="e.g. 10",default=0.9, type="float")
+
 
 parser.add_option_group(group)
 (options, args) = parser.parse_args()
@@ -114,7 +116,7 @@ if options.snape:
         C,P,R,S,I=l.split()
         info = float(I.split(":")[4])
         COV=len(sync2string(S))
-        if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or info <= 0.9 or info >= 0.1:
+        if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or info <= options.maxsnape or info >= (1 - options.maxsnape):
             SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
             if Start=="":
                 Start=int(P)
