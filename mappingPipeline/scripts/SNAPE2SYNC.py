@@ -70,7 +70,7 @@ def process_line(x):
         elif len(ref_alt) == 1:
             if ref_alt != ref:
                 alt = ref_alt
-            if ref_alt == ref:
+            else:
                 alt = "."
         elif len(ref_alt) > 2:
             print("Found triallelic in " + str(chrom) + ":" + str(pos))
@@ -97,10 +97,10 @@ def process_line(x):
             a_count = alt_count
         elif alt == "T":
             t_count = alt_count
-        elif  alt == "C":
-            c_count == alt_count
+        elif alt == "C":
+            c_count = alt_count
         elif alt == "G":
-            g_count == alt_count
+            g_count = alt_count
         return str(a_count) + ":" + str(t_count) + ":" + str(c_count) + ":" + str(g_count) + ":0:0\t" + str(ref_count) + ":" + str(alt_count) + ":" + str(ref_qual) + ":" + str(alt_qual) + ":" + str(prob) + ":" + str(pvalue) + ":" + str(mean)
 
 
