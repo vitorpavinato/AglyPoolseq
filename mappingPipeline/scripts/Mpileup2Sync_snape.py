@@ -249,67 +249,68 @@ for l in load_data(options.m):
             INDEX+=1
 
     # loop through libraries
+    alleles=d(lambda:d(int))
+    div = list(splitter(a,3))
+    libraries=div[1:]
+
+    for j in range(len(libraries)):
+
+        alleles[j]
+
+        if len(libraries[j])!=3:
+            continue
+
+        nuc = libraries[j][1]
+        qualities = libraries[j][2]
+
+        # test if seq-string is empty
+        if nuc=="*":
+            continue
+
+        # find and remove read indices and mapping quality string
+        nuc = re.sub(r'\^.',r'',nuc)
+        nuc = nuc.replace('$','')
+        cov = 0
+
+        # find and remove InDels
+        nuc,indel=extract_indel(nuc,int(options.mi))
+        if indel!=[]:
+            IndelPos[CHR][int(POS)] = indel
+
+        # test for base quality threshold (if below: ignore nucleotide)
+        #syncout.write len(nuc),len(qualities)
+        nuc = "".join([nuc[x] for x in range(len(nuc)) if ord(qualities[x])-pc>=baseqthreshold])
+        nuc = "".join([nuc[x] for x in range(len(nuc)) if nuc[x]!="*"])
+
+        # store coverage distribution
+        if len(nuc) not in coverage[CHR]:
+            coverage[CHR][len(nuc)]=1
+        else:
+            coverage[CHR][len(nuc)]+=1
+        if -1 not in coverage[CHR]:
+            coverage[CHR][-1]=1
+        else:
+            coverage[CHR][-1]+=1
+
+        # read all alleles
+        for i in range(len(nuc)):
+
+            # ignore single nucleotide deletions
+            if nuc[i]=="*":
+                continue
+            # count nucleotides similar to reference base
+            if nuc[i] =="," or nuc[i] == ".":
+                alleles[j][REF]+=1
+                continue
+            # count alternative nucleotides
+            alleles[j][nuc[i].upper()]+=1
+
     if options.snape:
         syncL = process_line(a)
         ## write output
         syncout.write(CHR+"\t"+POS+"\t"+REFID[CHR][INDEX-1]+"\t"+ syncL +"\n")
         INDEX+=1
     else:
-        alleles=d(lambda:d(int))
-        div = list(splitter(a,3))
-        libraries=div[1:]
-
-        for j in range(len(libraries)):
-
-            alleles[j]
-
-            if len(libraries[j])!=3:
-                continue
-
-            nuc = libraries[j][1]
-            qualities = libraries[j][2]
-
-            # test if seq-string is empty
-            if nuc=="*":
-                continue
-
-            # find and remove read indices and mapping quality string
-            nuc = re.sub(r'\^.',r'',nuc)
-            nuc = nuc.replace('$','')
-            cov = 0
-
-            # find and remove InDels
-            nuc,indel=extract_indel(nuc,int(options.mi))
-            if indel!=[]:
-                IndelPos[CHR][int(POS)] = indel
-
-            # test for base quality threshold (if below: ignore nucleotide)
-            #syncout.write len(nuc),len(qualities)
-            nuc = "".join([nuc[x] for x in range(len(nuc)) if ord(qualities[x])-pc>=baseqthreshold])
-            nuc = "".join([nuc[x] for x in range(len(nuc)) if nuc[x]!="*"])
-
-            # store coverage distribution
-            if len(nuc) not in coverage[CHR]:
-                coverage[CHR][len(nuc)]=1
-            else:
-                coverage[CHR][len(nuc)]+=1
-            if -1 not in coverage[CHR]:
-                coverage[CHR][-1]=1
-            else:
-                coverage[CHR][-1]+=1
-
-            # read all alleles
-            for i in range(len(nuc)):
-
-                # ignore single nucleotide deletions
-                if nuc[i]=="*":
-                    continue
-                # count nucleotides similar to reference base
-                if nuc[i] =="," or nuc[i] == ".":
-                    alleles[j][REF]+=1
-                    continue
-                # count alternative nucleotides
-                alleles[j][nuc[i].upper()]+=1
         syncL=[]
         for k,v in sorted(alleles.items()):
             syncL.append(counth2sync(v))
