@@ -130,25 +130,7 @@ if options.snape:
             else:
                 RR=int(P)
         else:
-            if info <= float(1 - float(options.maxsnape)):
-                nucleotides = S.split(":")
-                a_counts = 0
-                t_counts = 0
-                c_counts = 0
-                g_counts = 0
-                if R == "A":
-                    a_counts = nucleotides[0]
-                elif R == "T":
-                    t_counts = nucleotides[1]
-                elif R == "C":
-                    c_counts = nucleotides[2]
-                elif R == "G":
-                    g_counts = nucleotides[3]
-                else:
-                    print("ERROR, reference is not a nucleotide")
-                SO.write("\t".join([C,P,R])+ "\t" + str(a_counts) + ":" + str(t_counts) + ":" + str(c_counts) + ":" + str(g_counts) + ":0:0\n")
-            else:
-                SO.write("\t".join([C,P,R,S])+"\n")
+            SO.write("\t".join([C,P,R,S,I])+"\n")
     if Start!=RR:
         BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
 else:
