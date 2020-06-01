@@ -233,7 +233,7 @@ python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
 
 check_exit_status "Mpileup2Sync" $?
 
-python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC.py \
+python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape.py \
 --sync $output/$sample/${sample}.sync.gz \
 --output $output/$sample/${sample} \
 --indel $output/$sample/${sample}.indel \
@@ -251,7 +251,8 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape.py \
 --coverage $output/$sample/${sample}.cov \
 --mincov $min_cov \
 --maxcov $max_cov \
---te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff
+--te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+--SNAPE
 
 # gzip $output/$sample/${sample}.cov
 # gzip $output/$sample/${sample}.indel
