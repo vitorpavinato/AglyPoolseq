@@ -18,6 +18,7 @@ theta=0.005
 D=0.01
 priortype="informative"
 fold="unfolded"
+maxsnape=0.9
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
@@ -65,6 +66,11 @@ case $key in
     ;;
     -f|--fold)
     fold=$2
+    shift # past argument
+    shift # past value
+    ;;
+    -ms|--maxsnape)
+    maxsnape=$2
     shift # past argument
     shift # past value
     ;;
@@ -244,15 +250,31 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape.py \
 
 check_exit_status "MaskSYNC" $?
 
-python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape.py \
+python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
 --sync $output/$sample/${sample}.SNAPE.sync.gz \
---output $output/$sample/${sample}.SNAPE \
+--output $output/$sample/${sample}.SNAPE.complete \
 --indel $output/$sample/${sample}.indel \
 --coverage $output/$sample/${sample}.cov \
 --mincov $min_cov \
 --maxcov $max_cov \
 --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+--maxsnape $maxsnape \
 --SNAPE
+
+check_exit_status "MaskSYNC_SNAPE_Complete" $?
+
+python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
+--sync $output/$sample/${sample}.SNAPE.sync.gz \
+--output $output/$sample/${sample}.SNAPE.monomorphic \
+--indel $output/$sample/${sample}.indel \
+--coverage $output/$sample/${sample}.cov \
+--mincov $min_cov \
+--maxcov $max_cov \
+--te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+--maxsnape $maxsnape \
+--SNAPE
+
+check_exit_status "MaskSYNC_SNAPE_Monomporphic_Filter" $?
 
 # gzip $output/$sample/${sample}.cov
 # gzip $output/$sample/${sample}.indel
@@ -278,3 +300,8 @@ echo "Output directory: $output" >> $output/$sample/${sample}.parameters.txt
 echo "Number of cores used: $threads" >> $output/$sample/${sample}.parameters.txt
 echo "Max cov: $max_cov" >> $output/$sample/${sample}.parameters.txt
 echo "Min cov $min_cov" >> $output/$sample/${sample}.parameters.txt
+echo "Maxsnape $maxsnape" >> $output/$sample/${sample}.parameters.txt
+echo "theta:  $theta" >> $output/$sample/${sample}.parameters.txt
+echo "D:  $D" >> $output/$sample/${sample}.parameters.txt
+echo "priortype: $priortype" >> $output/$sample/${sample}.parameters.txt
+echo "fold $fold" >> $output/$sample/${sample}.parameters.txt
