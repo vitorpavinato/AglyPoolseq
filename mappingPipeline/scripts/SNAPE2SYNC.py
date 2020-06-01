@@ -67,6 +67,8 @@ def process_line(x):
                 alt = ref_alt_2
             elif ref_alt_2 == ref:
                 alt = ref_alt_1
+            else:
+                print()
         elif len(ref_alt) == 1:
             if ref_alt != ref:
                 alt = ref_alt
@@ -74,6 +76,10 @@ def process_line(x):
                 alt = "."
         elif len(ref_alt) > 2:
             print("Found triallelic in " + str(chrom) + ":" + str(pos))
+            sys.exit()
+        else:
+            print("ERROR")
+            sys.exit()
         ref_count = x[3]
         alt_count = x[4]
         ref_qual = x[5]
@@ -93,6 +99,9 @@ def process_line(x):
             c_count = ref_count
         elif ref == "G":
             g_count = ref_count
+        else:
+            print("ERROR: not DNA base")
+            sys.exit()
         if alt == "A":
             a_count = alt_count
         elif alt == "T":

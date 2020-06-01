@@ -130,7 +130,7 @@ if options.snape:
             else:
                 RR=int(P)
         else:
-            SO.write("\t".join([C,P,R,S,I])+"\n")
+            SO.write("\t".join([C,P,R,S])+"\n")
     if Start!=RR:
         BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
 else:
@@ -152,5 +152,5 @@ else:
                 RR=int(P)
         else:
             SO.write("\t".join([C,P,R,S])+"\n")
-if Start!=RR:
-    BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
+    if Start!=RR:
+        BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
