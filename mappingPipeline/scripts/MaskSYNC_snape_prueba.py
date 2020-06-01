@@ -148,7 +148,7 @@ if options.snape:
                     print("ERROR, reference is not a nucleotide")
                 SO.write("\t".join([C,P,R])+ "\t" + str(a_counts) + ":" + str(t_counts) + ":" + str(c_counts) + ":" + str(g_counts) + ":0:0\n")
             else:
-            SO.write("\t".join([C,P,R,S])+"\n")
+                SO.write("\t".join([C,P,R,S])+"\n")
     if Start!=RR:
         BED.write("\t".join([CR,str(Start-1),str(RR)])+"\n")
 else:
