@@ -52,7 +52,7 @@ def load_data(x):
 
 def process_line(x):
     ''' convert SNAPE output to sync '''
-    if len(x) != 11 and x[7] == "":
+    if len(x) != 11 or x[7] == "":
         return "0:0:0:0:0:0\t0:0:0:0:0:0"
     else:
         chrom = x[0]
@@ -86,7 +86,7 @@ def process_line(x):
         alt_qual = x[6]
         prob = x[8]
         pvalue = x[9]
-        mean = (x[10]).split("\n")[0] 
+        mean = (x[10]).split("\n")[0]
         a_count = 0
         t_count = 0
         c_count = 0
@@ -190,4 +190,3 @@ if int(POS)<ChrLen[CHR]:
         print
         syncout.write("\t".join([CHR,str(INDEX),REFID[CHR][INDEX-1],"\t".join(["0:0:0:0:0:0"]*NUM)])+"\n")
         INDEX+=1
-
