@@ -263,6 +263,8 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
 
 check_exit_status "MaskSYNC_SNAPE_Complete" $?
 
+mv $output/$sample/${sample}.SNAPE.complete_masked.sync.gz $output/$sample/${sample}SNAPE.complete.masked.sync.gz
+
 python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
 --sync $output/$sample/${sample}.SNAPE.sync.gz \
 --output $output/$sample/${sample}.SNAPE.monomorphic \
@@ -276,6 +278,8 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
 
 check_exit_status "MaskSYNC_SNAPE_Monomporphic_Filter" $?
 
+mv $output/$sample/${sample}.SNAPE.monomorphic_masked.sync.gz $output/$sample/${sample}SNAPE.monomorphic.masked.sync.gz
+
 # gzip $output/$sample/${sample}.cov
 # gzip $output/$sample/${sample}.indel
 
@@ -284,10 +288,13 @@ gunzip $output/$sample/${sample}.masked.sync.gz
 bgzip $output/$sample/${sample}.masked.sync
 tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.masked.sync.gz
 
-mv $output/$sample/${sample}.SNAPE_masked.sync.gz $output/$sample/${sample}.SNAPE.masked.sync.gz
-gunzip $output/$sample/${sample}.SNAPE.masked.sync.gz
-bgzip $output/$sample/${sample}.SNAPE.masked.sync
-tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.masked.sync.gz
+gunzip $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
+bgzip $output/$sample/${sample}.SNAPE.complete.masked.sync
+tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
+
+gunzip $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
+bgzip $output/$sample/${sample}.SNAPE.monomorphic.masked.sync
+tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
 
 check_exit_status "tabix" $?
 
