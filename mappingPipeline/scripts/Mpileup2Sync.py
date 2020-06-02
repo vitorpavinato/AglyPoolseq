@@ -32,9 +32,9 @@ group=OptionGroup(parser,helptext)
 
 parser.add_option("--mpileup", dest="m", help="A mpileup file")
 parser.add_option("--ref", dest="Ref", help=" The reference genome as Python object from PickleRef.py")
-parser.add_option("--base-quality-threshold", dest="b", help="The Base-quality threshold ",default=15)
-parser.add_option("--coding", dest="c", help="the Illumina FASTQ quality coding",default=1.8)
-parser.add_option("--minIndel", dest="mi", help="minimum count of Indel polymorphisms",default=5)
+parser.add_option("--base-quality-threshold", dest="b", help="The Base-quality threshold ")
+parser.add_option("--coding", dest="c", help="the Illumina FASTQ quality coding")
+parser.add_option("--minIndel", dest="mi", help="minimum count of Indel polymorphisms")
 parser.add_option("--output", dest="OUT", help="output prefix")
 
 parser.add_option_group(group)
