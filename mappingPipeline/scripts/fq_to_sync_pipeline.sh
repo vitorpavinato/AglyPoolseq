@@ -19,6 +19,7 @@ D=0.01
 priortype="informative"
 fold="unfolded"
 maxsnape=0.9
+nflies=40
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
@@ -71,6 +72,11 @@ case $key in
     ;;
     -ms|--maxsnape)
     maxsnape=$2
+    shift # past argument
+    shift # past value
+    ;;
+    -nf|--num_flies)
+    nflies=$2
     shift # past argument
     shift # past value
     ;;
@@ -219,7 +225,8 @@ check_exit_status "mpileup" $?
   $theta \
   $D \
   $priortype \
-  $fold
+  $fold \
+  $nflies
 
 check_exit_status "Mpileup2SNAPE" $?
 
@@ -230,7 +237,7 @@ python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
 
 check_exit_status "SNAPE2SYNC" $?
 
-rm ${sample}_SNAPE.txt
+mv ${sample}_SNAPE.txt $output/$sample/${sample}.SNAPE.output.txt
 
 python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
 --mpileup $output/$sample/${sample}.mel_mpileup.txt \

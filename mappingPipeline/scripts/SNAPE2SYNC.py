@@ -100,8 +100,9 @@ def process_line(x):
         elif ref == "G":
             g_count = ref_count
         else:
-            print("ERROR: not DNA base")
-            sys.exit()
+            print("ERROR: not DNA base for line: {}\n".format(x))
+            return "0:0:0:0:0:0\t0:0:0:0:0:0"
+            # sys.exit()
         if alt == "A":
             a_count = alt_count
         elif alt == "T":
