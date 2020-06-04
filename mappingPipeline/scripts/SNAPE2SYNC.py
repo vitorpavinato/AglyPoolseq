@@ -100,7 +100,7 @@ def process_line(x):
         elif ref == "G":
             g_count = ref_count
         else:
-            print("Reference is N; most frequent allele is calculated in position " + str(chrom) + " " + str(pos) + "{}\n".format(x))
+            print("Reference is N; most frequent allele is calculated in position {}\n".format(x))
             #return "0:0:0:0:0:0\t0:0:0:0:0:0"
             # sys.exit()
         if alt == "A":
@@ -111,8 +111,8 @@ def process_line(x):
             c_count = alt_count
         elif alt == "G":
             g_count = alt_count
-        else:
-            print("Alle position not a nucleotide base in position " + str(chrom) + " " + str(pos) + "{}\n".format(x))
+        #else:
+        #    print("Alle position not a nucleotide base in position " + str(chrom) + " " + str(pos) + "{}\n".format(x))
 
         return str(a_count) + ":" + str(t_count) + ":" + str(c_count) + ":" + str(g_count) + ":0:0\t" + str(ref_count) + ":" + str(alt_count) + ":" + str(ref_qual) + ":" + str(alt_qual) + ":" + str(prob) + ":" + str(pvalue) + ":" + str(mean)
 
