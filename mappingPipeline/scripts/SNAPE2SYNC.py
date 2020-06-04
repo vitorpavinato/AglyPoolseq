@@ -111,6 +111,7 @@ def process_line(x):
             c_count = alt_count
         elif alt == "G":
             g_count = alt_count
+
         return str(a_count) + ":" + str(t_count) + ":" + str(c_count) + ":" + str(g_count) + ":0:0\t" + str(ref_count) + ":" + str(alt_count) + ":" + str(ref_qual) + ":" + str(alt_qual) + ":" + str(prob) + ":" + str(pvalue) + ":" + str(mean)
 
 

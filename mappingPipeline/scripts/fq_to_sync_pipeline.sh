@@ -20,6 +20,9 @@ priortype="informative"
 fold="unfolded"
 maxsnape=0.9
 nflies=40
+base_quality_threshold=15
+illumina_quality_coding=1.8
+minIndel=5
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
@@ -28,17 +31,32 @@ do
 key="$1"
 
 case $key in
+    -bq|--base-quality-threshold)
+    base_quality_threshold="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -ill|--illumina-quality-coding)
+    illumina_quality_coding="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -mindel|--min-indel)
+    minIndel="$2"
+    shift # past argument
+    shift # past value
+    ;;
     -c|--cores)
     threads="$2"
     shift # past argument
     shift # past value
     ;;
-    -x|--max_cov)
+    -x|--max-cov)
     max_cov="$2"
     shift # past argument
     shift # past value
     ;;
-    -n|--min_cov)
+    -n|--min-cov)
     min_cov="$2"
     shift # past argument
     shift # past value
@@ -75,7 +93,7 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    -nf|--num_flies)
+    -nf|--num-flies)
     nflies=$2
     shift # past argument
     shift # past value
@@ -215,7 +233,7 @@ samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $
 mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
 rm $output/$sample/${sample}.contaminated_realigned.bai
 
-samtools mpileup $output/$sample/${sample}.mel.bam -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
+samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
 check_exit_status "mpileup" $?
 
@@ -253,6 +271,9 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape.py \
 --coverage $output/$sample/${sample}.cov \
 --mincov $min_cov \
 --maxcov $max_cov \
+--base-quality-threshold $base_quality_threshold \
+--coding $illumina_quality_coding \
+--minIndel $minIndel \
 --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff
 
 check_exit_status "MaskSYNC" $?
@@ -318,4 +339,6 @@ echo "Maxsnape $maxsnape" >> $output/$sample/${sample}.parameters.txt
 echo "theta:  $theta" >> $output/$sample/${sample}.parameters.txt
 echo "D:  $D" >> $output/$sample/${sample}.parameters.txt
 echo "priortype: $priortype" >> $output/$sample/${sample}.parameters.txt
-echo "fold $fold" >> $output/$sample/${sample}.parameters.txt
+echo "base-quality-threshold $base_quality_threshold" >> $output/$sample/${sample}.parameters.txt
+echo "illumina-quality-coding $illumina_quality_coding" >> $output/$sample/${sample}.parameters.txt
+echo "min-indel $minIndel" >> $output/$sample/${sample}.parameters.txt
