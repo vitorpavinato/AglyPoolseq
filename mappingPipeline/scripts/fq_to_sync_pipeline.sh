@@ -358,3 +358,5 @@ if [ $do_snape -eq "1" ]; then
   echo "priortype: $priortype" >> $output/$sample/${sample}.parameters.txt
 
 fi
+
+gzip $output/$sample/${sample}.SNAPE.output.txt
