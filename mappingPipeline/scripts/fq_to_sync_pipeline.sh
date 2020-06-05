@@ -325,7 +325,7 @@ if [ $do_snape -eq "1" ]; then
 
   check_exit_status "MaskSYNC_SNAPE_Complete" $?
 
-  mv $output/$sample/${sample}.SNAPE.complete_masked.sync.gz $output/$sample/${sample}SNAPE.complete.masked.sync.gz
+  mv $output/$sample/${sample}.SNAPE.complete_masked.sync.gz $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
 
   python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
   --sync $output/$sample/${sample}.SNAPE.sync.gz \
@@ -340,7 +340,7 @@ if [ $do_snape -eq "1" ]; then
 
   check_exit_status "MaskSYNC_SNAPE_Monomporphic_Filter" $?
 
-  mv $output/$sample/${sample}.SNAPE.monomorphic_masked.sync.gz $output/$sample/${sample}SNAPE.monomorphic.masked.sync.gz
+  mv $output/$sample/${sample}.SNAPE.monomorphic_masked.sync.gz $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
 
   gunzip $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
   bgzip $output/$sample/${sample}.SNAPE.complete.masked.sync
