@@ -23,6 +23,7 @@ nflies=40
 base_quality_threshold=15
 illumina_quality_coding=1.8
 minIndel=5
+do_snape=0
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
@@ -97,6 +98,10 @@ case $key in
     nflies=$2
     shift # past argument
     shift # past value
+    ;;
+    -d|--do-snape)
+    do_snape=1
+    shift # past argument
     ;;
     *)    # unknown option
     POSITIONAL+=("$1") #save it to an array
@@ -248,13 +253,6 @@ check_exit_status "mpileup" $?
 
 check_exit_status "Mpileup2SNAPE" $?
 
-python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
-  --input ${sample}_SNAPE.txt \
-  --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
-  --output $output/$sample/${sample}.SNAPE
-
-check_exit_status "SNAPE2SYNC" $?
-
 mv ${sample}_SNAPE.txt $output/$sample/${sample}.SNAPE.output.txt
 
 python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
@@ -267,6 +265,7 @@ python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
 
 check_exit_status "Mpileup2Sync" $?
 
+#For the non-snape output
 python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
 --sync $output/$sample/${sample}.sync.gz \
 --output $output/$sample/${sample} \
@@ -277,38 +276,7 @@ python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
 --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
 --maxsnape $maxsnape
 
-
 check_exit_status "MaskSYNC" $?
-
-python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
---sync $output/$sample/${sample}.SNAPE.sync.gz \
---output $output/$sample/${sample}.SNAPE.complete \
---indel $output/$sample/${sample}.indel \
---coverage $output/$sample/${sample}.cov \
---mincov $min_cov \
---maxcov $max_cov \
---te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
---maxsnape $maxsnape \
---SNAPE
-
-check_exit_status "MaskSYNC_SNAPE_Complete" $?
-
-mv $output/$sample/${sample}.SNAPE.complete_masked.sync.gz $output/$sample/${sample}SNAPE.complete.masked.sync.gz
-
-python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
---sync $output/$sample/${sample}.SNAPE.sync.gz \
---output $output/$sample/${sample}.SNAPE.monomorphic \
---indel $output/$sample/${sample}.indel \
---coverage $output/$sample/${sample}.cov \
---mincov $min_cov \
---maxcov $max_cov \
---te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
---maxsnape $maxsnape \
---SNAPE
-
-check_exit_status "MaskSYNC_SNAPE_Monomporphic_Filter" $?
-
-mv $output/$sample/${sample}.SNAPE.monomorphic_masked.sync.gz $output/$sample/${sample}SNAPE.monomorphic.masked.sync.gz
 
 # gzip $output/$sample/${sample}.cov
 # gzip $output/$sample/${sample}.indel
@@ -317,14 +285,6 @@ mv $output/$sample/${sample}_masked.sync.gz $output/$sample/${sample}.masked.syn
 gunzip $output/$sample/${sample}.masked.sync.gz
 bgzip $output/$sample/${sample}.masked.sync
 tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.masked.sync.gz
-
-gunzip $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
-bgzip $output/$sample/${sample}.SNAPE.complete.masked.sync
-tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
-
-gunzip $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
-bgzip $output/$sample/${sample}.SNAPE.monomorphic.masked.sync
-tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
 
 check_exit_status "tabix" $?
 
@@ -337,10 +297,63 @@ echo "Output directory: $output" >> $output/$sample/${sample}.parameters.txt
 echo "Number of cores used: $threads" >> $output/$sample/${sample}.parameters.txt
 echo "Max cov: $max_cov" >> $output/$sample/${sample}.parameters.txt
 echo "Min cov $min_cov" >> $output/$sample/${sample}.parameters.txt
-echo "Maxsnape $maxsnape" >> $output/$sample/${sample}.parameters.txt
-echo "theta:  $theta" >> $output/$sample/${sample}.parameters.txt
-echo "D:  $D" >> $output/$sample/${sample}.parameters.txt
-echo "priortype: $priortype" >> $output/$sample/${sample}.parameters.txt
 echo "base-quality-threshold $base_quality_threshold" >> $output/$sample/${sample}.parameters.txt
 echo "illumina-quality-coding $illumina_quality_coding" >> $output/$sample/${sample}.parameters.txt
 echo "min-indel $minIndel" >> $output/$sample/${sample}.parameters.txt
+
+#Generate the SNAPE SYNC files
+if [ $do_snape -eq "1" ]; then
+
+  python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
+    --input ${sample}_SNAPE.txt \
+    --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
+    --output $output/$sample/${sample}.SNAPE
+
+  check_exit_status "SNAPE2SYNC" $?
+
+  python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
+  --sync $output/$sample/${sample}.SNAPE.sync.gz \
+  --output $output/$sample/${sample}.SNAPE.complete \
+  --indel $output/$sample/${sample}.indel \
+  --coverage $output/$sample/${sample}.cov \
+  --mincov $min_cov \
+  --maxcov $max_cov \
+  --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+  --maxsnape $maxsnape \
+  --SNAPE
+
+  check_exit_status "MaskSYNC_SNAPE_Complete" $?
+
+  mv $output/$sample/${sample}.SNAPE.complete_masked.sync.gz $output/$sample/${sample}SNAPE.complete.masked.sync.gz
+
+  python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
+  --sync $output/$sample/${sample}.SNAPE.sync.gz \
+  --output $output/$sample/${sample}.SNAPE.monomorphic \
+  --indel $output/$sample/${sample}.indel \
+  --coverage $output/$sample/${sample}.cov \
+  --mincov $min_cov \
+  --maxcov $max_cov \
+  --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+  --maxsnape $maxsnape \
+  --SNAPE
+
+  check_exit_status "MaskSYNC_SNAPE_Monomporphic_Filter" $?
+
+  mv $output/$sample/${sample}.SNAPE.monomorphic_masked.sync.gz $output/$sample/${sample}SNAPE.monomorphic.masked.sync.gz
+
+  gunzip $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
+  bgzip $output/$sample/${sample}.SNAPE.complete.masked.sync
+  tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
+
+  gunzip $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
+  bgzip $output/$sample/${sample}.SNAPE.monomorphic.masked.sync
+  tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
+
+  check_exit_status "tabix" $?
+
+  echo "Maxsnape $maxsnape" >> $output/$sample/${sample}.parameters.txt
+  echo "theta:  $theta" >> $output/$sample/${sample}.parameters.txt
+  echo "D:  $D" >> $output/$sample/${sample}.parameters.txt
+  echo "priortype: $priortype" >> $output/$sample/${sample}.parameters.txt
+
+fi
