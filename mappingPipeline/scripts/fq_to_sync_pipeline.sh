@@ -5,6 +5,7 @@ check_exit_status () {
     echo "Step $1 failed with exit status $2"
     exit $2
   fi
+  echo "Checked step $1"
 }
 
 read1="test_file_1"
@@ -305,7 +306,7 @@ echo "min-indel $minIndel" >> $output/$sample/${sample}.parameters.txt
 if [ $do_snape -eq "1" ]; then
 
   python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
-    --input ${sample}_SNAPE.txt \
+    --input $output/$sample/${sample}.SNAPE.output.txt \
     --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
     --output $output/$sample/${sample}.SNAPE
 
