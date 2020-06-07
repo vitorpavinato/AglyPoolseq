@@ -24,6 +24,7 @@ nflies=40
 base_quality_threshold=15
 illumina_quality_coding=1.8
 minIndel=5
+do_prep=1
 do_snape=0
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -33,6 +34,10 @@ do
 key="$1"
 
 case $key in
+    -dp|--dont-prep)
+    do_prep=0
+    shift # past argument
+    ;;
     -bq|--base-quality-threshold)
     base_quality_threshold="$2"
     shift # past argument
@@ -100,7 +105,7 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    -d|--do-snape)
+    -ds|--do-snape)
     do_snape=1
     shift # past argument
     ;;
@@ -145,168 +150,173 @@ fi
 if [ ! -d $output/$sample/${sample}_fastqc/trimmed ]; then
   mkdir $output/$sample/${sample}_fastqc/trimmed
 fi
+if [ $do_prep -eq "1" ]; then
 
-fastqc $read1 $read2 -o $output/$sample/${sample}_fastqc
+  fastqc $read1 $read2 -o $output/$sample/${sample}_fastqc
 
-cutadapt \
--q 18 \
---minimum-length 75 \
--o $output/$sample/${sample}.trimmed1.fq.gz \
--p $output/$sample/${sample}.trimmed2.fq.gz \
--b ACACTCTTTCCCTACACGACGCTCTTCCGATC \
--B CAAGCAGAAGACGGCATACGAGAT \
--O 15 \
--n 3 \
---cores=$threads \
-$read1 $read2
+  cutadapt \
+  -q 18 \
+  --minimum-length 75 \
+  -o $output/$sample/${sample}.trimmed1.fq.gz \
+  -p $output/$sample/${sample}.trimmed2.fq.gz \
+  -b ACACTCTTTCCCTACACGACGCTCTTCCGATC \
+  -B CAAGCAGAAGACGGCATACGAGAT \
+  -O 15 \
+  -n 3 \
+  --cores=$threads \
+  $read1 $read2
 
-check_exit_status "cutadapt" $?
+  check_exit_status "cutadapt" $?
 
-fastqc $output/$sample/${sample}.trimmed1.fq.gz $output/$sample/${sample}.trimmed2.fq.gz -o $output/$sample/${sample}_fastqc/trimmed
+  fastqc $output/$sample/${sample}.trimmed1.fq.gz $output/$sample/${sample}.trimmed2.fq.gz -o $output/$sample/${sample}_fastqc/trimmed
 
-check_exit_status "fastqc" $?
+  check_exit_status "fastqc" $?
 
-#Automatically uses all available cores
-bbmerge.sh in1=$output/$sample/${sample}.trimmed1.fq.gz in2=$output/$sample/${sample}.trimmed2.fq.gz out=$output/$sample/${sample}.merged.fq.gz outu1=$output/$sample/${sample}.1_un.fq.gz outu2=$output/$sample/${sample}.2_un.fq.gz
+  #Automatically uses all available cores
+  bbmerge.sh in1=$output/$sample/${sample}.trimmed1.fq.gz in2=$output/$sample/${sample}.trimmed2.fq.gz out=$output/$sample/${sample}.merged.fq.gz outu1=$output/$sample/${sample}.1_un.fq.gz outu2=$output/$sample/${sample}.2_un.fq.gz
 
-check_exit_status "bbmerge" $?
+  check_exit_status "bbmerge" $?
 
-rm $output/$sample/${sample}.trimmed*
+  rm $output/$sample/${sample}.trimmed*
 
-bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged_un.bam
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged_un.bam
 
-rm $output/$sample/${sample}.1_un.fq.gz
-rm $output/$sample/${sample}.2_un.fq.gz
+  rm $output/$sample/${sample}.1_un.fq.gz
+  rm $output/$sample/${sample}.2_un.fq.gz
 
-bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged.bam
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged.bam
 
-check_exit_status "bwa_mem" $?
+  check_exit_status "bwa_mem" $?
 
-rm $output/$sample/${sample}.merged.fq.gz
+  rm $output/$sample/${sample}.merged.fq.gz
 
-java -jar $PICARD MergeSamFiles I=$output/$sample/${sample}.merged.bam I=$output/$sample/${sample}.merged_un.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.sorted_merged.bam
+  java -jar $PICARD MergeSamFiles I=$output/$sample/${sample}.merged.bam I=$output/$sample/${sample}.merged_un.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.sorted_merged.bam
 
-check_exit_status "Picard_MergeSamFiles" $?
+  check_exit_status "Picard_MergeSamFiles" $?
 
-rm $output/$sample/${sample}.merged.bam
-rm $output/$sample/${sample}.merged_un.bam
+  rm $output/$sample/${sample}.merged.bam
+  rm $output/$sample/${sample}.merged_un.bam
 
-java -jar $PICARD MarkDuplicates \
-REMOVE_DUPLICATES=true \
-I=$output/$sample/${sample}.sorted_merged.bam \
-O=$output/$sample/${sample}.dedup.bam \
-M=$output/$sample/${sample}.mark_duplicates_report.txt \
-VALIDATION_STRINGENCY=SILENT
+  java -jar $PICARD MarkDuplicates \
+  REMOVE_DUPLICATES=true \
+  I=$output/$sample/${sample}.sorted_merged.bam \
+  O=$output/$sample/${sample}.dedup.bam \
+  M=$output/$sample/${sample}.mark_duplicates_report.txt \
+  VALIDATION_STRINGENCY=SILENT
 
-check_exit_status "Picard_MarkDuplicates" $?
+  check_exit_status "Picard_MarkDuplicates" $?
 
-rm $output/$sample/${sample}.sorted_merged.bam
+  rm $output/$sample/${sample}.sorted_merged.bam
 
-samtools index $output/$sample/${sample}.dedup.bam
+  samtools index $output/$sample/${sample}.dedup.bam
 
-java -jar $GATK -T RealignerTargetCreator \
--nt $threads \
--R /opt/hologenome/holo_dmel_6.12.fa \
--I $output/$sample/${sample}.dedup.bam \
--o $output/$sample/${sample}.hologenome.intervals
+  java -jar $GATK -T RealignerTargetCreator \
+  -nt $threads \
+  -R /opt/hologenome/holo_dmel_6.12.fa \
+  -I $output/$sample/${sample}.dedup.bam \
+  -o $output/$sample/${sample}.hologenome.intervals
 
-check_exit_status "GATK_RealignerTargetCreator" $?
+  check_exit_status "GATK_RealignerTargetCreator" $?
 
-java -jar $GATK \
--T IndelRealigner \
--R /opt/hologenome/holo_dmel_6.12.fa \
--I $output/$sample/${sample}.dedup.bam \
--targetIntervals $output/$sample/${sample}.hologenome.intervals \
--o $output/$sample/${sample}.contaminated_realigned.bam
+  java -jar $GATK \
+  -T IndelRealigner \
+  -R /opt/hologenome/holo_dmel_6.12.fa \
+  -I $output/$sample/${sample}.dedup.bam \
+  -targetIntervals $output/$sample/${sample}.hologenome.intervals \
+  -o $output/$sample/${sample}.contaminated_realigned.bam
 
-check_exit_status "GATK_IndelRealigner" $?
+  check_exit_status "GATK_IndelRealigner" $?
 
-rm $output/$sample/${sample}.dedup.bam*
+  rm $output/$sample/${sample}.dedup.bam*
 
-# samtools index $output/$sample/${sample}.contaminated_realigned.bam
+  # samtools index $output/$sample/${sample}.contaminated_realigned.bam
 
-#Number of reads mapping to simulans and mel
-# grep -v "sim_" $output/$sample/${sample}.${sample}.original_idxstats.txt | awk -F '\t' '{sum+=$3;} END {print sum;}' > $output/$sample/${sample}.num_mel.txt
-# grep "sim_" $output/$sample/${sample}.${sample}.original_idxstats.txt | awk -F '\t' '{sum+=$3;} END {print sum;}' > $output/$sample/${sample}.num_sim.txt
+  #Number of reads mapping to simulans and mel
+  # grep -v "sim_" $output/$sample/${sample}.${sample}.original_idxstats.txt | awk -F '\t' '{sum+=$3;} END {print sum;}' > $output/$sample/${sample}.num_mel.txt
+  # grep "sim_" $output/$sample/${sample}.${sample}.original_idxstats.txt | awk -F '\t' '{sum+=$3;} END {print sum;}' > $output/$sample/${sample}.num_sim.txt
 
-#Filter out the simulans contaminants
-mel_chromosomes="2L 2R 3L 3R 4 X Y mitochondrion_genome"
-sim_chromosomes="sim_2L sim_2R sim_3L sim_3R sim_4 sim_X sim_mtDNA"
+  #Filter out the simulans contaminants
+  mel_chromosomes="2L 2R 3L 3R 4 X Y mitochondrion_genome"
+  sim_chromosomes="sim_2L sim_2R sim_3L sim_3R sim_4 sim_X sim_mtDNA"
 
-samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $mel_chromosomes -b > $output/$sample/${sample}.mel.bam
-samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $sim_chromosomes -b > $output/$sample/${sample}.sim.bam
+  samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $mel_chromosomes -b > $output/$sample/${sample}.mel.bam
+  samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $sim_chromosomes -b > $output/$sample/${sample}.sim.bam
 
-mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
-rm $output/$sample/${sample}.contaminated_realigned.bai
+  mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
+  rm $output/$sample/${sample}.contaminated_realigned.bai
 
-samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
+  samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
-check_exit_status "mpileup" $?
+  check_exit_status "mpileup" $?
 
-/opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
-  $output/$sample/${sample}.mel_mpileup.txt \
-  $sample \
-  $theta \
-  $D \
-  $priortype \
-  $fold \
-  $nflies
+  /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
+    $output/$sample/${sample}.mel_mpileup.txt \
+    $sample \
+    $theta \
+    $D \
+    $priortype \
+    $fold \
+    $nflies
 
-check_exit_status "Mpileup2SNAPE" $?
+  check_exit_status "Mpileup2SNAPE" $?
 
-mv ${sample}_SNAPE.txt $output/$sample/${sample}.SNAPE.output.txt
+  mv ${sample}_SNAPE.txt $output/$sample/${sample}.SNAPE.output.txt
 
-python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
---mpileup $output/$sample/${sample}.mel_mpileup.txt \
---ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
---output $output/$sample/${sample} \
---base-quality-threshold $base_quality_threshold \
---coding $illumina_quality_coding \
---minIndel $minIndel
+  gzip $output/$sample/${sample}.SNAPE.output.txt
 
-check_exit_status "Mpileup2Sync" $?
+  python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
+  --mpileup $output/$sample/${sample}.mel_mpileup.txt \
+  --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
+  --output $output/$sample/${sample} \
+  --base-quality-threshold $base_quality_threshold \
+  --coding $illumina_quality_coding \
+  --minIndel $minIndel
 
-#For the non-snape output
-python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
---sync $output/$sample/${sample}.sync.gz \
---output $output/$sample/${sample} \
---indel $output/$sample/${sample}.indel \
---coverage $output/$sample/${sample}.cov \
---mincov $min_cov \
---maxcov $max_cov \
---te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
---maxsnape $maxsnape
+  check_exit_status "Mpileup2Sync" $?
 
-check_exit_status "MaskSYNC" $?
+  #For the non-snape output
+  python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
+  --sync $output/$sample/${sample}.sync.gz \
+  --output $output/$sample/${sample} \
+  --indel $output/$sample/${sample}.indel \
+  --coverage $output/$sample/${sample}.cov \
+  --mincov $min_cov \
+  --maxcov $max_cov \
+  --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+  --maxsnape $maxsnape
 
-# gzip $output/$sample/${sample}.cov
-# gzip $output/$sample/${sample}.indel
+  check_exit_status "MaskSYNC" $?
 
-mv $output/$sample/${sample}_masked.sync.gz $output/$sample/${sample}.masked.sync.gz
-gunzip $output/$sample/${sample}.masked.sync.gz
-bgzip $output/$sample/${sample}.masked.sync
-tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.masked.sync.gz
+  # gzip $output/$sample/${sample}.cov
+  # gzip $output/$sample/${sample}.indel
 
-check_exit_status "tabix" $?
+  mv $output/$sample/${sample}_masked.sync.gz $output/$sample/${sample}.masked.sync.gz
+  gunzip $output/$sample/${sample}.masked.sync.gz
+  bgzip $output/$sample/${sample}.masked.sync
+  tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.masked.sync.gz
 
-gzip $output/$sample/${sample}.mel_mpileup.txt
+  check_exit_status "tabix" $?
 
-echo "Read 1: $read1" >> $output/$sample/${sample}.parameters.txt
-echo "Read 2: $read2" >> $output/$sample/${sample}.parameters.txt
-echo "Sample name: $sample" >> $output/$sample/${sample}.parameters.txt
-echo "Output directory: $output" >> $output/$sample/${sample}.parameters.txt
-echo "Number of cores used: $threads" >> $output/$sample/${sample}.parameters.txt
-echo "Max cov: $max_cov" >> $output/$sample/${sample}.parameters.txt
-echo "Min cov $min_cov" >> $output/$sample/${sample}.parameters.txt
-echo "base-quality-threshold $base_quality_threshold" >> $output/$sample/${sample}.parameters.txt
-echo "illumina-quality-coding $illumina_quality_coding" >> $output/$sample/${sample}.parameters.txt
-echo "min-indel $minIndel" >> $output/$sample/${sample}.parameters.txt
+  gzip $output/$sample/${sample}.mel_mpileup.txt
+
+  echo "Read 1: $read1" >> $output/$sample/${sample}.parameters.txt
+  echo "Read 2: $read2" >> $output/$sample/${sample}.parameters.txt
+  echo "Sample name: $sample" >> $output/$sample/${sample}.parameters.txt
+  echo "Output directory: $output" >> $output/$sample/${sample}.parameters.txt
+  echo "Number of cores used: $threads" >> $output/$sample/${sample}.parameters.txt
+  echo "Max cov: $max_cov" >> $output/$sample/${sample}.parameters.txt
+  echo "Min cov $min_cov" >> $output/$sample/${sample}.parameters.txt
+  echo "base-quality-threshold $base_quality_threshold" >> $output/$sample/${sample}.parameters.txt
+  echo "illumina-quality-coding $illumina_quality_coding" >> $output/$sample/${sample}.parameters.txt
+  echo "min-indel $minIndel" >> $output/$sample/${sample}.parameters.txt
+
+fi
 
 #Generate the SNAPE SYNC files
 if [ $do_snape -eq "1" ]; then
 
   python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
-    --input $output/$sample/${sample}.SNAPE.output.txt \
+    --input $output/$sample/${sample}.SNAPE.output.txt.gz \
     --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
     --output $output/$sample/${sample}.SNAPE
 
@@ -358,5 +368,3 @@ if [ $do_snape -eq "1" ]; then
   echo "priortype: $priortype" >> $output/$sample/${sample}.parameters.txt
 
 fi
-
-gzip $output/$sample/${sample}.SNAPE.output.txt
