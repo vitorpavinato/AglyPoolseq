@@ -26,6 +26,7 @@ illumina_quality_coding=1.8
 minIndel=5
 do_prep=1
 do_snape=0
+do_poolsnp=0
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
@@ -34,6 +35,10 @@ do
 key="$1"
 
 case $key in
+    -dps|--do_poolsnp)
+    do_poolsnp=1
+    shift # past argument
+    ;;
     -dp|--dont-prep)
     do_prep=0
     shift # past argument
@@ -248,6 +253,10 @@ if [ $do_prep -eq "1" ]; then
   samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
   check_exit_status "mpileup" $?
+
+fi
+
+if [ $do_poolsnp -eq "1" ]; then
 
   /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
     $output/$sample/${sample}.mel_mpileup.txt \
