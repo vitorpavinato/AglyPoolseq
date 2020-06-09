@@ -254,20 +254,6 @@ if [ $do_prep -eq "1" ]; then
 
   check_exit_status "mpileup" $?
 
-  /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
-    ${sample}.mel_mpileup.txt \
-    $output \
-    $sample \
-    $theta \
-    $D \
-    $priortype \
-    $fold \
-    $nflies
-
-  check_exit_status "Mpileup2SNAPE" $?
-
-  gzip $output/$sample/${sample}.SNAPE.output.txt
-
 fi
 
 if [ $do_poolsnp -eq "1" ]; then
@@ -322,6 +308,20 @@ fi
 
 #Generate the SNAPE SYNC files
 if [ $do_snape -eq "1" ]; then
+
+  /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
+    ${sample}.mel_mpileup.txt \
+    $output \
+    $sample \
+    $theta \
+    $D \
+    $priortype \
+    $fold \
+    $nflies
+
+  check_exit_status "Mpileup2SNAPE" $?
+
+  gzip $output/$sample/${sample}.SNAPE.output.txt
 
   python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
     --input $output/$sample/${sample}.SNAPE.output.txt.gz \
