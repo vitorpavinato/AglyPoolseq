@@ -1,12 +1,15 @@
 #!/bin/bash
 
 mpileup=$1
-sample=$2
-theta=$3
-D=$4
-priortype=$5
-fold=$6
-nflies=$7
+output=$2
+sample=$3
+theta=$4
+D=$5
+priortype=$6
+fold=$7
+nflies=$8
+
+cd $output/$sample/
 
 awk '{if (last != $1) close(last); print >> $1; last = $1}' $mpileup
 
@@ -22,6 +25,6 @@ for chr in {2L,2R,3L,3R,4,X,Y}; do
   rm $chr
 done
 
-cat *-$sample-SNAPE.txt  > ${sample}_SNAPE.txt
+cat *-$sample-SNAPE.txt  > ${sample}.SNAPE.output.txt
 
 rm *-$sample-SNAPE.txt

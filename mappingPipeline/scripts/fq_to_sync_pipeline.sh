@@ -254,12 +254,9 @@ if [ $do_prep -eq "1" ]; then
 
   check_exit_status "mpileup" $?
 
-fi
-
-if [ $do_poolsnp -eq "1" ]; then
-
   /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
-    $output/$sample/${sample}.mel_mpileup.txt \
+    ${sample}.mel_mpileup.txt \
+    $output \
     $sample \
     $theta \
     $D \
@@ -269,9 +266,11 @@ if [ $do_poolsnp -eq "1" ]; then
 
   check_exit_status "Mpileup2SNAPE" $?
 
-  mv ${sample}_SNAPE.txt $output/$sample/${sample}.SNAPE.output.txt
-
   gzip $output/$sample/${sample}.SNAPE.output.txt
+
+fi
+
+if [ $do_poolsnp -eq "1" ]; then
 
   python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
   --mpileup $output/$sample/${sample}.mel_mpileup.txt \
