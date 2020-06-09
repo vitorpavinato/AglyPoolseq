@@ -291,8 +291,6 @@ if [ $do_poolsnp -eq "1" ]; then
 
   check_exit_status "tabix" $?
 
-  gzip $output/$sample/${sample}.mel_mpileup.txt
-
   echo "Read 1: $read1" >> $output/$sample/${sample}.parameters.txt
   echo "Read 2: $read2" >> $output/$sample/${sample}.parameters.txt
   echo "Sample name: $sample" >> $output/$sample/${sample}.parameters.txt
@@ -369,6 +367,8 @@ if [ $do_snape -eq "1" ]; then
   tabix -s 1 -b 2 -e 2 $output/$sample/${sample}.SNAPE.monomorphic.masked.sync.gz
 
   check_exit_status "tabix" $?
+
+  gzip $output/$sample/${sample}.mel_mpileup.txt
 
   echo "Maxsnape $maxsnape" >> $output/$sample/${sample}.parameters.txt
   echo "theta:  $theta" >> $output/$sample/${sample}.parameters.txt
