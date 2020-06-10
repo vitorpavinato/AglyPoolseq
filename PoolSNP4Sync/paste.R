@@ -13,7 +13,8 @@ jobId=gsub(",", "_", job)
 
 ### get input files
   files <- list.files(tmpdir, pattern=jobId)
-
+  setwd(tmpdir)
+  
 ### import
   o <- foreach(files.i=files)%do%{
     #files.i=files[199]
