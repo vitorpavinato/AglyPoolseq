@@ -13,3 +13,10 @@ python /Users/mkapun/Documents/GitHub/DEST/PoolSNP4Sync/PoolSnp.py \
 --names sample1,sample2 \
 > testMpileup2Sync/joined.vcf
 ```
+
+## make job file to split out chromosomal sub chunks
+  ### makes job DEST/PoolSNP4Sync/makeJobs.R
+
+  ### produces /scratch/aob2x/dest/dest/poolSNP_jobs.csv
+
+  

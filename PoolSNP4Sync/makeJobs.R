@@ -49,5 +49,4 @@
   }
 
 ### write job file
-  write.table(jobs, quote=F, row.names=F, sep=",", file="/scratch/aob2x/dest/dest/poolSNP_jobs.csv")
-  
+  write.table(jobs, quote=F, col.names=F, row.names=F, sep=",", file="/scratch/aob2x/dest/dest/poolSNP_jobs.csv")
