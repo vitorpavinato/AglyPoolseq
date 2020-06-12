@@ -11,8 +11,8 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
-### sbatch --array=1500-1505 ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sacct -j 12760824
+### sbatch --array=1000-1005 ${wd}/DEST/snpCalling/run_poolsnp.sh
+### sacct -j 12761236
 
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
@@ -87,7 +87,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 ### compress and clean up
   echo "compress and clean"
-  bgzip -c ${outdir}/${jobid}.vcf > ${outdir}/${jobid}.vcf.gz
+  bgzip -c ${tmpdir}/${jobid}.vcf > ${outdir}/${jobid}.vcf.gz
   tabix -p vcf ${outdir}/${jobid}.vcf.gz
 
   #echo "vcf -> bcf "
