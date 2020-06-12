@@ -10,11 +10,10 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### get bam files
+### run as: sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
+### sbatch --array=1-5 ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh 
 
-### split on chromosome chunks
-
-module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0 gcc/9.2.0  mvapich2/2.3.3 python/3.7.7
+module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 
 ## working & temp directory
@@ -26,7 +25,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0 gcc/9.2.0 
 ## get job
   #SLURM_ARRAY_TASK_ID=4
   job=$( cat ${wd}/dest/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
-
+  jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
 
 ## set up RAM disk
@@ -49,7 +48,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0 gcc/9.2.0 
     pop=$( echo ${syncFile} | rev | cut -f1 -d'/' | rev | cut -f1 -d '.' )
 
 
-    #syncFile=/project/berglandlab/DEST/dest_mapped/B/B.masked.sync.gz
+    #syncFile=/project/berglandlab/DEST/dest_mapped/pipeline_output/ES_ba_12_spring/ES_ba_12_spring.masked.sync.gz
+
     #job=2L,1,13766
 
     chr=$( echo $job | cut -f1 -d',' )
@@ -65,7 +65,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0 gcc/9.2.0 
   }
   export -f subsection
 
-  parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} ) ::: ${job} ::: ${tmpdir}
+  parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
 
 ### paste function
   Rscript --no-save --no-restore ${wd}/DEST/PoolSNP4Sync/paste.R ${job} ${tmpdir}
@@ -77,9 +77,12 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0 gcc/9.2.0 
   --min-cov 4 \
   --max-cov 0.95 \
   --min-count 4 \
-  --min-freq 0.01 \
+  --min-freq 0.001 \
   --miss-frac 0.5 \
-  --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' ) > \
-  ${tmpdir}/${jobid}.vcf
+  --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.vcf
 
-  rm -fr /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+  bgzip -c ${tmpdir}/${jobid}.vcf > ${tmpdir}/${jobid}.vcf.gz
+  tabix -p vcf ${tmpdir}/${jobid}.vcf.gz
+  bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
+
+  rm -fr ${tmpdir}
