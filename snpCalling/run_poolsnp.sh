@@ -12,7 +12,7 @@
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
 ### sbatch --array=1-5 ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
-### sacct -j 12755375
+### sacct -j 12755543
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 
@@ -71,11 +71,11 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 ### paste function
   echo "paste"
-  Rscript --no-save --no-restore ${wd}/DEST/PoolSNP4Sync/paste.R ${job} ${tmpdir}
+  Rscript --no-save --no-restore ${wd}/DEST/snpCalling/paste.R ${job} ${tmpdir}
 
 ### run through PoolSNP
   echo "poolsnp"
-  cat ${tmpdir}/allpops.sites | python ${wd}/DEST/PoolSNP4Sync/PoolSnp.py \
+  cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
   --sync - \
   --min-cov 4 \
   --max-cov 0.95 \
