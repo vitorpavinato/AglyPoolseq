@@ -110,9 +110,9 @@ print("""##INFO=<ID=ADP,Number=1,Type=Integer,Description=\"Average per-sample d
 ##INFO=<ID=NC,Number=1,Type=Integer,Description=\"Number of samples not called\">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">
 ##FORMAT=<ID=RD,Number=1,Type=Integer,Description=\"Reference Counts\">
-##FORMAT=<ID=AD,Number=1,Type=Integer,Description=\"Alternative Counts\">
+##FORMAT=<ID=AD,Number=A,Type=Integer,Description=\"Alternative Counts\">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">
-##FORMAT=<ID=FREQ,Number=1,Type=Float,Description=\"Variant allele frequency\">""")
+##FORMAT=<ID=FREQ,Number=A,Type=Float,Description=\"Variant allele frequency\">""")
 print("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t"+"\t".join(options.n.split(",")))
 
 for l in load_data(data):
