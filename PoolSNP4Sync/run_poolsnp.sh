@@ -88,6 +88,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   echo "compress and clean"
   bgzip -c ${tmpdir}/${jobid}.vcf > ${tmpdir}/${jobid}.vcf.gz
   tabix -p vcf ${tmpdir}/${jobid}.vcf.gz
+
+  echo "vcf -> bcf "
   bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
 
   rm -fr ${tmpdir}
