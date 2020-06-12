@@ -14,7 +14,7 @@
 
 ### split on chromosome chunks
 
-module load htslib bcftools parallel
+module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 
 ## working & temp directory
@@ -29,6 +29,7 @@ module load htslib bcftools parallel
   echo $job
 
 ## set up RAM disk
+  ## rm /scratch/aob2x/test/*
   tmpdir="/scratch/aob2x/test"
 
 ## get sub section
@@ -59,5 +60,16 @@ module load htslib bcftools parallel
 
   parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} ) ::: ${job} ::: ${tmpdir}
 
-### paste function (done with R)
-  Rscript --no-save --no-restore paste.R ${job} ${tmpdir}
+### paste function
+  Rscript --no-save --no-restore ${wd}/DEST/PoolSNP4Sync/paste.R ${job} ${tmpdir}
+
+### run through PoolSNP
+  python ${wd}/DEST/PoolSNP4Sync/PoolSnp.py \
+  --sync testMpileup2Sync/joined_masked.sync.gz \
+  --min-cov 4 \
+  --max-cov 0.7 \
+  --min-count 4 \
+  --min-freq 0.01 \
+  --miss-frac 0.5 \
+  --names sample1,sample2 \
+> testMpileup2Sync/joined.vcf
