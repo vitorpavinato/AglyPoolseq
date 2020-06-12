@@ -22,7 +22,9 @@ head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x
 
 bcftools concat \
 -f /scratch/aob2x/dest/sub_vcfs/bcfs_order \
--O b \
--o ~/test.all.bcf
+-O v \
+-o ~/test.all.vcf
 
-bcftools view ~/test.all.bcf | less -S
+bcftools view ~/test.all.vcf | less -S
+
+grep "5735" ~/test.all.vcf | tr '\t' '\n'
