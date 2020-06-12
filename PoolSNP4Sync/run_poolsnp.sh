@@ -11,8 +11,8 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
-### sbatch --array=1-5 ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh 
-
+### sbatch --array=1-5 ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
+### sacct -j 12755072
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 
@@ -65,13 +65,16 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   }
   export -f subsection
 
+  echo "subset"
+
   parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
 
 ### paste function
+  echo "paste"
   Rscript --no-save --no-restore ${wd}/DEST/PoolSNP4Sync/paste.R ${job} ${tmpdir}
 
 ### run through PoolSNP
-
+  echo "poolsnp"
   cat ${tmpdir}/allpops.sites | python ${wd}/DEST/PoolSNP4Sync/PoolSnp.py \
   --sync - \
   --min-cov 4 \
@@ -81,6 +84,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   --miss-frac 0.5 \
   --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.vcf
 
+### compress and clean up
+  echo "compress and clean"
   bgzip -c ${tmpdir}/${jobid}.vcf > ${tmpdir}/${jobid}.vcf.gz
   tabix -p vcf ${tmpdir}/${jobid}.vcf.gz
   bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
