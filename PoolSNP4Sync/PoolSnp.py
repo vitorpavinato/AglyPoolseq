@@ -92,6 +92,7 @@ missfrac=float(options.mis)
 # Returns a datetime object containing the local date and time
 dateTimeObj = datetime.now()
 
+print("##fileformat=VCFv4.2")
 print("##fileDate="+str(dateTimeObj.day)+"/"+str(dateTimeObj.month)+"/"+str(dateTimeObj.year))
 if options.snape:
     print("##Source=SNAPE")

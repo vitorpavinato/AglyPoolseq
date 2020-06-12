@@ -14,13 +14,14 @@
 
 ### split on chromosome chunks
 
-module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
+module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0 gcc/9.2.0  mvapich2/2.3.3 python/3.7.7
 
 
 ## working & temp directory
   wd="/scratch/aob2x/dest"
   syncPath1="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
   syncPath2="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
+  outdir="/scratch/aob2x/dest/sub_vcfs"
 
 ## get job
   #SLURM_ARRAY_TASK_ID=4
@@ -30,7 +31,13 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 ## set up RAM disk
   ## rm /scratch/aob2x/test/*
-  tmpdir="/scratch/aob2x/test"
+  #tmpdir="/scratch/aob2x/test"
+  #SLURM_JOB_ID=1; SLURM_ARRAY_TASK_ID=4
+  [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
+  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
+  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+
+  tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 ## get sub section
   subsection () {
@@ -64,12 +71,15 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   Rscript --no-save --no-restore ${wd}/DEST/PoolSNP4Sync/paste.R ${job} ${tmpdir}
 
 ### run through PoolSNP
-  python ${wd}/DEST/PoolSNP4Sync/PoolSnp.py \
-  --sync testMpileup2Sync/joined_masked.sync.gz \
+
+  cat ${tmpdir}/allpops.sites | python ${wd}/DEST/PoolSNP4Sync/PoolSnp.py \
+  --sync - \
   --min-cov 4 \
-  --max-cov 0.7 \
+  --max-cov 0.95 \
   --min-count 4 \
   --min-freq 0.01 \
   --miss-frac 0.5 \
-  --names sample1,sample2 \
-> testMpileup2Sync/joined.vcf
+  --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' ) > \
+  ${tmpdir}/${jobid}.vcf
+
+  rm -fr /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
