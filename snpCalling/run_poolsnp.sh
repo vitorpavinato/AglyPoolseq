@@ -11,8 +11,8 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
-### sbatch --array=1-5 ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
-### sacct -j 12755543
+### sbatch --array=1-5 ${wd}/DEST/snpCalling/run_poolsnp.sh
+### sacct -j 12757614
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 
@@ -45,7 +45,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
     jobid=$( echo ${job} | sed 's/,/_/g' )
     tmpdir=${3}
 
-    pop=$( echo ${syncFile} | rev | cut -f1 -d'/' | rev | cut -f1 -d '.' )
+    pop=$( echo ${syncFile} | rev | cut -f1 -d'/' | rev | sed 's/.masked.sync.gz//g' )
 
 
     #syncFile=/project/berglandlab/DEST/dest_mapped/pipeline_output/ES_ba_12_spring/ES_ba_12_spring.masked.sync.gz
