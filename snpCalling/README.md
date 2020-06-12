@@ -1,3 +1,36 @@
+# Scripts to call polymorphic sites using PoolSNP and SNAPE.
+
+## Description
+> This set of scripts generates VCF files from whole-genome SYNC files using one of two SNP calling pipelines.
+
+### 0. Define working directory
+```bash
+wd=/scratch/aob2x/dest
+```
+
+### 1. Generate job id file
+```bash
+Rscript ${wd}/DEST/snpCalling/makeJobs.R
+```
+
+### 2. Make PoolSNP based VCF file
+```bash
+sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## SNP calling with PoolSNP based on SYNC file format
 
 call SNPs on joined SYNC file based on (1) minimum allele count (across all samples) or (2) minimum allele frequency (across all samples). Note, that only positions with a proportion of missing data <= than the miss-frac threshold are retained. The max-cov argument is only used for the VCF header.
@@ -18,5 +51,3 @@ python /Users/mkapun/Documents/GitHub/DEST/PoolSNP4Sync/PoolSnp.py \
   ### makes job DEST/PoolSNP4Sync/makeJobs.R
 
   ### produces /scratch/aob2x/dest/dest/poolSNP_jobs.csv
-
-  

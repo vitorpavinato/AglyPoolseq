@@ -18,7 +18,8 @@ module load htslib bcftools
 wd="/scratch/aob2x/dest"
 outdir="/scratch/aob2x/dest/sub_vcfs"
 
-head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x\/dest\/sub_vcfs\//g' | sed 's/$/.bcf/g' > /scratch/aob2x/dest/sub_vcfs/bcfs_order
+#head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x\/dest\/sub_vcfs\//g' | sed 's/$/.bcf/g' > /scratch/aob2x/dest/sub_vcfs/bcfs_order
+ls -d $outdir/*.bcf > /scratch/aob2x/dest/sub_vcfs/bcfs_order
 
 bcftools concat \
 -f /scratch/aob2x/dest/sub_vcfs/bcfs_order \

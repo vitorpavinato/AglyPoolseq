@@ -3,7 +3,7 @@
 #SBATCH -J split_and_run # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 1:00:00 ### 6 hours
+#SBATCH -t 0:15:00 ### 15 minutes
 #SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
@@ -11,8 +11,9 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
-### sbatch --array=500-505 ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sacct -j 12759350
+### sbatch --array=1500-1505 ${wd}/DEST/snpCalling/run_poolsnp.sh
+### sacct -j 12760824
+
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 
@@ -86,11 +87,11 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 ### compress and clean up
   echo "compress and clean"
-  bgzip -c ${tmpdir}/${jobid}.vcf > ${tmpdir}/${jobid}.vcf.gz
-  tabix -p vcf ${tmpdir}/${jobid}.vcf.gz
+  bgzip -c ${outdir}/${jobid}.vcf > ${outdir}/${jobid}.vcf.gz
+  tabix -p vcf ${outdir}/${jobid}.vcf.gz
 
-  echo "vcf -> bcf "
-  bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
+  #echo "vcf -> bcf "
+  #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
 
   rm -fr ${tmpdir}
 
