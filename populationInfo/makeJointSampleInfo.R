@@ -75,6 +75,7 @@
 		### fix issue with SRA_accession numbers for a few Maine populations
 			#dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r1", SRA_accession:="SRX661844"]
 			#dat.drosRTEC.dt[sampleId=="ME_bo_09_fall.r2", SRA_accession:="SRR2006283"]
+			dat.drosRTEC.dt[sra_sampleName=="mel14TWA7", sra_sampleName:="mel14TWA7_SPT"]
 
 		### add in SRA accession numbers from separate file
 			### from two bio-projects:
@@ -87,7 +88,7 @@
 			setnames(drosRTEC.sra.2, c("Sample Name", "Run", "Experiment"), c("sra_sampleName", "SRA_accession", "SRA_experiment"))
 
 			drosRTEC.sra.1[SRA_accession=="SRR1525694", sra_sampleName:="FL_rep2"]
-			drosRTEC.sra.2 <- drosRTEC.sra.2[!sra_sampleName%in%c("PA_2012_FAT", "VI_2012_FAT", "mel14TWA7_SPT")]
+			drosRTEC.sra.2 <- drosRTEC.sra.2[!sra_sampleName%in%c("PA_2012_FAT", "VI_2012_FAT", "mel14TWA7")]
 
 			drosRTEC.sra <- rbind(drosRTEC.sra.1[,c("sra_sampleName", "SRA_accession", "SRA_experiment"),with=F],
 														drosRTEC.sra.2[,c("sra_sampleName", "SRA_accession", "SRA_experiment"),with=F])
@@ -98,6 +99,8 @@
 
 			### strip out duplicate Maine library
 				dat.drosRTEC.dt <- dat.drosRTEC.dt[SRA_accession!="SRR2006283"]
+
+
 
 	### load in DPGP data
 		### first parse Individuals file to select which individuals; modified with population tag
@@ -215,7 +218,7 @@
 		### This is a function to identify the closest station with the most information
 
 		### first, pull the list of statsions
-			stations <- ghcnd_stations(refresh=FALSE)
+			stations <- ghcnd_stations(refresh=TRUE)
 			stations <- as.data.table(stations)
 
 		### function to identify best station to use
