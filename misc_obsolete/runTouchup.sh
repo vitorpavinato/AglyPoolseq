@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 wd=/scratch/aob2x/dest
-### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
+### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/DEST/misc_obsolete/runTouchup.sh
 
 module load singularity
 

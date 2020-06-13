@@ -3,7 +3,7 @@
 #SBATCH -J download_SRA # A single job name for the array
 #SBATCH --ntasks-per-node=10 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 2:00:00 ### 6 hours
+#SBATCH -t 6:00:00 ### 6 hours
 #SBATCH --mem 10G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
