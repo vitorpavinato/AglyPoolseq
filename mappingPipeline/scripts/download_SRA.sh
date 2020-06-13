@@ -11,7 +11,8 @@
 #SBATCH --account berglandlab
 
 wd=/scratch/aob2x/dest
-### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/mapingPipeline/scripts/download_SRA.sh
+### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
+## sacct -j 12767302
 
 module load sratoolkit/2.10.5
 
@@ -29,7 +30,7 @@ ${sranum}
 fasterq-dump \
 --split-files \
 --split-3 \
---outfile /scratch/aob2x/fastq/foo_${sranum} \
+--outfile /scratch/aob2x/fastq/${sranum} \
 -e 10 \
 /scratch/aob2x/fastq/${sranum}.sra
 
