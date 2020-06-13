@@ -5,4 +5,22 @@
 #SBATCH -o test_sync_time.txt
 #SBATCH --mem=30GB
 
-singularity run dmelsync_latest.sif /scratch/jho5ze/DEST_docker/singularity/SRX5246551_1.fastq /scratch/jho5ze/DEST_docker/singularity/SRX5246551_2.fastq test_sub test_out
+singularity run \
+/scratch/aob2x/dest/dmelsync_hpc.sif \
+/scratch/aob2x/fastq/SRR5647742_1.fastq.gz \
+/scratch/aob2x/fastq/SRR5647742_1.fastq.gz \
+/scratch/aob2x/test_sub \
+/scratch/aob2x/test_out \
+-dps 1 \
+-c 20
+
+
+singularity run \
+dmelsync_hpc.sif \
+<read_1> \
+<read_2> \
+<sample_name> \
+<output_folder> \
+--cores <optional> \
+--max_cov <optional> \
+--min_cov <optional>

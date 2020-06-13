@@ -14,8 +14,6 @@ sbatch --array=1-$( wc -l < ${wd}/DEST/populationInfo/samps.csv ) \
 ${wd}/DEST/mappingPipeline/scripts/downloadSRA.sh
 ```
 
-
-
 ### 2. Check that data are in the correct FASTQ format
 Double check that all downloaded data are in Fastq33. Uses script from [here](https://github.com/brentp/bio-playground/blob/master/reads-utils/guess-encoding.py). </br>
 

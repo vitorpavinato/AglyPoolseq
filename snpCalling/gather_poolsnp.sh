@@ -19,10 +19,11 @@ wd="/scratch/aob2x/dest"
 outdir="/scratch/aob2x/dest/sub_vcfs"
 
 #head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x\/dest\/sub_vcfs\//g' | sed 's/$/.bcf/g' > /scratch/aob2x/dest/sub_vcfs/bcfs_order
-ls -d $outdir/*.bcf > /scratch/aob2x/dest/sub_vcfs/bcfs_order
+ls -d $outdir/*.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order
 
 bcftools concat \
--f /scratch/aob2x/dest/sub_vcfs/bcfs_order \
+-a \
+-f /scratch/aob2x/dest/sub_vcfs/vcfs_order \
 -O v \
 -o ~/test.all.vcf
 

@@ -12,8 +12,7 @@
 
 wd=/scratch/aob2x/dest
 ### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
-## sacct -j 12767322
-
+##
 module load sratoolkit/2.10.5
 
 #SLURM_ARRAY_TASK_ID=1
