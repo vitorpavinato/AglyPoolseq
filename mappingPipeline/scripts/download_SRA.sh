@@ -12,7 +12,8 @@
 
 wd=/scratch/aob2x/dest
 ### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
-## sacct -j 12767302
+## sbatch --array=1 ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
+## sacct -j 12767313
 
 module load sratoolkit/2.10.5
 
@@ -34,5 +35,7 @@ fasterq-dump \
 -e 10 \
 /scratch/aob2x/fastq/${sranum}.sra
 
-gzip /scratch/aob2x/dest/fastq/${sranum}_1.fastq
-gzip /scratch/aob2x/dest/fastq/${sranum}_2.fastq
+gzip /scratch/aob2x/fastq/${sranum}_1.fastq
+gzip /scratch/aob2x/fastq/${sranum}_2.fastq
+
+rm /scratch/aob2x/fastq/${sranum}.sra
