@@ -30,3 +30,13 @@ ${sampName} \
 ${sampName} \
 -c $SLURM_CPUS_PER_TASK \
 -dps
+
+
+#cd PA_li_12_fall; mv PA_li_12_fall /project/berglandlab/DEST/dest_mapped/
+#cd UA_Che_14_28; mv UA_Che_14_28 /project/berglandlab/DEST/dest_mapped/
+#cd ..; cd UA_Che_14_29; mv UA_Che_14_29 /project/berglandlab/DEST/dest_mapped/
+#cd ..; cd UA_Che_14_47; mv UA_Che_14_47 /project/berglandlab/DEST/dest_mapped/
+#cd ..; cd UA_Che_14_48; mv UA_Che_14_48 /project/berglandlab/DEST/dest_mapped/
+#cd ..; cd UA_Pir_14_26; mv UA_Pir_14_26 /project/berglandlab/DEST/dest_mapped/
+#cd ..; cd VA_ch_12_fall; mv VA_ch_12_fall /project/berglandlab/DEST/dest_mapped/
+#cd ..; cd WA_se_14_spring; mv WA_se_14_spring /project/berglandlab/DEST/dest_mapped/
