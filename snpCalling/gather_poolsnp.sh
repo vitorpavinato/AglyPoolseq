@@ -12,7 +12,7 @@
 
 ### run as: sbatch -${wd}/DEST/PoolSNP4Sync/gather_poolsnp.sh
 ### sacct -j 12755543
-module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0; R
+module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0
 
 
 wd="/scratch/aob2x/dest"
