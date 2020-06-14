@@ -10,8 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### run as: sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
-### sbatch --array=1-5 ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
+### run as: sbatch -${wd}/DEST/PoolSNP4Sync/gather_poolsnp.sh
 ### sacct -j 12755543
 module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0; R
 
