@@ -8,12 +8,6 @@
 ### define working directory where
   wd="/project/berglandlab/DEST"
 
-### get paths to bgzipped sync files
-  sync_files <- system(paste("ls ",
-                             wd,
-                             "/dest_mapped/*/*masked.sync.gz",
-                             sep=""), intern=T)
-
 ### get chromosome names and lengths
   chrs="2L|2R|3L|3R|4|X|Y|mitochondrion_genome"
 
@@ -49,4 +43,4 @@
   }
 
 ### write job file
-  write.table(jobs, quote=F, col.names=F, row.names=F, sep=",", file="/scratch/aob2x/dest/dest/poolSNP_jobs.csv")
+  write.table(jobs, quote=F, col.names=F, row.names=F, sep=",", file="/scratch/aob2x/dest/poolSNP_jobs.csv")

@@ -8,15 +8,12 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-#SLURM_ARRAY_TASK_ID=1
-
-
-wd=/scratch/aob2x/dest
+#SLURM_ARRAY_TASK_ID=1; SLURM_CPUS_PER_TASK=1
 ### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/DEST/misc_obsolete/runTouchup.sh
-### sacct -j 12768256
-module load singularity
+### sacct -j 12773686
 
-#SLURM_ARRAY_TASK_ID=1
+module load singularity
+wd=/scratch/aob2x/dest
 
 sranum=$( grep ",${SLURM_ARRAY_TASK_ID}$" /scratch/aob2x/fastq/todl.csv | cut -f2 -d',' )
 sampName=$( grep ",${SLURM_ARRAY_TASK_ID}$" /scratch/aob2x/fastq/todl.csv | cut -f1 -d',' )

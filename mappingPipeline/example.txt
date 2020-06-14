@@ -5,13 +5,15 @@
 #SBATCH -o test_sync_time.txt
 #SBATCH --mem=30GB
 
+
+cd /scratch/aob2x/test
+
 singularity run \
 /scratch/aob2x/dest/dmelsync_hpc.sif \
 /scratch/aob2x/fastq/SRR5647742_1.fastq.gz \
 /scratch/aob2x/fastq/SRR5647742_1.fastq.gz \
-/scratch/aob2x/test_sub \
-/scratch/aob2x/test_out \
--dps 1 \
+test_sub \
+test_out \
 -c 20
 
 
