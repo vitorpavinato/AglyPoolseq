@@ -11,7 +11,8 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch ${wd}/DEST/snpCalling/gather_poolsnp.sh
-### sacct -j 12813163
+### sacct -j 12825134
+### cat /scratch/aob2x/dest/slurmOutput/split_and_run.12825134
 module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0
 
 
@@ -20,11 +21,11 @@ outdir="/scratch/aob2x/dest/sub_vcfs"
 
 #head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x\/dest\/sub_vcfs\//g' | sed 's/$/.bcf/g' > /scratch/aob2x/dest/sub_vcfs/bcfs_order
 #ls -d $outdir/*.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order
+cat /scratch/aob2x/dest/sub_vcfs/vcfs_order | sort -t"_" -k2,2 -k3g,3  > /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort
 
 bcftools concat \
 --threads 20 \
--a \
--f /scratch/aob2x/dest/sub_vcfs/vcfs_order \
+-f /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort \
 -O v \
 -o /scratch/aob2x/dest.June14_2020.vcf
 

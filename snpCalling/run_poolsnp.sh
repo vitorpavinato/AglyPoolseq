@@ -11,9 +11,9 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
+### sacct -j 12814454 | grep "TIMEOUT";  squeue -j 12814454
 
-
-###### sbatch --array=1-10,3788 ${wd}/DEST/snpCalling/run_poolsnp.sh
+###### sbatch --array=13,14 ${wd}/DEST/snpCalling/run_poolsnp.sh
 ###### sacct -j 12801954 | grep "TIMEOUT" > ~/timeout
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
