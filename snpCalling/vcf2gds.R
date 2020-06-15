@@ -5,7 +5,7 @@ library(data.table)
 library(foreach)
 library(ggplot2)
 
-seqVCF2GDS("/scratch/aob2x/dest.June14_2020.ann.vcf", "/scratch/aob2x/dest.June14_2020.ann.gds", storage.option="ZIP_RA")
+seqVCF2GDS("/scratch/aob2x/dest/dest.June14_2020.ann.vcf", "/scratch/aob2x/dest.June14_2020.ann.gds", storage.option="ZIP_RA")
 
 #ofile <- seqOpen("/scratch/aob2x/tmp.gds")
 #ps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
