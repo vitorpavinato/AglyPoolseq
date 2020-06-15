@@ -87,7 +87,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   --min-cov 4 \
   --max-cov 0.95 \
   --min-count 4 \
-  --min-freq 0.001 \
+  --min-freq 0.01 \
   --miss-frac 0.5 \
   --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.vcf
 
