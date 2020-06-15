@@ -11,10 +11,14 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sbatch --array=1-10,3788 ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sacct -j 12801954 | grep "TIMEOUT" > ~/timeout
-### ls -lh ${outdir}/*.vcf.gz | grep "users 0"
-#sacct -j 12813152 | head
+
+
+###### sbatch --array=1-10,3788 ${wd}/DEST/snpCalling/run_poolsnp.sh
+###### sacct -j 12801954 | grep "TIMEOUT" > ~/timeout
+###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
+####sacct -j 12813152 | head
+#### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
+#### cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,21912590,21926361" | cut -f1
 
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
@@ -26,7 +30,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   outdir="/scratch/aob2x/dest/sub_vcfs"
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=1
+  #SLURM_ARRAY_TASK_ID=3300
   job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
@@ -51,7 +55,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
     pop=$( echo ${syncFile} | rev | cut -f1 -d'/' | rev | sed 's/.masked.sync.gz//g' )
 
 
-    #syncFile=/project/berglandlab/DEST/dest_mapped/pipeline_output/ES_ba_12_spring/ES_ba_12_spring.masked.sync.gz
+    #syncFile=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz
 
     #job=2L,1,13766
 
