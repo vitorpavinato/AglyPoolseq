@@ -28,7 +28,7 @@ bcftools concat \
 -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort \
 -O v \
 -n \
--o /scratch/aob2x/dest.June14_2020.n.vcf
+-o /scratch/aob2x/dest.June14_2020.vcf
 
 java -jar ~/snpEff/snpEff.jar eff BDGP6.86 /scratch/aob2x/dest.June14_2020.vcf > /scratch/aob2x/dest.June14_2020.ann.vcf
 
