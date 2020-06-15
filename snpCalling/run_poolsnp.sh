@@ -3,7 +3,7 @@
 #SBATCH -J split_and_run # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 0:15:00 ### 15 minutes
+#SBATCH -t 0:30:00 ### 15 minutes
 #SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
@@ -12,7 +12,7 @@
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 ### sbatch --array=300-310 ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sacct -j 12779101
+###
 
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
