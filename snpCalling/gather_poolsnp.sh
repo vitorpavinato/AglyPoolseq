@@ -10,8 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### run as: sbatch -${wd}/DEST/PoolSNP4Sync/gather_poolsnp.sh
-### sacct -j 12755543
+### run as: sbatch ${wd}/DEST/snpCalling/gather_poolsnp.sh
+### sacct -j 12813163
 module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0
 
 
@@ -19,7 +19,7 @@ wd="/scratch/aob2x/dest"
 outdir="/scratch/aob2x/dest/sub_vcfs"
 
 #head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x\/dest\/sub_vcfs\//g' | sed 's/$/.bcf/g' > /scratch/aob2x/dest/sub_vcfs/bcfs_order
-ls -d $outdir/*.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order
+#ls -d $outdir/*.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order
 
 bcftools concat \
 --threads 20 \

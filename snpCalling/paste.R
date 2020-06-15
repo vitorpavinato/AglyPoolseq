@@ -4,7 +4,7 @@ args = commandArgs(trailingOnly=TRUE)
 job=args[1]
 tmpdir=args[2]
 
-#job="2L_41301_55067"; tmpdir="/scratch/aob2x/test"
+#job="2R_21912590_21926361"; tmpdir="/dev/shm/aob2x/1/3300"
 jobId=gsub(",", "_", job)
 
 ### libraries
@@ -14,15 +14,21 @@ jobId=gsub(",", "_", job)
 ### get input files
   files <- list.files(tmpdir, pattern=jobId)
   setwd(tmpdir)
-  
+
 ### import
   o <- foreach(files.i=files)%do%{
     #files.i=files[199]
     tmp <- fread(files.i)
+    if(dim(tmp)[1]==0) {
+      tmp <- data.table(V1=tstrsplit(jobId, "_")[[1]],
+                        V2=as.numeric(tstrsplit(jobId, "_")[[2]]):as.numeric(tstrsplit(jobId, "_")[[3]]),
+                        V3="N",
+                        V4=".:.:.:.:.:.")
+    }
     tmp[,pop:=gsub("_$", "", gsub(jobId, "", files.i))]
     tmp
   }
-  o <- rbindlist(o)
+  o <- rbindlist(o, use.names=T, fill=T)
 
 ### long to wide
   ow <- dcast(o, V1+V2~pop, value.var="V4")

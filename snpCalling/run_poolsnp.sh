@@ -11,8 +11,10 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sbatch --array=300-310 ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sacct -j 12791856 | head
+### sbatch --array=1-10,3788 ${wd}/DEST/snpCalling/run_poolsnp.sh
+### sacct -j 12801954 | grep "TIMEOUT" > ~/timeout
+### ls -lh ${outdir}/*.vcf.gz | grep "users 0"
+#sacct -j 12813152 | head
 
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
@@ -24,7 +26,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   outdir="/scratch/aob2x/dest/sub_vcfs"
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=4
+  #SLURM_ARRAY_TASK_ID=1
   job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
