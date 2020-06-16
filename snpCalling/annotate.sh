@@ -11,18 +11,18 @@
 #SBATCH --account berglandlab
 
 maf=${1}
-#maf="maf001"
+#maf=001
 wd=/scratch/aob2x/dest
 
 
 bcftools concat \
-${wd}/sub_bcf/dest.June14_2020.${maf}.2L.bcf \
-${wd}/sub_bcf/dest.June14_2020.${maf}.2R.bcf \
-${wd}/sub_bcf/dest.June14_2020.${maf}.3L.bcf \
-${wd}/sub_bcf/dest.June14_2020.${maf}.3R.bcf \
-${wd}/sub_bcf/dest.June14_2020.${maf}.X.bcf \
-${wd}/sub_bcf/dest.June14_2020.${maf}.4.bcf \
-${wd}/sub_bcf/dest.June14_2020.${maf}.Y.bcf \
+${wd}/sub_bcf/dest.June14_2020.maf001.2L.${maf}.bcf \
+${wd}/sub_bcf/dest.June14_2020.maf001.2R.${maf}.bcf \
+${wd}/sub_bcf/dest.June14_2020.maf001.3L.${maf}.bcf \
+${wd}/sub_bcf/dest.June14_2020.maf001.3R.${maf}.bcf \
+${wd}/sub_bcf/dest.June14_2020.maf001.X.${maf}.bcf \
+${wd}/sub_bcf/dest.June14_2020.maf001.4.${maf}.bcf \
+${wd}/sub_bcf/dest.June14_2020.maf001.Y.${maf}.bcf \
 -n \
 -o ${wd}/dest.June14_2020.${maf}.bcf
 
