@@ -34,13 +34,4 @@ outdir="/scratch/aob2x/dest/sub_vcfs"
  -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.sort \
  -O v \
  -n \
- -o /scratch/aob2x/dest/dest.June14_2020.${chr}.bcf
-
-
-#mv /scratch/aob2x/dest/dest.June14_2020.vcf /scratch/aob2x/dest/dest.June14_2020.bcf
-
-#bcftools view /scratch/aob2x/dest/dest.June14_2020.bcf > /scratch/aob2x/dest/dest.June14_2020.vcf
-#
-#java -jar ~/snpEff/snpEff.jar eff BDGP6.86 /scratch/aob2x/dest/dest.June14_2020.vcf -v > /scratch/aob2x/dest/dest.June14_2020.ann.vcf
-#
-#Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R
+ -o /scratch/aob2x/dest/dest.June14_2020.maf001.${chr}.bcf
