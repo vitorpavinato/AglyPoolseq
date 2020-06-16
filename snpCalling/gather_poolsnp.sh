@@ -10,8 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### run as: sbatch ${wd}/DEST/snpCalling/gather_poolsnp.sh
-### sacct -j 12825841
+### run as: sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh
+### sacct -j 12839251
 ### cat /scratch/aob2x/dest/slurmOutput/split_and_run.12825614
 module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0
 
@@ -22,18 +22,24 @@ outdir="/scratch/aob2x/dest/sub_vcfs"
 #head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x\/dest\/sub_vcfs\//g' | sed 's/$/.bcf/g' > /scratch/aob2x/dest/sub_vcfs/bcfs_order
 #ls -d $outdir/*.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order
 # cat /scratch/aob2x/dest/sub_vcfs/vcfs_order | sort -t"_" -k2,2 -k3g,3  > /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort
-#
+
+# SLURM_ARRAY_TASK_ID=7
+  chr=$( cat /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort | rev | cut -f1 -d'/' | rev  | cut -f1 -d'_' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+
+  grep /${chr}_ /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.sort
+
+
  bcftools concat \
  --threads 20 \
- -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort \
+ -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.sort \
  -O v \
  -n \
- -o /scratch/aob2x/dest/dest.June14_2020.bcf
+ -o /scratch/aob2x/dest/dest.June14_2020.${chr}.bcf
 
 #mv /scratch/aob2x/dest/dest.June14_2020.vcf /scratch/aob2x/dest/dest.June14_2020.bcf
 
-bcftools view /scratch/aob2x/dest/dest.June14_2020.bcf > /scratch/aob2x/dest/dest.June14_2020.vcf
-
-java -jar ~/snpEff/snpEff.jar eff BDGP6.86 /scratch/aob2x/dest/dest.June14_2020.vcf -v > /scratch/aob2x/dest/dest.June14_2020.ann.vcf
-
-Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R
+#bcftools view /scratch/aob2x/dest/dest.June14_2020.bcf > /scratch/aob2x/dest/dest.June14_2020.vcf
+#
+#java -jar ~/snpEff/snpEff.jar eff BDGP6.86 /scratch/aob2x/dest/dest.June14_2020.vcf -v > /scratch/aob2x/dest/dest.June14_2020.ann.vcf
+#
+#Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R
