@@ -7,26 +7,30 @@ library(ggplot2)
 
 #seqVCF2GDS("/scratch/aob2x/dest/dest.June14_2020.ann.vcf", "/scratch/aob2x/dest.June14_2020.ann.gds", storage.option="ZIP_RA")
 
-seqVCF2GDS("/scratch/aob2x/dest/dest.June14_2020.maf001.vcf", "/scratch/aob2x/dest.June14_2020.maf001.gds", storage.option="ZIP_RA")
+args = commandArgs(trailingOnly=TRUE)
+vcf.fn=args[[1]]
+gds.fn=gsub(".vcf", ".gds", vcf.fn)
+
+seqVCF2GDS(vcf.fn, gds.fn, storage.option="ZIP_RA")
 
 
-genofile <- seqOpen("/scratch/aob2x/dest.June14_2020.maf001.gds")
-samps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
-vSamps <- seqGetData(genofile, "sample.id")
-
-# are all populations there?
-setkey(samps, sampleId)
-samps[J(vSamps)]
-samps[!samps$sampleId%in%vSamps]$sampleId
-
-# tri-allelic sites
-
-## how many are there?
-  snp.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
-                        pos=seqGetData(genofile, "position"),
-                        nAlleles=seqGetData(genofile, "$num_allele"),
-                        id=seqGetData(genofile, "variant.id"))
-  table(snp.dt$chr)
+#genofile <- seqOpen("/scratch/aob2x/dest.June14_2020.maf001.gds")
+#samps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
+#vSamps <- seqGetData(genofile, "sample.id")
+#
+## are all populations there?
+#setkey(samps, sampleId)
+#samps[J(vSamps)]
+#samps[!samps$sampleId%in%vSamps]$sampleId
+#
+## tri-allelic sites
+#
+### how many are there?
+#  snp.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
+#                        pos=seqGetData(genofile, "position"),
+#                        nAlleles=seqGetData(genofile, "$num_allele"),
+#                        id=seqGetData(genofile, "variant.id"))
+#  table(snp.dt$chr)
 #  prop.table(table(snp.dt$nAlleles))
 
 ## Do both alts at tri allelic sites pass filtering?

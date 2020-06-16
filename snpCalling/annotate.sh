@@ -10,10 +10,25 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-echo ${1}
+maf=${1}
+#maf="maf001"
+wd=/scratch/aob2x/dest
 
-#bcftools view /scratch/aob2x/dest/dest.June14_2020.bcf > /scratch/aob2x/dest/dest.June14_2020.vcf
-#
-#java -jar ~/snpEff/snpEff.jar eff BDGP6.86 /scratch/aob2x/dest/dest.June14_2020.vcf -v > /scratch/aob2x/dest/dest.June14_2020.ann.vcf
-#
+
+bcftools concat \
+${wd}/dest.June14_2020.${maf}.2L.bcf \
+${wd}/dest.June14_2020.${maf}.2R.bcf \
+${wd}/dest.June14_2020.${maf}.3L.bcf \
+${wd}/dest.June14_2020.${maf}.3R.bcf \
+${wd}/dest.June14_2020.${maf}.X.bcf \
+${wd}/dest.June14_2020.${maf}.4.bcf \
+${wd}/dest.June14_2020.${maf}.Y.bcf \
+-n \
+-o ${wd}/dest.June14_2020.${maf}.bcf
+
+
+bcftools view ${wd}/dest.June14_2020.${maf}.bcf > ${wd}/dest.June14_2020.${maf}.vcf
+
+java -jar ~/snpEff/snpEff.jar eff BDGP6.86 ${wd}/dest.June14_2020.${maf}.vcf -v > ${wd}/dest.June14_2020.${maf}.ann.vcf
+
 #Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R
