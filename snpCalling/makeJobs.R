@@ -20,13 +20,13 @@
   }
 
 ### split into how many jobs?
-  nJobs <- 9999
+  nJobs <- 999
 
 ### how many jobs per chr
   chrs.dt[,nJobs:=floor(maxLen/sum(chrs.dt$maxLen)*nJobs)]
 
 ### make jobs
-  jobs <- foreach(chr.i=chrs.dt$chr, .combine="rbind")%do%{
+  jobs <- foreach(chr.i=chrs.dt$chr, .combine="rbind", .errorhandling="remove")%do%{
     #chr.i <- chrs.dt$chr[8]
     tmp <- data.table(chr=chr.i,
                       start=floor(seq(from=1, to=chrs.dt[chr==chr.i]$maxLen, length.out=chrs.dt[chr==chr.i]$nJobs)))

@@ -24,7 +24,7 @@ maf=${1}
 ls -d $outdir/*.${maf}.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}
 cat /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf} | sort -t"_" -k2,2 -k3g,3  > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}.sort
 
-# SLURM_ARRAY_TASK_ID=7
+# SLURM_ARRAY_TASK_ID=1
   chr=$( cat /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}.sort | rev | cut -f1 -d'/' | rev  | cut -f1 -d'_' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
   grep /${chr}_ /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}.sort > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.sort
@@ -35,4 +35,4 @@ cat /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf} | sort -t"_" -k2,2 -k3g,3  > 
  -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.sort \
  -O v \
  -n \
- -o /scratch/aob2x/dest/sub_bcfs/dest.June14_2020.maf001.${chr}.${maf}.bcf
+ -o /scratch/aob2x/dest/sub_bcf/dest.June14_2020.maf001.${chr}.${maf}.bcf

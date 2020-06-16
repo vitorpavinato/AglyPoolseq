@@ -14,7 +14,7 @@
 ### sacct -j 12850848 | grep "TIMEOUT";  squeue -j 12814454
 
 ###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh 001
-###### sacct -j 12877088 | grep "TIMEOUT" > ~/timeout
+###### sacct -j 12890992
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
