@@ -27,11 +27,11 @@ sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001
 sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 01
 ```
 
-sacct -j 12893664
+sacct -j 12893762
 
-### 3c. Annotate and convert (bgzip out; GDS out)
+### 3c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
-sbatch ${wd}/DEST/snpCalling/annotate.sh maf001
+sbatch ${wd}/DEST/snpCalling/annotate.sh 001
 
 
 

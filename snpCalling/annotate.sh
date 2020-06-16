@@ -35,7 +35,9 @@ eff \
 -v \
 -t 10 \
 BDGP6.86 \
-${wd}/dest.June14_2020.${maf}.vcf | \
-bgzip -c - > ${wd}/dest.June14_2020.${maf}.ann.vcf.gz
+${wd}/dest.June14_2020.${maf}.vcf > \
+${wd}/dest.June14_2020.${maf}.ann.vcf
 
-#Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R
+Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/dest.June14_2020.${maf}.ann.vcf
+
+bgzip -c ${wd}/dest.June14_2020.${maf}.ann.vcf > ${wd}/dest.June14_2020.${maf}.ann.vcf.gz
