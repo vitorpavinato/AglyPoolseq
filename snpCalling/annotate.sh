@@ -15,25 +15,23 @@ maf=${1}
 wd=/scratch/aob2x/dest
 
 
-bcftools concat \
-${wd}/sub_bcf/dest.June14_2020.maf001.2L.${maf}.bcf \
-${wd}/sub_bcf/dest.June14_2020.maf001.2R.${maf}.bcf \
-${wd}/sub_bcf/dest.June14_2020.maf001.3L.${maf}.bcf \
-${wd}/sub_bcf/dest.June14_2020.maf001.3R.${maf}.bcf \
-${wd}/sub_bcf/dest.June14_2020.maf001.X.${maf}.bcf \
-${wd}/sub_bcf/dest.June14_2020.maf001.4.${maf}.bcf \
-${wd}/sub_bcf/dest.June14_2020.maf001.Y.${maf}.bcf \
--n \
--o ${wd}/dest.June14_2020.${maf}.bcf
-
-bcftools view \
---threads 10 \
-${wd}/dest.June14_2020.${maf}.bcf > ${wd}/dest.June14_2020.${maf}.vcf
+# bcftools concat \
+# ${wd}/sub_bcf/dest.June14_2020.maf001.2L.${maf}.bcf \
+# ${wd}/sub_bcf/dest.June14_2020.maf001.2R.${maf}.bcf \
+# ${wd}/sub_bcf/dest.June14_2020.maf001.3L.${maf}.bcf \
+# ${wd}/sub_bcf/dest.June14_2020.maf001.3R.${maf}.bcf \
+# ${wd}/sub_bcf/dest.June14_2020.maf001.X.${maf}.bcf \
+# ${wd}/sub_bcf/dest.June14_2020.maf001.4.${maf}.bcf \
+# ${wd}/sub_bcf/dest.June14_2020.maf001.Y.${maf}.bcf \
+# -n \
+# -o ${wd}/dest.June14_2020.${maf}.bcf
+#
+# bcftools view \
+# --threads 10 \
+# ${wd}/dest.June14_2020.${maf}.bcf > ${wd}/dest.June14_2020.${maf}.vcf
 
 java -jar ~/snpEff/snpEff.jar \
 eff \
--v \
--t 10 \
 BDGP6.86 \
 ${wd}/dest.June14_2020.${maf}.vcf > \
 ${wd}/dest.June14_2020.${maf}.ann.vcf

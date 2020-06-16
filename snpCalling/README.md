@@ -24,16 +24,15 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/sn
 sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001
 sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 01
 ```
-sacct -j 12893804 #01
-
 
 ### 3c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
 sbatch ${wd}/DEST/snpCalling/annotate.sh 001
+sbatch ${wd}/DEST/snpCalling/annotate.sh 01
+
 ```
-sacct -j 12893821 #001
-
-
+sacct -j 12894077
+sacct -j 12894078
 
 
 
