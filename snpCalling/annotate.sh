@@ -26,8 +26,16 @@ ${wd}/sub_bcf/dest.June14_2020.${maf}.Y.bcf \
 -n \
 -o ${wd}/dest.June14_2020.${maf}.bcf
 
-bcftools view ${wd}/dest.June14_2020.${maf}.bcf > ${wd}/dest.June14_2020.${maf}.vcf
+bcftools view \
+--threads 10 \
+${wd}/dest.June14_2020.${maf}.bcf > ${wd}/dest.June14_2020.${maf}.vcf
 
-java -jar ~/snpEff/snpEff.jar eff BDGP6.86 ${wd}/dest.June14_2020.${maf}.vcf -v | bgzip -c - > ${wd}/dest.June14_2020.${maf}.ann.vcf
+java -jar ~/snpEff/snpEff.jar \
+eff \
+-v \
+-t 10 \
+BDGP6.86 \
+${wd}/dest.June14_2020.${maf}.vcf | \
+bgzip -c - > ${wd}/dest.June14_2020.${maf}.ann.vcf.gz
 
 #Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R
