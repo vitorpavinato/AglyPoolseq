@@ -4,7 +4,7 @@
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
 #SBATCH -t 0:60:00 ### 15 minutes
-#SBATCH --mem 2G
+#SBATCH --mem 10G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
 #SBATCH -p standard
@@ -13,7 +13,7 @@
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 ### sacct -j 12850848 | grep "TIMEOUT";  squeue -j 12814454
 
-###### sbatch --array=68,7620-7629,8815 ${wd}/DEST/snpCalling/run_poolsnp.sh
+###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh 001
 ###### sacct -j 12877088 | grep "TIMEOUT" > ~/timeout
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
