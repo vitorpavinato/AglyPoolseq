@@ -18,20 +18,21 @@ module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0
 
 wd="/scratch/aob2x/dest"
 outdir="/scratch/aob2x/dest/sub_vcfs"
+maf=${1}
 
 #head -n5 ${wd}/dest/poolSNP_jobs.csv | sed 's/,/_/g' | sed 's/^/\/scratch\/aob2x\/dest\/sub_vcfs\//g' | sed 's/$/.bcf/g' > /scratch/aob2x/dest/sub_vcfs/bcfs_order
-#ls -d $outdir/*.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order
-# cat /scratch/aob2x/dest/sub_vcfs/vcfs_order | sort -t"_" -k2,2 -k3g,3  > /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort
+ls -d $outdir/*.${maf}.vcf.gz > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}
+cat /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf} | sort -t"_" -k2,2 -k3g,3  > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}.sort
 
 # SLURM_ARRAY_TASK_ID=7
-  chr=$( cat /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort | rev | cut -f1 -d'/' | rev  | cut -f1 -d'_' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+  chr=$( cat /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}.sort | rev | cut -f1 -d'/' | rev  | cut -f1 -d'_' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
-  grep /${chr}_ /scratch/aob2x/dest/sub_vcfs/vcfs_order.sort > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.sort
+  grep /${chr}_ /scratch/aob2x/dest/sub_vcfs/vcfs_order.${maf}.sort > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.sort
 
 
  bcftools concat \
  --threads 20 \
- -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.sort \
+ -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.sort \
  -O v \
  -n \
- -o /scratch/aob2x/dest/dest.June14_2020.maf001.${chr}.bcf
+ -o /scratch/aob2x/dest/sub_bcfs/dest.June14_2020.maf001.${chr}.${maf}.bcf
