@@ -36,6 +36,7 @@ outdir="/scratch/aob2x/dest/sub_vcfs"
  -n \
  -o /scratch/aob2x/dest/dest.June14_2020.${chr}.bcf
 
+
 #mv /scratch/aob2x/dest/dest.June14_2020.vcf /scratch/aob2x/dest/dest.June14_2020.bcf
 
 #bcftools view /scratch/aob2x/dest/dest.June14_2020.bcf > /scratch/aob2x/dest/dest.June14_2020.vcf
