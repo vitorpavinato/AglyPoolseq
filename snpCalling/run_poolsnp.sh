@@ -13,8 +13,8 @@
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 ### sacct -j 12850848 | grep "TIMEOUT";  squeue -j 12814454
 
-###### sbatch --array=150,151 ${wd}/DEST/snpCalling/run_poolsnp.sh
-###### sacct -j 12801954 | grep "TIMEOUT" > ~/timeout
+###### sbatch --array=68,7620-7629,8815 ${wd}/DEST/snpCalling/run_poolsnp.sh
+###### sacct -j 12877088 | grep "TIMEOUT" > ~/timeout
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
@@ -28,6 +28,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   syncPath1="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
   syncPath2="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
   outdir="/scratch/aob2x/dest/sub_vcfs"
+  maf=${1}
 
 ## get job
   #SLURM_ARRAY_TASK_ID=3300
@@ -82,19 +83,21 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 
 ### run through PoolSNP
   echo "poolsnp"
+
+
   cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
   --sync - \
   --min-cov 4 \
   --max-cov 0.95 \
   --min-count 4 \
-  --min-freq 0.001 \
+  --min-freq 0.${maf} \
   --miss-frac 0.5 \
-  --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.vcf
+  --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.${maf}.vcf
 
 ### compress and clean up
   echo "compress and clean"
-  bgzip -c ${tmpdir}/${jobid}.vcf > ${outdir}/${jobid}.vcf.gz
-  tabix -p vcf ${outdir}/${jobid}.vcf.gz
+  bgzip -c ${tmpdir}/${jobid}.${maf}.vcf > ${outdir}/${jobid}.${maf}.vcf.gz
+  tabix -p vcf ${outdir}/${jobid}.${maf}.vcf.gz
 
   #echo "vcf -> bcf "
   #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
