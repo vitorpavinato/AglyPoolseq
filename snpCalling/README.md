@@ -13,24 +13,28 @@ wd=/scratch/aob2x/dest
 Rscript ${wd}/DEST/snpCalling/makeJobs.R
 ```
 
-### 2a. Make PoolSNP based VCF file
+### 2a. Make PoolSNP based VCF file (bgzip out)
 ```bash
 sbatch --array=1-$( wc -l ${wd}/dest/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/PoolSNP4Sync/run_poolsnp.sh
 ```
 
-### 2b. Collect PoolSNP
-``` bash
+### 2b. Collect PoolSNP (bcf out)
+```bash
+sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh
+
 bcftools concat \
-dest.June14_2020.2L.bcf \
-dest.June14_2020.2R.bcf \
-dest.June14_2020.3L.bcf \
-dest.June14_2020.3R.bcf \
-dest.June14_2020.X.bcf \
-dest.June14_2020.4.bcf \
-dest.June14_2020.Y.bcf \
+${wd}dest.June14_2020.maf001.2L.bcf \
+${wd}dest.June14_2020.maf001.2R.bcf \
+${wd}dest.June14_2020.maf001.3L.bcf \
+${wd}dest.June14_2020.maf001.3R.bcf \
+${wd}dest.June14_2020.maf001.X.bcf \
+${wd}dest.June14_2020.maf001.4.bcf \
+${wd}dest.June14_2020.maf001.Y.bcf \
 -n \
--o dest.June14_2020.maf01.bcf
+-o dest.June14_2020.maf001.bcf
 ```
+
+### 3c. Annotate and convert (bgzip out; GDS out)
 
 
 
