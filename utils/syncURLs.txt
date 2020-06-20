@@ -11,6 +11,15 @@ http://berglandlab.uvadcos.io/dest_mapped/FR/FR.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/GA/GA.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/GU/GU.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/I/I.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/FL_ho_10_fall/FL_ho_10_fall.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/PA_li_12_fall/PA_li_12_fall.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/UA_Che_14_28/UA_Che_14_28.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/UA_Che_14_29/UA_Che_14_29.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/UA_Che_14_47/UA_Che_14_47.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/UA_Che_14_48/UA_Che_14_48.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/UA_Pir_14_26/UA_Pir_14_26.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/VA_ch_12_fall/VA_ch_12_fall.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/joseph_extra_copies/WA_se_14_spring/WA_se_14_spring.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/KN/KN.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/NG/NG.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/N/N.masked.sync.gz
@@ -65,8 +74,6 @@ http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/DK_Kar_16_3/DK_Kar_16_
 http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/DK_Kar_16_4/DK_Kar_16_4.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/ES_ba_12_fall/ES_ba_12_fall.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/ES_ba_12_spring/ES_ba_12_spring.masked.sync.gz
-http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/ES_ba_12_spring/ES_ba_12_spring.SNAPE.complete.masked.sync.gz
-http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/ES_ba_12_spring/ES_ba_12_spring.SNAPE.monomorphic.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/ES_Ben_16_32/ES_Ben_16_32.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/ES_Cor_15_33/ES_Cor_15_33.masked.sync.gz
 http://berglandlab.uvadcos.io/dest_mapped/pipeline_output/ES_Gim_14_34/ES_Gim_14_34.masked.sync.gz
