@@ -31,10 +31,6 @@ sbatch ${wd}/DEST/snpCalling/annotate.sh 001
 sbatch ${wd}/DEST/snpCalling/annotate.sh 01
 
 ```
-sacct -j 12894077
-sacct -j 12894078
-
-
 
 
 

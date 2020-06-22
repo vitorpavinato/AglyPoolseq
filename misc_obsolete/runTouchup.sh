@@ -15,6 +15,8 @@
 module load singularity
 wd=/scratch/aob2x/dest
 
+#cp /scratch/aob2x/fastq/todl.csv /project/berglandlab/.
+
 sranum=$( grep ",${SLURM_ARRAY_TASK_ID}$" /scratch/aob2x/fastq/todl.csv | cut -f2 -d',' )
 sampName=$( grep ",${SLURM_ARRAY_TASK_ID}$" /scratch/aob2x/fastq/todl.csv | cut -f1 -d',' )
 
