@@ -26,12 +26,12 @@ seqVCF2GDS(vcf.fn, gds.fn, storage.option="ZIP_RA")
 ## tri-allelic sites
 #
 ### how many are there?
-#  snp.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
-#                        pos=seqGetData(genofile, "position"),
-#                        nAlleles=seqGetData(genofile, "$num_allele"),
-#                        id=seqGetData(genofile, "variant.id"))
-#  table(snp.dt$chr)
-#  prop.table(table(snp.dt$nAlleles))
+  snp.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
+                        pos=seqGetData(genofile, "position"),
+                        nAlleles=seqGetData(genofile, "$num_allele"),
+                        id=seqGetData(genofile, "variant.id"))
+  table(snp.dt$chr)
+  prop.table(table(snp.dt$nAlleles))
 
 ## Do both alts at tri allelic sites pass filtering?
 #  seqSetFilter(genofile, variant.id=snp.dt[nAlleles==3]$id)

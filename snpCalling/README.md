@@ -13,9 +13,20 @@ wd=/scratch/aob2x/dest
 Rscript ${wd}/DEST/snpCalling/makeJobs.R
 ```
 
+
+### 2. Parameter evaluation
+### 2a. Random sample of ~10% of data:
+```bash
+shuf -n 100 ${wd}/poolSNP_jobs.csv > ${wd}/poolSNP_jobs.sample.csv
+```
+### 2b. Run modified pool_snp
+```bash
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
+```
+
 ### 2a. Make PoolSNP based VCF file (bgzip out)
 ```bash
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001 5
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 01
 ```
 
