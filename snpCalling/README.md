@@ -29,7 +29,6 @@ sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 01
 ```bash
 sbatch ${wd}/DEST/snpCalling/annotate.sh 001
 sbatch ${wd}/DEST/snpCalling/annotate.sh 01
-
 ```
 
 
