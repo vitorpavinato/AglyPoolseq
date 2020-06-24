@@ -10,7 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### run as: sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
+### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
+### sacct -j 13024258
 
 ### sacct -j
 ###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh 001
@@ -93,6 +94,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
     mac=${2}
     tmpdir=${3}
     wd="/scratch/aob2x/dest"
+    outdir="/scratch/aob2x/dest/sub_vcfs"
     echo ${maf}_${mac}
 
     cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
@@ -103,15 +105,19 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
     --min-freq 0.${maf} \
     --miss-frac 0.5 \
     --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.${maf}.${mac}.vcf
+
+    echo "compress and clean"
+    bgzip -c ${tmpdir}/${jobid}.${maf}.${mac}.vcf > ${outdir}/${jobid}.${maf}.${mac}.paramTest.vcf.gz
+    tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.paramTest.vcf.gz
+
+
   }
   export -f runPoolSNP
 
   parallel -j ${SLURM_NTASKS_PER_NODE} runPoolSNP ::: 001 01 05 ::: 5 10 15 20 50 100
+  #parallel -j ${SLURM_NTASKS_PER_NODE} runPoolSNP ::: 01 ::: 5
 
 ### compress and clean up
-  echo "compress and clean"
-  bgzip -c ${tmpdir}/${jobid}.${maf}.vcf > ${outdir}/${jobid}.${maf}.${mac}.paramTest.vcf.gz
-  tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.paramTest.vcf.gz
 
   #echo "vcf -> bcf "
   #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
