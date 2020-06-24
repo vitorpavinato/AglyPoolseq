@@ -10,7 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
+### run as: sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
+
 ### sacct -j
 ###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh 001
 ###### sacct -j 12890992
@@ -24,7 +25,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
 
 ## working & temp directory
   wd="/scratch/aob2x/dest"
-  syncPath="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
+  syncPath1="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
+  syncPath2="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
   outdir="/scratch/aob2x/dest/sub_vcfs"
 
 ## get job
@@ -36,7 +38,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
 ## set up RAM disk
   ## rm /scratch/aob2x/test/*
   #tmpdir="/scratch/aob2x/test"
-  #SLURM_JOB_ID=1; SLURM_ARRAY_TASK_ID=4
+  #SLURM_JOB_ID=1; SLURM_ARRAY_TASK_ID=4; SLURM_NTASKS_PER_NODE=1
   [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
   [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
   [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
@@ -72,18 +74,26 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
 
   echo "subset"
 
-  parallel -j 1 subsection ::: $( ls ${syncPath1} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
+  parallel -j ${SLURM_NTASKS_PER_NODE} subsection ::: $( ls ${syncPath1} ${syncPath2} | grep -v "SNAPE" | grep -v "joseph_extra_copies" ) ::: ${job} ::: ${tmpdir}
+
+
+  # ls ${syncPath1} ${syncPath2} | grep -v "SNAPE" | grep -v "joseph_extra_copies"  | wc -l
+  # head
 
 ### paste function
   echo "paste"
   Rscript --no-save --no-restore ${wd}/DEST/snpCalling/paste.R ${job} ${tmpdir}
 
+  #head ${tmpdir}/allpops.sites | awk '{print NF}'
 ### run through PoolSNP
   echo "poolsnp"
 
   runPoolSNP () {
     maf=${1}
     mac=${2}
+    tmpdir=${3}
+    wd="/scratch/aob2x/dest"
+    echo ${maf}_${mac}
 
     cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
     --sync - \
@@ -96,12 +106,12 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
   }
   export -f runPoolSNP
 
-  parallel -j ${SLURM_NTASKS_PER_NODE} runBayEnv ::: 001 01 05 ::: 5 10 15 20 50 100 
+  parallel -j ${SLURM_NTASKS_PER_NODE} runPoolSNP ::: 001 01 05 ::: 5 10 15 20 50 100
 
 ### compress and clean up
   echo "compress and clean"
-  bgzip -c ${tmpdir}/${jobid}.${maf}.vcf > ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
-  tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
+  bgzip -c ${tmpdir}/${jobid}.${maf}.vcf > ${outdir}/${jobid}.${maf}.${mac}.paramTest.vcf.gz
+  tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.paramTest.vcf.gz
 
   #echo "vcf -> bcf "
   #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
