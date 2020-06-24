@@ -1,0 +1,9 @@
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/FL_ho_10_fall/FL_ho_10_fall.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/PA_li_12_fall/PA_li_12_fall.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/UA_Che_14_28/UA_Che_14_28.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/UA_Che_14_29/UA_Che_14_29.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/UA_Che_14_47/UA_Che_14_47.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/UA_Che_14_48/UA_Che_14_48.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/UA_Pir_14_26/UA_Pir_14_26.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/VA_ch_12_fall/VA_ch_12_fall.masked.sync.gz
+http://berglandlab.uvadcos.io/dest_mapped/extra_pipeline_output/WA_se_14_spring/WA_se_14_spring.masked.sync.gz
