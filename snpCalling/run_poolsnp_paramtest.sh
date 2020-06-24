@@ -11,10 +11,10 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
-### sacct -j 13024258
+### sacct -j 13024311
 
 ### sacct -j
-###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh 001
+###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
 ###### sacct -j 12890992
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
@@ -94,7 +94,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
     mac=${2}
     tmpdir=${3}
     wd="/scratch/aob2x/dest"
-    outdir="/scratch/aob2x/dest/sub_vcfs"
+    outdir="/scratch/aob2x/dest/sub_vcfs_paramTest"
     echo ${maf}_${mac}
 
     cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
