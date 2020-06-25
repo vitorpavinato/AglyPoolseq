@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
-### sacct -j 13024311
+### sacct -j 13025604
 
 ### sacct -j
 ###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
