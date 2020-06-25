@@ -37,7 +37,7 @@ concatFun () {
   -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.${mac}.sort \
   -O v \
   -n \
-  -o /scratch/aob2x/dest/sub_bcf_paramTest/dest.June14_2020.maf001.${chr}.${maf}.${mac}.bcf
+  -o /scratch/aob2x/dest/sub_bcf_paramTest/dest.June14_2020.maf001.${chr}.${maf}.${mac}.paramTest.bcf
 }
 export -f concatFun
 
