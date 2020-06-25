@@ -15,7 +15,7 @@
 
 ### sacct -j
 ###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
-###### sacct -j 12890992
+###### sacct -j 13024395
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
@@ -28,10 +28,9 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
   wd="/scratch/aob2x/dest"
   syncPath1="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
   syncPath2="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
-  outdir="/scratch/aob2x/dest/sub_vcfs"
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=50
+  #SLURM_ARRAY_TASK_ID=20
   job=$( cat ${wd}/poolSNP_jobs.sample.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
@@ -93,9 +92,14 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
     maf=${1}
     mac=${2}
     tmpdir=${3}
+    jobid=${4}
+    #maf=01; mac=10
     wd="/scratch/aob2x/dest"
     outdir="/scratch/aob2x/dest/sub_vcfs_paramTest"
-    echo ${maf}_${mac}
+
+    echo ${maf}_${mac}_${tmpdir}
+
+    #cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g'
 
     cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
     --sync - \
@@ -104,7 +108,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
     --min-count ${mac} \
     --min-freq 0.${maf} \
     --miss-frac 0.5 \
-    --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.${maf}.${mac}.vcf
+    --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${maf}.${mac}.vcf
 
     echo "compress and clean"
     bgzip -c ${tmpdir}/${jobid}.${maf}.${mac}.vcf > ${outdir}/${jobid}.${maf}.${mac}.paramTest.vcf.gz
@@ -114,8 +118,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.3 parallel
   }
   export -f runPoolSNP
 
-  parallel -j ${SLURM_NTASKS_PER_NODE} runPoolSNP ::: 001 01 05 ::: 5 10 15 20 50 100
-  #parallel -j ${SLURM_NTASKS_PER_NODE} runPoolSNP ::: 01 ::: 5
+  parallel -j ${SLURM_NTASKS_PER_NODE} runPoolSNP ::: 001 01 05 ::: 5 10 15 20 50 100 ::: ${tmpdir} ::: ${jobid}
+  #parallel -j 1 runPoolSNP ::: 01 ::: 5 ::: ${tmpdir} ::: ${jobid}
 
 ### compress and clean up
 
