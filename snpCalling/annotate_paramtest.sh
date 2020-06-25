@@ -10,13 +10,13 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
+module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
 
-#SLURM_ARRAY_TASK_ID=3
+
 stem=$( ls /scratch/aob2x/dest/sub_bcf_paramTest/dest.June14_2020.maf001.*.paramTest.bcf | rev | cut -d'.' -f3,4 | rev | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 #maf=001
 wd=/scratch/aob2x/dest
 
-module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
 
 bcftools concat \
 ${wd}/sub_bcf_paramTest/dest.June14_2020.maf001.2L.${stem}.paramTest.bcf \
