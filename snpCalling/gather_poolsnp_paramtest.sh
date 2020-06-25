@@ -3,7 +3,7 @@
 #SBATCH -J split_and_run # A single job name for the array
 #SBATCH --ntasks-per-node=20 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 12:00:00 ### 6 hours
+#SBATCH -t 4:00:00 ### 6 hours
 #SBATCH --mem 10G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### run as: sbatch --array=1-$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | awk '{print NR}' | tail -n1 ) ${wd}/DEST/snpCalling/gather_poolsnp_paramtest.sh
-### sacct -j 13029693
+### sacct -j 13029705
 ### cat /scratch/aob2x/dest/slurmOutput/split_and_run.12825614
 module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
 
@@ -30,7 +30,7 @@ concatFun () {
   mac=${2}
   chr=${3}
 
-  ls -d $outdir/*.${maf}.${mac}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | grep /${chr}_ > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.${mac}.sort
+  ls -d $outdir/*.${maf}.${mac}.paramTest.vcf.gz | sort -t"_" -k2,2 -k3g,3  | grep /${chr}_ > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.${mac}.sort
 
   bcftools concat \
   --threads 20 \
