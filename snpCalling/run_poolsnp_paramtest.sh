@@ -3,7 +3,7 @@
 #SBATCH -J split_and_run # A single job name for the array
 #SBATCH --ntasks-per-node=10 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 0:60:00 ### 15 minutes
+#SBATCH -t 5:00:00 ### 15 minutes
 #SBATCH --mem 10G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
@@ -15,7 +15,7 @@
 
 ### sacct -j
 ###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
-###### sacct -j 13024395
+###### sacct -j 13025487
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
