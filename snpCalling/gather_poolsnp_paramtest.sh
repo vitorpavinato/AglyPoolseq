@@ -10,10 +10,10 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### run as: sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh
+### run as: sbatch --array=1-$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | awk '{print NR}' | tail -n1 ) ${wd}/DEST/snpCalling/ gather_poolsnp_paramtest.sh
 ### sacct -j 12839251
 ### cat /scratch/aob2x/dest/slurmOutput/split_and_run.12825614
-module load htslib bcftools intel/18.0 intelmpi/18.0 R/3.6.0
+module load htslib bcftools intel/18.0 intelmpi/18.0
 
 
 wd="/scratch/aob2x/dest"
