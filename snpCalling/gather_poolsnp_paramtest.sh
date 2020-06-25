@@ -10,10 +10,10 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### run as: sbatch --array=1-$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | awk '{print NR}' | tail -n1 ) ${wd}/DEST/snpCalling/ gather_poolsnp_paramtest.sh
-### sacct -j 12839251
+### run as: sbatch --array=1-$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | awk '{print NR}' | tail -n1 ) ${wd}/DEST/snpCalling/gather_poolsnp_paramtest.sh
+### sacct -j 13029693
 ### cat /scratch/aob2x/dest/slurmOutput/split_and_run.12825614
-module load htslib bcftools intel/18.0 intelmpi/18.0
+module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
 
 
 wd="/scratch/aob2x/dest"
@@ -22,8 +22,7 @@ outdir="/scratch/aob2x/dest/sub_vcfs_paramTest"
 chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 
-concantFun () {
-
+concatFun () {
   wd="/scratch/aob2x/dest"
   outdir="/scratch/aob2x/dest/sub_vcfs_paramTest"
 
