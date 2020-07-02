@@ -71,3 +71,4 @@ sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/concatenate.sh
 nJobs=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | awk '{print NR}'| tail -n1 )
 sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/move.sh
 ```
+sacct -j 12449704

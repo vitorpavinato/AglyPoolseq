@@ -8,12 +8,6 @@
 ### define working directory where
   wd="/project/berglandlab/DEST"
 
-### get paths to bgzipped sync files
-  sync_files <- system(paste("ls ",
-                             wd,
-                             "/dest_mapped/*/*masked.sync.gz",
-                             sep=""), intern=T)
-
 ### get chromosome names and lengths
   chrs="2L|2R|3L|3R|4|X|Y|mitochondrion_genome"
 
@@ -26,13 +20,13 @@
   }
 
 ### split into how many jobs?
-  nJobs <- 9999
+  nJobs <- 999
 
 ### how many jobs per chr
   chrs.dt[,nJobs:=floor(maxLen/sum(chrs.dt$maxLen)*nJobs)]
 
 ### make jobs
-  jobs <- foreach(chr.i=chrs.dt$chr, .combine="rbind")%do%{
+  jobs <- foreach(chr.i=chrs.dt$chr, .combine="rbind", .errorhandling="remove")%do%{
     #chr.i <- chrs.dt$chr[8]
     tmp <- data.table(chr=chr.i,
                       start=floor(seq(from=1, to=chrs.dt[chr==chr.i]$maxLen, length.out=chrs.dt[chr==chr.i]$nJobs)))
@@ -49,5 +43,4 @@
   }
 
 ### write job file
-  write.table(jobs, quote=F, row.names=F, sep=",", file="/scratch/aob2x/dest/dest/poolSNP_jobs.csv")
-  
+  write.table(jobs, quote=F, col.names=F, row.names=F, sep=",", file="/scratch/aob2x/dest/poolSNP_jobs.csv")

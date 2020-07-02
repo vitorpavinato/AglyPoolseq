@@ -32,6 +32,5 @@ mv ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz.tbi ${wd}/dest/wholeGenomeSyncD
 
 rsync ${wd}/dest/wholeGenomeSyncData/${pop}.masked.sync.gz* /project/berglandlab/DEST/dest_mapped/${pop}/
 
-mv
 
 echo $pop
