@@ -92,7 +92,6 @@ missfrac=float(options.mis)
 # Returns a datetime object containing the local date and time
 dateTimeObj = datetime.now()
 
-print("##fileformat=VCFv4.2")
 print("##fileDate="+str(dateTimeObj.day)+"/"+str(dateTimeObj.month)+"/"+str(dateTimeObj.year))
 if options.snape:
     print("##Source=SNAPE")
@@ -108,11 +107,13 @@ else:
 print("##Parameters=<ID=MaximumMissingFraction,Number="+str(options.mis)+",Type=Float,Description=\"Maximum fraction of samples allowed that are not fullfilling all parameters\">")
 print("""##INFO=<ID=ADP,Number=1,Type=Integer,Description=\"Average per-sample depth of bases\">
 ##INFO=<ID=NC,Number=1,Type=Integer,Description=\"Number of samples not called\">
+##INFO=<ID=AC,Number=1,Type=Integer,Description=\"Total number of allele counts of the ALT alleles\">
+##INFO=<ID=AF,Number=1,Type=Float,Description=\"Allele frequency of the ALT alleles across all samples\">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">
 ##FORMAT=<ID=RD,Number=1,Type=Integer,Description=\"Reference Counts\">
-##FORMAT=<ID=AD,Number=A,Type=Integer,Description=\"Alternative Counts\">
+##FORMAT=<ID=AD,Number=1,Type=Integer,Description=\"Alternative Counts\">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"Total Depth\">
-##FORMAT=<ID=FREQ,Number=A,Type=Float,Description=\"Variant allele frequency\">""")
+##FORMAT=<ID=FREQ,Number=1,Type=FLoat,Description=\"Variant allele frequency\">""")
 print("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t"+"\t".join(options.n.split(",")))
 
 for l in load_data(data):
