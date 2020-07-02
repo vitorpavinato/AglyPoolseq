@@ -144,12 +144,19 @@ for l in load_data(data):
             totalalleles[nuc[i].upper()]+=1
             alleles[j][nuc[i].upper()]+=1
 
+    ## calculate allele frequencies for individuals samples and alleles
+    TAF=d(list)
+    for allele,counts in totalalleles.items():
+        for j in range(len(libraries)):
+                TAF[allele].append(alleles[j][allele]/sum(alleles[j].values()))
+
     ## only test for min-count and min-freq if raw SYNC input and not SNAPE SYNC
     if not options.snape:
 
         ## test if SNPs pass minimum count / minimum frequency threshold:
-        for allele,counts in totalalleles.items():
-            if counts<minimumcount or counts/float(sum(totalalleles.values()))<minimumfreq:
+        for allele,counts in totalalleles.copy().items():
+            # print(allele,counts,sum(TAF[allele])/len(TAF[allele]))
+            if counts<minimumcount or sum(TAF[allele])/len(TAF[allele])<minimumfreq:
                 del totalalleles[allele]
 
     ## test if site is polymorphic
@@ -234,5 +241,10 @@ for l in load_data(data):
         #print CHR,POS,"missing fraction",miss/float(len(libraries))
         continue
     ADP=sum(totalalleles.values())/(len(libraries)-miss)
+    AF=[]
+    AC=[]
+    for i in ALT:
+        AF.append(str(totalalleles[i]/sum(totalalleles.values())))
+        AC.append(str(totalalleles[i]))
     ## write output
-    print(CHR+"\t"+POS+"\t.\t"+REF+"\t"+",".join(ALT)+"\t.\t.\tADP="+str(ADP)+";NC="+str(NC)+"\tGT:RD:AD:DP:FREQ\t"+"\t".join(samplelist))
+    print(CHR+"\t"+POS+"\t.\t"+REF+"\t"+",".join(ALT)+"\t.\t.\tADP="+str(ADP)+";NC="+str(NC)+";AF="+",".join(AF)+";AC="+",".join(AC)+"\tGT:RD:AD:DP:FREQ\t"+"\t".join(samplelist))
