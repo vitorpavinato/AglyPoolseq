@@ -100,7 +100,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   bgzip -c ${tmpdir}/${jobid}.${maf}.vcf > ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
   tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
 
-  cp ${tmpdir}/allpops* ${outdir}
+  cp ${tmpdir}/allpops* ${outdir}/.
 
   #echo "vcf -> bcf "
   #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
