@@ -105,7 +105,7 @@ else:
     print("##Parameters=<ID=MinCount,Number="+str(options.mint)+",Type=Integer,Description=\"Minimum alternative allele count across all samples pooled\">")
     print("##Parameters=<ID=MinFreq,Number="+str(options.minf)+",Type=Float,Description=\"Minimum alternative allele frequency across all samples pooled\">")
 print("##Parameters=<ID=MaximumMissingFraction,Number="+str(options.mis)+",Type=Float,Description=\"Maximum fraction of samples allowed that are not fullfilling all parameters\">")
-print("""##INFO=<ID=ADP,Number=1,Type=Integer,Description=\"Average per-sample depth of bases\">
+print("""##INFO=<ID=ADP,Number=1,Type=Float,Description=\"Average per-sample depth of bases\">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Combined read depth across all samples\">
 ##INFO=<ID=NC,Number=1,Type=Integer,Description=\"Number of samples not called\">
 ##INFO=<ID=AC,Number=1,Type=Integer,Description=\"Total number of allele counts of the ALT alleles\">
