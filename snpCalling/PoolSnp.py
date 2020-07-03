@@ -16,7 +16,7 @@ usage="""python %prog \
       --min-count 10 \
       --min-freq 0.01 \
       --posterior-prob 0.9 \
-      --mis-frac 0.1 \
+      --miss-frac 0.1 \
       --names sample1,sample2 \
       > output.vcf
       """
@@ -106,6 +106,7 @@ else:
     print("##Parameters=<ID=MinFreq,Number="+str(options.minf)+",Type=Float,Description=\"Minimum alternative allele frequency across all samples pooled\">")
 print("##Parameters=<ID=MaximumMissingFraction,Number="+str(options.mis)+",Type=Float,Description=\"Maximum fraction of samples allowed that are not fullfilling all parameters\">")
 print("""##INFO=<ID=ADP,Number=1,Type=Integer,Description=\"Average per-sample depth of bases\">
+##INFO=<ID=DP,Number=1,Type=Integer,Description=\"Combined read depth across all samples\">
 ##INFO=<ID=NC,Number=1,Type=Integer,Description=\"Number of samples not called\">
 ##INFO=<ID=AC,Number=1,Type=Integer,Description=\"Total number of allele counts of the ALT alleles\">
 ##INFO=<ID=AF,Number=1,Type=Float,Description=\"Allele frequency of the ALT alleles across all samples\">
@@ -150,6 +151,7 @@ for l in load_data(data):
     TAF=d(list)
     for allele,counts in totalalleles.items():
         for j in range(len(libraries)):
+            if sum(alleles[j].values())!=0:
                 TAF[allele].append(alleles[j][allele]/sum(alleles[j].values()))
 
     ## only test for min-count and min-freq if raw SYNC input and not SNAPE SYNC
@@ -195,7 +197,7 @@ for l in load_data(data):
 
         alleleh = alleles[j]
         # remove alleles not counted in all samples
-        for k,v in alleleh.items():
+        for k,v in alleleh.copy().items():
             if k != REF and k not in ALT:
                 del alleleh[k]
         GT,AD,RD,FREQ=[],[],0,[]
@@ -243,10 +245,11 @@ for l in load_data(data):
         #print CHR,POS,"missing fraction",miss/float(len(libraries))
         continue
     ADP=sum(totalalleles.values())/(len(libraries)-miss)
+    DP=sum(totalalleles.values())
     AF=[]
     AC=[]
     for i in ALT:
         AF.append(str(totalalleles[i]/sum(totalalleles.values())))
         AC.append(str(totalalleles[i]))
     ## write output
-    print(CHR+"\t"+POS+"\t.\t"+REF+"\t"+",".join(ALT)+"\t.\t.\tADP="+str(ADP)+";NC="+str(NC)+";AF="+",".join(AF)+";AC="+",".join(AC)+"\tGT:RD:AD:DP:FREQ\t"+"\t".join(samplelist))
+    print(CHR+"\t"+POS+"\t.\t"+REF+"\t"+",".join(ALT)+"\t.\t.\tADP="+str(ADP)+";DP="+str(DP)+";NC="+str(NC)+";AF="+",".join(AF)+";AC="+",".join(AC)+"\tGT:RD:AD:DP:FREQ\t"+"\t".join(samplelist))
