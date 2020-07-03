@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### unpack datasets
-  #SLURM_ARRAY_TASK_ID=2
+  #SLURM_ARRAY_TASK_ID=1
 
   name=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f2 -d' ' )
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
@@ -23,7 +23,7 @@ cd /scratch/aob2x/dest/dgn/wideData
 if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
   ### DPGP2
 
-  tar -zvx \
+  tar -jvx \
   --directory=/scratch/aob2x/dest/dgn/rawData \
   --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 

@@ -8,6 +8,12 @@
 ```bash
 wd="/scratch/aob2x/dest"
 ```
+## -0.5 Directory structure
+```bash
+mkdir ${wd}/dgn/
+mkdir ${wd}/dgn/rawData
+mkdir ${wd}/dgn/wideData
+```
 
 ## 0. Download all DGN data
 > Needs a tab delimited file with jobID, prefix, path to DGN bz2 file: `DEST/add_DGN_data/dgn.list` <br/>
@@ -27,7 +33,7 @@ sbatch --array=1-8 ${wd}/DEST/add_DGN_data/unpack.sh
 ## 2. Wide to long
 > should be 4725 jobs <br/>
 ```bash
-cd ${wd}/dgn/wideData/; ls * | tr '\t' '\n' | awk '{print >NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
+cd ${wd}/dgn/wideData/; ls *.seq | tr '\t' '\n' | awk '{print >NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
 sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | >cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
 ```
 > A quick check to make sure things look good:

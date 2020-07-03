@@ -22,9 +22,6 @@
 
   mkdir -p /scratch/aob2x/dest/dgn/longData
 
-
-
-
   sed 's/\(.\)/\1\n/g' \
   /scratch/aob2x/dest/dgn/wideData/${filestem} > \
   /scratch/aob2x/dest/dgn/longData/${filestem}.long
