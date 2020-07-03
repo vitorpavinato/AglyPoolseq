@@ -249,7 +249,8 @@ for l in load_data(data):
     AF=[]
     AC=[]
     for i in ALT:
-        AF.append(str(totalalleles[i]/sum(totalalleles.values())))
+        AF.append(str(sum(TAF[i])/len(TAF[i])))
         AC.append(str(totalalleles[i]))
+
     ## write output
     print(CHR+"\t"+POS+"\t.\t"+REF+"\t"+",".join(ALT)+"\t.\t.\tADP="+str(ADP)+";DP="+str(DP)+";NC="+str(NC)+";AF="+",".join(AF)+";AC="+",".join(AC)+"\tGT:RD:AD:DP:FREQ\t"+"\t".join(samplelist))
