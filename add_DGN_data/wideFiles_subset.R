@@ -24,4 +24,4 @@
   dgn.final <- dgn.final[!duplicated(V2)]
   dgn.final <- dgn.final[,V1:=c(1:dim(dgn.final)[1])][,c("V1", "V2"), with=F]
 
-  write.table(dgn.final, file="dgn/dgn_wideFiles.final.delim", quote=F, row.names=F, sep="\t")
+  write.table(dgn.final, file="dgn/dgn_wideFiles.final.delim", quote=F, row.names=F, sep="\t", col.names=F)
