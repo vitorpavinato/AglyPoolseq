@@ -33,8 +33,7 @@ sbatch --array=1-$( ls /scratch/aob2x/dest/sub_bcf_paramTest/dest.June14_2020.ma
 ```
 
 
-
-### 3a. Make PoolSNP based VCF file (bgzip out)
+### 3a. Make PoolSNP based VCF file (bgzip out). Uses MAF > 0.001 & MAC > 5. These are liberal thresholds but can be filtered at a later stage using standard VCF tools.
 ```bash
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001 5
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 01

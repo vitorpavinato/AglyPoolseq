@@ -29,13 +29,15 @@ sbatch --array=1-8 ${wd}/DEST/add_DGN_data/downloadDGN.sh
  ```bash
 sbatch --array=1-8 ${wd}/DEST/add_DGN_data/unpack.sh
 ```
+sacct -j 13117940
 
 ## 2. Wide to long
 > should be 4725 jobs <br/>
 ```bash
-cd ${wd}/dgn/wideData/; ls *.seq | tr '\t' '\n' | awk '{print >NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
-sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | >cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
+cd ${wd}/dgn/wideData/; ls *.seq | cut -f2 | tr '\t' '\n' | awk '{print NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
+sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
 ```
+
 > A quick check to make sure things look good:
 > `w2l_check.R`
 
