@@ -23,9 +23,9 @@ cd /scratch/aob2x/dest/dgn/wideData
 if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
   ### DPGP2
 
-  #tar -zvx \
-  #--directory=/scratch/aob2x/dest/dgn/rawData \
-  #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+  tar -zvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
   cd /scratch/aob2x/dest/dgn/rawData/
   tar -xvf dpgp2_Chr2L_sequences.tar
