@@ -10,6 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
+
+## sacct -j 13029805
 module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
 
 
