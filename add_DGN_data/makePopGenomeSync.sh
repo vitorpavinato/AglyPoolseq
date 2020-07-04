@@ -7,7 +7,7 @@
 #SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/makePopSync.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/makePopSync.%A_%a.err # Standard error
-#SBATCH -p dev
+#SBATCH -p standard
 #SBATCH --account berglandlab
 
 module load htslib
