@@ -12,6 +12,8 @@
 
 module load htslib
 
+wd="/scratch/aob2x/dest"
+
 #####################
 ### get jobs task ###
 #####################
@@ -23,19 +25,6 @@ module load htslib
 pop=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" /scratch/aob2x/dest/dgn/pops.delim | cut -f3 )
 chr=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" /scratch/aob2x/dest/dgn/pops.delim | cut -f2 )
 
-
-##if [ ${chr_i} == "1" ]; then
-##  chr="2L"
-##elif [ ${chr_i} == "2" ]; then
-##  chr="2R"
-##elif [ ${chr_i} == "3" ]; then
-##  chr="3L"
-##elif [ ${chr_i} == "4" ]; then
-##  chr="3R"
-##elif [ ${chr_i} == "5" ]; then
-##  chr="X"
-##fi
-##
 
 echo $pop
 echo $chr
