@@ -30,15 +30,17 @@ sbatch --array=1-8 ${wd}/DEST/add_DGN_data/downloadDGN.sh
  ```bash
 sbatch --array=1-8 ${wd}/DEST/add_DGN_data/unpack.sh
 ```
-sacct -j 13117940
+sbatch --array=1 ${wd}/DEST/add_DGN_data/unpack.sh
+
 
 ## 2. Wide to long
 > should be 4725 jobs <br/>
 ```bash
 cd ${wd}/dgn/wideData/; ls *.seq | cut -f2 | tr '\t' '\n' | awk '{print NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
-Rscript ${wd}/DEST/add_DGN_data/wideFiles_subset.R
-sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.final.delim | cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
+sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
 ```
+sacct -j 13124816 | tail
+squeue -u aob2x | tail
 
 > A quick check to make sure things look good:
 > `w2l_check.R`
@@ -63,6 +65,7 @@ sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.final.delim | cut -f1 ) ${w
  nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
  sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
 ```
+sacct -j 13129586
 
 ## 5. Liftover to dm6 and generate bgzipped gSYNC file
 ```bash

@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### unpack datasets
-  #SLURM_ARRAY_TASK_ID=1
+  #SLURM_ARRAY_TASK_ID=8
 
   name=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f2 -d' ' )
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
@@ -63,9 +63,9 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
   ### DGRP
-  #tar -jvx \
-  #--directory=/scratch/aob2x/dest/dgn/rawData \
-  #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
   cd /scratch/aob2x/dest/dgn/rawData/
   tar -xvf dgrp_Chr2L.tar

@@ -3,7 +3,7 @@
 #SBATCH -J makePopSync # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 0:60:00 ### 5 minutes
+#SBATCH -t 1:30:00 ### 5 minutes
 #SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/makePopSync.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/makePopSync.%A_%a.err # Standard error
@@ -18,7 +18,7 @@ wd="/scratch/aob2x/dest"
 ### get jobs task ###
 #####################
 
-#SLURM_ARRAY_TASK_ID=60
+#SLURM_ARRAY_TASK_ID=1
 ##chr_i=$( echo "${SLURM_ARRAY_TASK_ID}%5+1" | bc )
 ##pop_i=$( echo "${SLURM_ARRAY_TASK_ID}%35+1" | bc )
 
