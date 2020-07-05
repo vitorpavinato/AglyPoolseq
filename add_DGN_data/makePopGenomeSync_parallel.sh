@@ -40,7 +40,7 @@ echo $chr
 #
 #fi
 
-## pop=RAL; chr=2L
+## pop=UK; chr=2L
 
 samps=$( grep "^"${pop}"," < ${wd}/DEST/populationInfo/dpgp.ind.use.csv | cut -f2 -d',' | sed "s/$/_Chr${chr}/g" | tr '\n' '|' | sed 's/.$//' )
 
@@ -71,22 +71,22 @@ echo "doing paste"
 
 subPaste () {
   job=${1} # job=jobsaa
-  tmpdir=${2} # tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+  tmpdir=${2}
 
   paste -d',' $( cat ${tmpdir}/${job} ) | \
   awk -F' ' -v chr=${chr} '
   {
-  nN=gsub(/N/,"",$2)
-  nA=gsub(/A/,"",$2)
-  nT=gsub(/T/,"",$2)
-  nC=gsub(/C/,"",$2)
-  nG=gsub(/G/,"",$2)
+  nN=gsub(/N/,"",$1)
+  nA=gsub(/A/,"",$1)
+  nT=gsub(/T/,"",$1)
+  nC=gsub(/C/,"",$1)
+  nG=gsub(/G/,"",$1)
 
   nObs=nA+nT+nC+nG
 
   print nA":"nT":"nC":"nG":"nN":0"
 
-}' > ${tmpdir}/sync.${job}.sync
+}' | head > ${tmpdir}/sync.${job}.sync
 
 }
 export -f subPaste

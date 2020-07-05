@@ -77,6 +77,8 @@ sbatch --array=$( grep "SB" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed '
 sbatch --array=$( grep "UK" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
 
 
+sacct -j 13131940
+
 ## 5. Liftover to dm6 and generate bgzipped gSYNC file
 ```bash
 nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
