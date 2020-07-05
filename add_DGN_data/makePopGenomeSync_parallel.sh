@@ -86,7 +86,7 @@ subPaste () {
 
   print nA":"nT":"nC":"nG":"nN":0"
 
-}' | head > ${tmpdir}/sync.${job}.sync
+}'  > ${tmpdir}/sync.${job}.sync
 
 }
 export -f subPaste
