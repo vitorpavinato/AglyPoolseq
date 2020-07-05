@@ -10,7 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-module load htslib
+module load htslib parallel
 
 wd="/scratch/aob2x/dest"
 
