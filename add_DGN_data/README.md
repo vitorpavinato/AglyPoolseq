@@ -20,7 +20,7 @@ mkdir ${wd}/dgn/wideData
 > Needs a tab delimited file with jobID, prefix, path to DGN bz2 file: `DEST/add_DGN_data/dgn.list` <br/>
 > Note that job 4 will fail. Why? Because 4 is the fourth line on DGN website for the DSPR. I don't think that we need to include that one.<br/>
 ```bash
-sbatch --array=1-8 ${wd}/DEST/add_DGN_data/downloadDGN.sh
+sbatch --array=1-9 ${wd}/DEST/add_DGN_data/downloadDGN.sh
 ```
 > OUT: ${wd}/dest/dgn/rawData<br/>
 
@@ -28,9 +28,8 @@ sbatch --array=1-8 ${wd}/DEST/add_DGN_data/downloadDGN.sh
 ## 1. Unpack
 > Each tarball is a bit different so the unpack scripts are different for each 1-8 (minus 4), from above. <br/>
  ```bash
-sbatch --array=1-8 ${wd}/DEST/add_DGN_data/unpack.sh
+sbatch --array=1-9 ${wd}/DEST/add_DGN_data/unpack.sh
 ```
-sbatch --array=1 ${wd}/DEST/add_DGN_data/unpack.sh
 
 
 ## 2. Wide to long
@@ -66,6 +65,11 @@ sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | cut -f1 ) ${wd}/DES
 
 sbatch --array=76,77,78,79,80,121,122,123,124,125 ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
 sacct -j 13131406
+
+scontrol update jobid=13131406 TimeLimit=24:00:00
+
+
+
 
 ## 5. Liftover to dm6 and generate bgzipped gSYNC file
 ```bash
