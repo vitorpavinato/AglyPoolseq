@@ -54,15 +54,20 @@ echo ${pop}","${chr}","${nFiles_obs}","${nFiles_exp} >> /scratch/aob2x/dest/dgn/
 
 ### use tmpdir
 #SLURM_ARRAY_TASK_ID=1; SLURM_JOB_ID=1; SLURM_NTASKS_PER_NODE=1
-tmpdir=/dev/shm/$USER/
 [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
 [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
 [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
+tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 ### first make sub_input files
-ls /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long | grep -E "${samps}" | split -l 20 - /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/jobs
+echo "making plit"
+ls /scratch/aob2x/dest/dgn/longData/${pop}_*_Chr${chr}*long | grep -E "${samps}" | split -l 20 - ${tmpdir}/jobs
 
+ls -lh ${tmpdir}/jobs*
+
+### paste fun
+echo "doing paste"
 
 subPaste () {
   job=${1} # job=jobsaa
@@ -91,6 +96,8 @@ parallel -j ${SLURM_NTASKS_PER_NODE} subPaste ::: $( ls jobs* | grep -v "csv" ) 
 
 
 ### add sync
+echo "adding subSYNCs"
+
 paste $( ls sync*sync ) | awk '{
   nA=0
   nT=0
@@ -114,6 +121,9 @@ paste $( ls sync*sync ) | awk '{
 }' > tmp.gSYNC
 
 
+### add ref
+echo "add ref"
+
 paste -d' ' \
 /scratch/aob2x/dest/referenceGenome/r5/${chr}.long \
 tmp.gSYNC | \
@@ -124,7 +134,8 @@ print chr"\t"NR"\t"toupper($1)"\t"$2
 
 }' | bgzip -c > /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
 
-
+### clean
+echo "clean"
 rm -fr /dev/shm/$USER/${SLURM_JOB_ID}/*
 
 #tabix -f -b 2 -s 1 -e 2 /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz

@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### unpack datasets
-  #SLURM_ARRAY_TASK_ID=8
+  #SLURM_ARRAY_TASK_ID=9
 
   name=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f2 -d' ' )
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
@@ -194,4 +194,21 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "8" ]; then
 
   cd /scratch/aob2x/dest/dgn/rawData/
   ls Simulans* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/SIM_{}
+
+elif [ "${SLURM_ARRAY_TASK_ID}" == "9" ]; then
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
+  tar -xvf pool_Chr2L_sequences.tar
+  tar -xvf pool_Chr2R_sequences.tar
+  tar -xvf pool_Chr3L_sequences.tar
+  tar -xvf pool_Chr3R_sequences.tar
+  tar -xvf pool_ChrX_sequences.tar
+
+  ls EB* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/EB_{}
+  ls ER* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ER_{}
+  ls SB* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/SB_{}
+  ls UK* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/UK_{}
+
 fi

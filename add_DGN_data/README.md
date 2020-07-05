@@ -33,11 +33,16 @@ sbatch --array=1-9 ${wd}/DEST/add_DGN_data/unpack.sh
 
 
 ## 2. Wide to long
-> should be 4725 jobs <br/>
+> should be 4825 jobs <br/>
 ```bash
 cd ${wd}/dgn/wideData/; ls *.seq | cut -f2 | tr '\t' '\n' | awk '{print NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
 sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
 ```
+sbatch --array=$( grep "EB" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
+sbatch --array=$( grep "ER" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
+sbatch --array=$( grep "SB" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
+sbatch --array=$( grep "UK" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
+
 
 > A quick check to make sure things look good:
 > `w2l_check.R`
@@ -66,9 +71,10 @@ sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | cut -f1 ) ${wd}/DES
 sbatch --array=76,77,78,79,80,121,122,123,124,125 ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
 sacct -j 13131406
 
-scontrol update jobid=13131406 TimeLimit=24:00:00
-
-
+sbatch --array=$( grep "EB" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
+sbatch --array=$( grep "ER" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
+sbatch --array=$( grep "SB" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
+sbatch --array=$( grep "UK" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
 
 
 ## 5. Liftover to dm6 and generate bgzipped gSYNC file

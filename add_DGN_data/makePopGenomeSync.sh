@@ -71,6 +71,6 @@ nObs=nA+nT+nC+nG
 
 print chr"\t"NR"\t"toupper($1)"\t"nA":"nT":"nC":"nG":"nN":0"
 
-}' | bgzip -c > /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
+}' | head bgzip -c > /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
 
 #tabix -f -b 2 -s 1 -e 2 /scratch/aob2x/dest/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz
