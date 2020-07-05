@@ -2,9 +2,9 @@
 #
 #SBATCH -J makePopSync # A single job name for the array
 #SBATCH --ntasks-per-node=20 # one core
-#SBATCH -N 20 # on one node
+#SBATCH -N 1 # on one node
 #SBATCH -t 4:30:00 ### 5 minutes
-#SBATCH --mem 10G
+#SBATCH --mem 5G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/makePopSync.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/makePopSync.%A_%a.err # Standard error
 #SBATCH -p standard
