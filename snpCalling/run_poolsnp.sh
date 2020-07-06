@@ -12,8 +12,8 @@
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 ### sacct -j
-###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh 001 10
-###### sacct -j 13117239
+###### sbatch --array=100 ${wd}/DEST/snpCalling/run_poolsnp.sh 001 10
+###### sacct -j 13134913
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
@@ -32,7 +32,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   #maf=01; mac=10
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=130
+  #SLURM_ARRAY_TASK_ID=1
   job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job

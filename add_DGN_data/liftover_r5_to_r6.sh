@@ -91,6 +91,7 @@ END{
 
 
 rm -fr /dev/shm/$USER/${SLURM_JOB_ID}/*
+
 #tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
 
 

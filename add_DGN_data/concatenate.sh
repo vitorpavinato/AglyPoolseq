@@ -40,7 +40,7 @@ parallel uncomp ::: $( ls ${wd}/dest/wholeGenomeSyncData/${pop}_*.gSYNC.gz )
 ### change out missing data annotation
 swapfun() {
   echo "swapping:" ${1}
-  sed -i 's/0:0:0:0:0:0/.:.:.:.:.:./g' ${1}
+  sed -i 's/\t0:0:0:0:0:0/\t.:.:.:.:.:./g' ${1}
 }
 export -f swapfun
 
@@ -54,6 +54,6 @@ ${wd}/dest/wholeGenomeSyncData/${pop}_Chr2L.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr2R.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr3L.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr3R.gSYNC \
-${wd}/dest/wholeGenomeSyncData/${pop}_ChrX.gSYNC | \
+${wd}/dest/wholeGenomeSyncData/${pop}_ChrX.gSYNC | head \
 bgzip -@ 5 -c > \
 ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz

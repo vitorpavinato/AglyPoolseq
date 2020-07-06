@@ -9,7 +9,7 @@
 wd="/scratch/aob2x/dest"
 ```
 
-## -0.5 Directory structure
+## -0.5 Directory structure (this is not comprehensive!)
 ```bash
 mkdir ${wd}/dgn/
 mkdir ${wd}/dgn/rawData
@@ -31,18 +31,12 @@ sbatch --array=1-9 ${wd}/DEST/add_DGN_data/downloadDGN.sh
 sbatch --array=1-9 ${wd}/DEST/add_DGN_data/unpack.sh
 ```
 
-
 ## 2. Wide to long
-> should be 4825 jobs <br/>
+> should be 4870 jobs <br/>
 ```bash
 cd ${wd}/dgn/wideData/; ls *.seq | cut -f2 | tr '\t' '\n' | awk '{print NR"\t"$0}' > ${wd}/dgn/dgn_wideFiles.delim
 sbatch --array=1-$( tail -n1 ${wd}/dgn/dgn_wideFiles.delim | cut -f1 ) ${wd}/DEST/add_DGN_data/wide2long.sh
 ```
-sbatch --array=$( grep "EB" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
-sbatch --array=$( grep "ER" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
-sbatch --array=$( grep "SB" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
-sbatch --array=$( grep "UK" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/wide2long.sh
-
 
 > A quick check to make sure things look good:
 > `w2l_check.R`
@@ -65,19 +59,8 @@ sbatch --array=$( grep "UK" ${wd}/dgn/dgn_wideFiles.delim | cut -f1 | tr '\n' ',
 ```bash
  ${wd}/DEST/add_DGN_data/pop_chr_maker.sh
  nJobs=$( tail -n1 ${wd}/dgn/pops.delim | cut -f1 )
- sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
+ sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
 ```
-
-sbatch --array=76,77,78,79,80,121,122,123,124,125 ${wd}/DEST/add_DGN_data/makePopGenomeSync.sh
-sacct -j 13131406
-
-sbatch --array=$( grep "EB" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
-sbatch --array=$( grep "ER" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
-sbatch --array=$( grep "SB" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
-sbatch --array=$( grep "UK" ${wd}/dgn/pops.delim | cut -f1 | tr '\n' ',' | sed 's/,$//g' ) ${wd}/DEST/add_DGN_data/makePopGenomeSync_parallel.sh
-
-
-sacct -j 13131940
 
 ## 5. Liftover to dm6 and generate bgzipped gSYNC file
 ```bash
@@ -91,9 +74,9 @@ nJobs=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | awk '{print NR}'| ta
 sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/concatenate.sh
 ```
 
+
 ## 7. Move to output directory
 ```bash
 nJobs=$( cat ${wd}/dgn/pops.delim | cut -f3 | sort | uniq | awk '{print NR}'| tail -n1 )
 sbatch --array=1-${nJobs} ${wd}/DEST/add_DGN_data/move.sh
 ```
-sacct -j 12449704

@@ -93,30 +93,35 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr2R
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr3L
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr3R
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_ChrX
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
   tar -zvx \
