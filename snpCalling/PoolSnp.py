@@ -232,7 +232,6 @@ for l in load_data(data):
             GT.append(0)
         ## set ALT counts
         for i in range(len(ALT)):
-            print(alleleh)
             if ALT[i] in alleleh:
                 GT.append(i+1)
                 AD.append(alleleh[ALT[i]])
