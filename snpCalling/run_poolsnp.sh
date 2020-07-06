@@ -97,10 +97,10 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 
 ### compress and clean up
   echo "compress and clean"
-  bgzip -c ${tmpdir}/${jobid}.${maf}.vcf > ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
+  bgzip -c ${tmpdir}/${jobid}.${maf}.${mac}.vcf > ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
   tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
 
-  cp ${tmpdir}/allpops* ${outdir}/.
+  #cp ${tmpdir}/allpops* ${outdir}/.
 
   #echo "vcf -> bcf "
   #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
