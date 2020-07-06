@@ -13,10 +13,12 @@
   ### get SNP index data.table
     snps.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
                           pos=seqGetData(genofile, "position"),
-                          variant.id=seqGetData(genofile, "variant.id"))
+                          variant.id=seqGetData(genofile, "variant.id"),
+                          nAlleles=seqNumAllele(genofile))
+
 
   ### random sample of 1000 SNPs per chromosome
-    snp.samp <- snps.dt[,list(variant.id=sample(variant.id, 1000)), list(chr)]
+    snp.samp <- snps.dt[,list(variant.id=snps.dt[nAlleles==2]$variant.id), list(chr)]
 
   ### extract out average read depth; seqArray reports the results of this seqGetData command a bit oddly so it takes a little work to get it into the right shape.
     seqResetFilter(genofile)

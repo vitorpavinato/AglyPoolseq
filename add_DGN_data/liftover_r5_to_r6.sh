@@ -29,7 +29,7 @@ chr=$( grep  "^${SLURM_ARRAY_TASK_ID}[[:space:]]" ${wd}/dgn/pops.delim | cut -f2
 zcat ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.sync.gz |
 awk '{
   print "chr"$1"\t"$2"\t"$2+1"\t"$3","$4",dm5_"$1"_"$2
-}' > /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm3.bed
+}'  > /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm3.bed
 
 ### do liftover
 ~/liftOver \
@@ -57,8 +57,11 @@ fi
 
 
 cat /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.dm6.bed | \
-grep -E "^chr${chr}[[:space:]]" | \
-sort -n -k2 - > ~/sort.bed | \
+grep -E "^chr${chr}[[:space:]]"  | \
+sort -n -k2 - > /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.sort.bed
+
+
+cat /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}/${pop}_Chr${chr}.sort.bed  | \
 awk -v chr=${chr} -v chrLen=${maxLen} '{
 
   if($2==p) {
@@ -85,7 +88,11 @@ END{
   }
 }' | bgzip -c > ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
 
-tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
+
+
+rm -fr /dev/shm/$USER/${SLURM_JOB_ID}/*
+
+#tabix -f -b 2 -s 1 -e 2 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr${chr}.gSYNC.gz
 
 
 ### checks

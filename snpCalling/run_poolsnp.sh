@@ -12,26 +12,27 @@
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 ### sacct -j
-###### sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh 001
-###### sacct -j 12890992
+###### sbatch --array=100 ${wd}/DEST/snpCalling/run_poolsnp.sh 001 10
+###### sacct -j 13135642
 ###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
 ####sacct -j 12813152 | head
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 #### cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,21912590,21926361" | cut -f1
 
-module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
-
+module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3.6.3 python/3.6.6
+#module spider python/3.7.7
 
 ## working & temp directory
   wd="/scratch/aob2x/dest"
-  syncPath1="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
+  syncPath1="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
   syncPath2="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
   outdir="/scratch/aob2x/dest/sub_vcfs"
   maf=${1}
   mac=${2}
+  #maf=01; mac=10
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=3300
+  #SLURM_ARRAY_TASK_ID=1
   job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
@@ -39,7 +40,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
 ## set up RAM disk
   ## rm /scratch/aob2x/test/*
   #tmpdir="/scratch/aob2x/test"
-  #SLURM_JOB_ID=1; SLURM_ARRAY_TASK_ID=4
+  #SLURM_JOB_ID=1
   [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
   [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
   [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
@@ -92,12 +93,14 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 R/3.6.0
   --min-count ${mac} \
   --min-freq 0.${maf} \
   --miss-frac 0.5 \
-  --names $( cat ${tmpdir}/allpops.names | tr '\n' ',' | sed 's/,$//g' ) > ${tmpdir}/${jobid}.${maf}.${mac}.vcf
+  --names $( cat ${tmpdir}/allpops.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${maf}.${mac}.vcf
 
 ### compress and clean up
   echo "compress and clean"
   bgzip -c ${tmpdir}/${jobid}.${maf}.vcf > ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
   tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
+
+  cp ${tmpdir}/allpops* ${outdir}/.
 
   #echo "vcf -> bcf "
   #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf

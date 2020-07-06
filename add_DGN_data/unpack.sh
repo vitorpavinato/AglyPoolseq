@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### unpack datasets
-  #SLURM_ARRAY_TASK_ID=2
+  #SLURM_ARRAY_TASK_ID=9
 
   name=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f2 -d' ' )
   url=$( grep ^${SLURM_ARRAY_TASK_ID} /scratch/aob2x/dest/DEST/add_DGN_data/dgn.list | cut -f3 -d' ' )
@@ -23,9 +23,9 @@ cd /scratch/aob2x/dest/dgn/wideData
 if [ "${SLURM_ARRAY_TASK_ID}" == "1" ]; then
   ### DPGP2
 
-  #tar -zvx \
-  #--directory=/scratch/aob2x/dest/dgn/rawData \
-  #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
   cd /scratch/aob2x/dest/dgn/rawData/
   tar -xvf dpgp2_Chr2L_sequences.tar
@@ -63,9 +63,9 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "2" ]; then
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "3" ]; then
   ### DGRP
-  #tar -jvx \
-  #--directory=/scratch/aob2x/dest/dgn/rawData \
-  #--file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
 
   cd /scratch/aob2x/dest/dgn/rawData/
   tar -xvf dgrp_Chr2L.tar
@@ -93,30 +93,35 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "5" ]; then
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr2R
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr3L
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_Chr3R
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
     cd /scratch/aob2x/dest/dgn/rawData/CLARK_sequences/CLARK_ChrX
     ls B* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/B_{}
     ls I* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/I_{}
     ls N* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/N_{}
     ls T* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/T_{}
+    ls ZW* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ZW_{}
 
 elif [ "${SLURM_ARRAY_TASK_ID}" == "6" ]; then
   tar -zvx \
@@ -194,4 +199,21 @@ elif [ "${SLURM_ARRAY_TASK_ID}" == "8" ]; then
 
   cd /scratch/aob2x/dest/dgn/rawData/
   ls Simulans* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/SIM_{}
+
+elif [ "${SLURM_ARRAY_TASK_ID}" == "9" ]; then
+  tar -jvx \
+  --directory=/scratch/aob2x/dest/dgn/rawData \
+  --file=/scratch/aob2x/dest/dgn/rawData/${fileName}
+
+  tar -xvf pool_Chr2L_sequences.tar
+  tar -xvf pool_Chr2R_sequences.tar
+  tar -xvf pool_Chr3L_sequences.tar
+  tar -xvf pool_Chr3R_sequences.tar
+  tar -xvf pool_ChrX_sequences.tar
+
+  ls EB* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/EB_{}
+  ls ER* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/ER_{}
+  ls SB* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/SB_{}
+  ls UK* | xargs -t -I{} mv {} /scratch/aob2x/dest/dgn/wideData/UK_{}
+
 fi
