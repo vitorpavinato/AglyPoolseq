@@ -204,7 +204,7 @@ for l in load_data(data):
         DP=sum(alleleh.values())
 
         ## test if sample empty:
-        if len(alleleh)==0:
+        if len(alleleh)==0 or sum(alleleh.values())==0:
             NC+=1
             samplelist.append("./.:.:.:.:.")
             miss+=1
@@ -232,6 +232,7 @@ for l in load_data(data):
             GT.append(0)
         ## set ALT counts
         for i in range(len(ALT)):
+            print(alleleh)
             if ALT[i] in alleleh:
                 GT.append(i+1)
                 AD.append(alleleh[ALT[i]])
