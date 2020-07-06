@@ -33,22 +33,25 @@ sbatch --array=1-$( ls /scratch/aob2x/dest/sub_bcf_paramTest/dest.June14_2020.ma
 ```
 
 
+
+
+
+
 ### 3a. Make PoolSNP based VCF file (bgzip out). Uses MAF > 0.001 & MAC > 5. These are liberal thresholds but can be filtered at a later stage using standard VCF tools.
 ```bash
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001 5
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 01
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001 10
 ```
+sacct -j 13138603
 
-### 2b. Collect PoolSNP (bcf out)
+
+### 3b. Collect PoolSNP (bcf out)
 ```bash
 sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001
-sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 01
 ```
 
 ### 3c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
 sbatch ${wd}/DEST/snpCalling/annotate.sh 001
-sbatch ${wd}/DEST/snpCalling/annotate.sh 01
 ```
 
 
