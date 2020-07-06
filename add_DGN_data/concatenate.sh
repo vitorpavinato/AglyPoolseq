@@ -54,6 +54,6 @@ ${wd}/dest/wholeGenomeSyncData/${pop}_Chr2L.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr2R.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr3L.gSYNC \
 ${wd}/dest/wholeGenomeSyncData/${pop}_Chr3R.gSYNC \
-${wd}/dest/wholeGenomeSyncData/${pop}_ChrX.gSYNC | head \
+${wd}/dest/wholeGenomeSyncData/${pop}_ChrX.gSYNC \
 bgzip -@ 5 -c > \
 ${wd}/dest/wholeGenomeSyncData/${pop}.sync.gz
