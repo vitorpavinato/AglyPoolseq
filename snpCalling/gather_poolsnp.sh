@@ -21,6 +21,8 @@ outdir="/scratch/aob2x/dest/sub_vcfs"
 
 chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
+maf=${1}
+mac=${2}
 
 
 
