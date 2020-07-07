@@ -22,23 +22,13 @@ outdir="/scratch/aob2x/dest/sub_vcfs"
 chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 
-concatFun () {
-  wd="/scratch/aob2x/dest"
-  outdir="/scratch/aob2x/dest/sub_vcfs_paramTest"
 
-  maf=${1}
-  mac=${2}
-  chr=${3}
 
-  ls -d $outdir/*.${maf}.${mac}.paramTest.vcf.gz | sort -t"_" -k2,2 -k3g,3  | grep /${chr}_ > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.${mac}.sort
+ls -d $outdir/*.${maf}.${mac}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | grep /${chr}_ > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.${mac}.sort
 
-  bcftools concat \
-  --threads 20 \
-  -f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.${mac}.sort \
-  -O v \
-  -n \
-  -o /scratch/aob2x/dest/sub_bcf_paramTest/dest.June14_2020.maf001.${chr}.${maf}.${mac}.paramTest.bcf
-}
-export -f concatFun
-
-parallel -j 1 concatFun ::: 001 01 05 ::: 5 10 15 20 50 100 ::: ${chr}
+bcftools concat \
+--threads 20 \
+-f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${maf}.${mac}.sort \
+-O v \
+-n \
+-o /scratch/aob2x/dest/sub_bcf/dest.July6_2020.${chr}.${maf}.${mac}.bcf
