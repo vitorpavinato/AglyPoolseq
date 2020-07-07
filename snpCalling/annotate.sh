@@ -16,6 +16,8 @@ maf=${1}
 mac=${2}
 stem=${3}
 
+#maf=001;mac=10;stem=July6_2020
+
 wd=/scratch/aob2x/dest
 
 echo "concat"
@@ -32,11 +34,11 @@ echo "concat"
 
 echo "convert to vcf & annotate"
   bcftools view \
-  --threads 5 |
+  --threads 10 \
+  ${wd}/dest.${stem}.${maf}.${mac}.bcf | \
   java -jar ~/snpEff/snpEff.jar \
   eff \
-  -t 5 \
-  BDGP6.86 > \
+  BDGP6.86 - > \
   ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
 
 echo "make GDS"
