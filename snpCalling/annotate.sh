@@ -21,25 +21,32 @@ stem=${3}
 wd=/scratch/aob2x/dest
 
 echo "concat"
- bcftools concat \
- ${wd}/sub_bcf/dest.${stem}.2L.${maf}.${mac}.bcf \
- ${wd}/sub_bcf/dest.${stem}.2R.${maf}.${mac}.bcf \
- ${wd}/sub_bcf/dest.${stem}.3L.${maf}.${mac}.bcf \
- ${wd}/sub_bcf/dest.${stem}.3R.${maf}.${mac}.bcf \
- ${wd}/sub_bcf/dest.${stem}.X.${maf}.${mac}.bcf \
- ${wd}/sub_bcf/dest.${stem}.4.${maf}.${mac}.bcf \
- ${wd}/sub_bcf/dest.${stem}.Y.${maf}.${mac}.bcf \
- -n \
- -o ${wd}/dest.${stem}.${maf}.${mac}.bcf
+# bcftools concat \
+# ${wd}/sub_bcf/dest.${stem}.2L.${maf}.${mac}.bcf \
+# ${wd}/sub_bcf/dest.${stem}.2R.${maf}.${mac}.bcf \
+# ${wd}/sub_bcf/dest.${stem}.3L.${maf}.${mac}.bcf \
+# ${wd}/sub_bcf/dest.${stem}.3R.${maf}.${mac}.bcf \
+# ${wd}/sub_bcf/dest.${stem}.X.${maf}.${mac}.bcf \
+# ${wd}/sub_bcf/dest.${stem}.4.${maf}.${mac}.bcf \
+# ${wd}/sub_bcf/dest.${stem}.Y.${maf}.${mac}.bcf \
+# -n \
+# -o ${wd}/dest.${stem}.${maf}.${mac}.bcf
 
 echo "convert to vcf & annotate"
-  bcftools view \
-  --threads 10 \
-  ${wd}/dest.${stem}.${maf}.${mac}.bcf | \
-  java -jar ~/snpEff/snpEff.jar \
-  eff \
-  BDGP6.86 - > \
-  ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
+# bcftools view \
+# --threads 10 \
+# ${wd}/dest.${stem}.${maf}.${mac}.bcf | \
+# java -jar ~/snpEff/snpEff.jar \
+# eff \
+# BDGP6.86 - > \
+# ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
+
+echo "fix header" #this is now fixed in PoolSNP.py
+  sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
+
+  bcftools view -h ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf > ${wd}/tmp.header
+
+  bcftools reheader --threads 10 -h ${wd}/tmp.header -o ${wd}/dest.${stem}.${maf}.${mac}.header.bcf ${wd}/dest.${stem}.${maf}.${mac}.bcf
 
 echo "make GDS"
   Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
