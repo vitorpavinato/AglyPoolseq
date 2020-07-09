@@ -10,6 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account biol8083
 
+### sbatch ${wd}/DEST/misc_obsolete/move.July6_2020.sh
+
 
 wd="/scratch/aob2x/dest"
 rsync ${wd}/dest.July6_2020.001.10.ann.gds /project/berglandlab/DEST/
