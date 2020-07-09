@@ -46,7 +46,7 @@ echo "fix header" #this is now fixed in PoolSNP.py
   sed -i '0,/CHROM/{s/AC,Number=1/AC,Number=A/}' ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
   sed -i '0,/CHROM/{s/AD,Number=1/AD,Number=A/}' ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
   sed -i '0,/CHROM/{s/FREQ,Number=1/FREQ,Number=A/}' ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf
-  
+
   bcftools view -h ${wd}/dest.${stem}.${maf}.${mac}.ann.vcf > ${wd}/tmp.header
 
   bcftools reheader --threads 10 -h ${wd}/tmp.header -o ${wd}/dest.${stem}.${maf}.${mac}.header.bcf ${wd}/dest.${stem}.${maf}.${mac}.bcf
