@@ -196,10 +196,12 @@ for l in load_data(data):
             continue
 
         alleleh = alleles[j]
+
         # remove alleles not counted in all samples
         for k,v in alleleh.copy().items():
-            if k != REF and k not in ALT:
+            if k != REF and k not in ALT or v==0:
                 del alleleh[k]
+        #print(alleleh,libraries[j])
         GT,AD,RD,FREQ=[],[],0,[]
         DP=sum(alleleh.values())
 
