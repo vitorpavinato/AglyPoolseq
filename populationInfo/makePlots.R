@@ -20,7 +20,8 @@
 
 
 ### set working directory
-	setwd("/scratch/aob2x/dest")
+	#setwd("/scratch/aob2x/dest")
+	setwd("/Users/alanbergland/Documents/GitHub/")
 
 ### load data
   samps <- fread("./DEST/populationInfo/samps.csv")
@@ -34,7 +35,7 @@
 							maxDelta=max(yday) - min(yday),
 							lat=mean(lat),
 							long=mean(long)),
-					list(locality, year, continent)]
+					list(locality, year, continent, set)]
 
 		setkey(samps.ag, locality, year)
 		setkey(samps, locality, year)

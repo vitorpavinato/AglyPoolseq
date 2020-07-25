@@ -59,7 +59,7 @@
 	### load in DrosRTEC data
 		dat.drosRTEC <- read.xls("./DEST/populationInfo/vcf_popinfo_Oct2018.xlsx")
 
-		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 10, 8, 13, 11, 12, 7, 17, 4)])
+		dat.drosRTEC.dt <- as.data.table(dat.drosRTEC[,c(1, 4, 10, 8, 13, 11, 12, 7, 17, 3)])
 		setnames(dat.drosRTEC.dt,
 				names(dat.drosRTEC.dt),
 				c("sampleName", "sra_sampleName", "country", "city", "collectionDate", "lat", "long", "season", "nFlies", "locality"))
@@ -218,7 +218,7 @@
 		### This is a function to identify the closest station with the most information
 
 		### first, pull the list of statsions
-			stations <- ghcnd_stations(refresh=TRUE)
+			stations <- ghcnd_stations(refresh=F)
 			stations <- as.data.table(stations)
 
 		### function to identify best station to use
