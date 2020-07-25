@@ -10,6 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
+# sbatch --array=1-492 /scratch/aob2x/dest/DEST/misc_obsolete/indexBamFiles.sh 
+
 module load samtools
 
 melBamPath="/project/berglandlab/DEST/dest_mapped/*/*/*mel.bam"
