@@ -1,5 +1,3 @@
-## from https://www.ankuroh.com/programming/data-analysis/reading-pickle-file-in-r/
-
 import pandas as pd
 
 def read_pickle_file(file):
