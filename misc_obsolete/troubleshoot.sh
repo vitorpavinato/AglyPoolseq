@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
 #SBATCH -J touchup # A single job name for the array
-#SBATCH -t 48:00:00 ### 6 hours
-#SBATCH --cpus-per-task=16
+#SBATCH -t 6:00:00 ### 6 hours
+#SBATCH --cpus-per-task=1
+#SBATCH --mem 8G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/touchup.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/touchup.%A_%a.err # Standard error
 #SBATCH -p standard
