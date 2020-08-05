@@ -18,7 +18,10 @@ module load parallel
 #
 
 ### run as
-sbatch --array=1-5 /scrach/aob2x/dest/DEST/misc_obsolete/troubleshoot.sh
+sbatch --array=1-5 /scratch/aob2x/dest/DEST/misc_obsolete/troubleshoot.sh
+
+### sacct -j 13431530
+
 
 ### bad
 #PA_li_09_fall
