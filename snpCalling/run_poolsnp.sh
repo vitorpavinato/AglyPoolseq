@@ -32,7 +32,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   #maf=01; mac=10
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=1
+  #SLURM_ARRAY_TASK_ID=995
   job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
@@ -60,6 +60,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
     #syncFile=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz
 
     #job=2L,1,13766
+    #job=mitochondrion_genome,1,19524
 
     chr=$( echo $job | cut -f1 -d',' )
     start=$( echo $job | cut -f2 -d',' )
@@ -76,10 +77,15 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 
   echo "subset"
 
+
+  # syncPath1=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz; syncPath2=/project/berglandlab/DEST/dest_mapped/pipeline_output/UK_Mar_14_12/UK_Mar_14_12.masked.sync.gz
+
+
   parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
 
 ### paste function
   echo "paste"
+  find ${tmpdir} -size  0 -print -delete
   Rscript --no-save --no-restore ${wd}/DEST/snpCalling/paste.R ${job} ${tmpdir}
 
 ### run through PoolSNP
