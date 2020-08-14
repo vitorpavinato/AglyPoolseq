@@ -13,19 +13,22 @@ wd=/scratch/aob2x/dest
 Rscript ${wd}/DEST/snpCalling/makeJobs.R
 ```
 
-### 2a. Make PoolSNP based VCF file (bgzip out). Uses MAF > 0.001 & MAC > 10. These are liberal thresholds but can be filtered at a later stage using standard VCF tools.
+### 2a. Make PoolSNP based VCF file (bgzip out). Uses MAF > 0.001 & MAC > 50. These are reasonable thresholds that produce consistent pn/ps, number of SNPs, et, but can be filtered at a later stage using standard VCF tools.
 ```bash
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001 10
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001 50
 ```
+
+sbatch --array=995 ${wd}/DEST/snpCalling/run_poolsnp.sh 001 50
+sacct -j 14255990
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
-sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001 10
+sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001 50
 ```
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
-sbatch ${wd}/DEST/snpCalling/annotate.sh 001 10 July6_2020
+sbatch ${wd}/DEST/snpCalling/annotate.sh 001 50 Aug9_2020
 ```
 
 

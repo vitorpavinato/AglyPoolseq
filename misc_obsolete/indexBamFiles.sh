@@ -10,8 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# sbatch --array=1-492 /scratch/aob2x/dest/DEST/misc_obsolete/indexBamFiles.sh
-# sacct -j 13427529
+# sbatch --array=1-6 /scratch/aob2x/dest/DEST/misc_obsolete/indexBamFiles.sh
+# sacct -j 13715912
 module load samtools
 
 melBamPath="/project/berglandlab/DEST/dest_mapped/0803_three_redos/*/*mel.bam"
@@ -19,7 +19,7 @@ simBamPath="/project/berglandlab/DEST/dest_mapped/0803_three_redos/*/*sim.bam"
 
 bams=$( ls ${melBamPath} ${simBamPath} )
 
-#SLURM_ARRAY_TASK_ID=100
+#SLURM_ARRAY_TASK_ID=1
 
 # echo ${bams} | tr ' ' '\n' | wc -l ; shoudl be 492
 

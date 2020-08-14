@@ -19,7 +19,7 @@ module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
 wd="/scratch/aob2x/dest"
 outdir="/scratch/aob2x/dest/sub_vcfs"
 
-chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+chr=$( cat ${wd}/poolSNP_jobs.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 maf=${1}
 mac=${2}

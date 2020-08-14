@@ -19,6 +19,7 @@ mappingRate <- foreach(fn.i=fns)%do%{
   melidx.out <- as.data.table(idxstatsBam(file=fn.i, index=paste(fn.i, ".bai", sep="")))[grepl("2L|2R|3L|3R|X", seqnames)][!grepl("Het|het|Sac|Sca", seqnames)]
 
   melidx.out[,samp:=last(tstrsplit(fn.i, "/"))]
+  melidx.out[,redo:=grepl("0803", fn.i)]
 
   melidx.out
 }
@@ -32,9 +33,13 @@ save(mappingRate, file="~/mappingRate.Rdata")
 # scp aob2x@rivanna.hpc.virginia.edu:~/mappingRate.Rdata ~/.
 
 library(ggplot2)
+library(data.table)
 load("~/mappingRate.Rdata")
 
-mappingRate.ag <- mappingRate[,list(sum=sum(mapped)), list(samp)]
-mappingRate <- merge(mappingRate, mappingRate.ag, by="samp")
+mappingRate.ag <- mappingRate[,list(sum=sum(mapped)), list(samp, redo)]
+setkey(mappingRate, samp, redo)
+setkey(mappingRate.ag, samp, redo)
+mappingRate <- merge(mappingRate, mappingRate.ag)
+
 mappingRate[,rate:=mapped/sum]
-ggplot(data=mappingRate[!grepl("sim", seqnames)], aes(x=samp, y=rate)) +geom_point() + facet_grid(~seqnames)
+ggplot(data=mappingRate[!grepl("sim", seqnames)], aes(x=samp, y=rate, color=redo)) +geom_point() + facet_grid(~seqnames)

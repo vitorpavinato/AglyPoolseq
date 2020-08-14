@@ -1,4 +1,4 @@
-#module load intel/18.0 intelmpi/18.0 R/3.6.0; R
+#module load intel/18.0 intelmpi/18.0 R/3.6.3; R
 
 
 ### libraries
@@ -23,7 +23,7 @@
   nJobs <- 999
 
 ### how many jobs per chr
-  chrs.dt[,nJobs:=floor(maxLen/sum(chrs.dt$maxLen)*nJobs)]
+  chrs.dt[,nJobs:=floor(maxLen/sum(chrs.dt$maxLen)*nJobs) + 1]
 
 ### make jobs
   jobs <- foreach(chr.i=chrs.dt$chr, .combine="rbind", .errorhandling="remove")%do%{
