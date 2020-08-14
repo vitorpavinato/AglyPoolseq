@@ -1,10 +1,11 @@
-#module load intel/18.0 intelmpi/18.0 R/3.6.0; R
+#module load intel/18.0 intelmpi/18.0 R/3.6.3; R
 
 args = commandArgs(trailingOnly=TRUE)
 job=args[1]
 tmpdir=args[2]
 
-#job="2R_21912590_21926361"; tmpdir="/dev/shm/aob2x/1/3300"
+#job="mitochondrion_genome_1_19524"; tmpdir="/scratch/aob2x/test"
+job=gsub("mitochondrion_genome", "mitochondrionGenome", job)
 jobId=gsub(",", "_", job)
 
 ### libraries
@@ -16,8 +17,8 @@ jobId=gsub(",", "_", job)
   setwd(tmpdir)
 
 ### import
-  o <- foreach(files.i=files)%do%{
-    #files.i=files[199]
+  o <- foreach(files.i=files, .errorhandling="pass")%do%{
+    #files.i=files[1]
     tmp <- fread(files.i)
     if(dim(tmp)[1]==0) {
       tmp <- data.table(V1=tstrsplit(jobId, "_")[[1]],

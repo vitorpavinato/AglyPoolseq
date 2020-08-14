@@ -17,14 +17,13 @@ Rscript ${wd}/DEST/snpCalling/makeJobs.R
 ```bash
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh 001 50
 ```
-
-sbatch --array=995 ${wd}/DEST/snpCalling/run_poolsnp.sh 001 50
-sacct -j 14255990
+sacct -j 14256378
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
-sbatch --array=1-7 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001 50
+sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001 50
 ```
+
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash

@@ -3,7 +3,7 @@
 #SBATCH -J split_and_run # A single job name for the array
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 0:60:00 ### 15 minutes
+#SBATCH -t 2:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
 #SBATCH --mem 10G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
@@ -29,7 +29,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   outdir="/scratch/aob2x/dest/sub_vcfs"
   maf=${1}
   mac=${2}
-  #maf=01; mac=10
+  #maf=01; mac=50
 
 ## get job
   #SLURM_ARRAY_TASK_ID=995
@@ -85,7 +85,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 
 ### paste function
   echo "paste"
-  find ${tmpdir} -size  0 -print -delete
+  #find ${tmpdir} -size  0 -print -delete
   Rscript --no-save --no-restore ${wd}/DEST/snpCalling/paste.R ${job} ${tmpdir}
 
 ### run through PoolSNP
