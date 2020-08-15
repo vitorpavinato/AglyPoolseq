@@ -16,7 +16,7 @@ maf=${1}
 mac=${2}
 stem=${3}
 
-#maf=001;mac=10;stem=July6_2020
+#maf=001;mac=50;stem=Aug9_2020
 
 wd=/scratch/aob2x/dest
 
@@ -29,7 +29,6 @@ echo "concat"
   ${wd}/sub_bcf/dest.${stem}.X.${maf}.${mac}.bcf \
   ${wd}/sub_bcf/dest.${stem}.4.${maf}.${mac}.bcf \
   ${wd}/sub_bcf/dest.${stem}.Y.${maf}.${mac}.bcf \
-  -n \
   -o ${wd}/dest.${stem}.${maf}.${mac}.bcf
 
 echo "convert to vcf & annotate"
