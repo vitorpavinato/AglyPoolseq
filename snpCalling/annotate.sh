@@ -20,6 +20,17 @@ stem=${3}
 
 wd=/scratch/aob2x/dest
 
+
+echo "index"
+  bcftools index ${wd}/sub_bcf/dest.${stem}.2L.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.${stem}.2R.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.${stem}.3L.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.${stem}.3R.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.${stem}.X.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.${stem}.4.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.${stem}.Y.${maf}.${mac}.bcf
+
+
 echo "concat"
   bcftools concat \
   ${wd}/sub_bcf/dest.${stem}.2L.${maf}.${mac}.bcf \
