@@ -151,12 +151,22 @@
   mrmps <- merge(mps, mappingRate, by="sampleId")
   mrmps[,chr:=factor(chr, levels=c("2L", "2R", "3L", "3R", "X", "Y", "4"))]
 
+  mpsl.ag <- mpsl[,list(xf=mean(x)), list(sampleId)]
 
-  mappingRate.plot <- ggplot(data=mrmps, aes(x=sampleId, y=mr, color=continent, fill=continent)) +
+  mrmps <- merge(mrmps, mpsl.ag, by="sampleId")
+  mrmps[,xf:=as.factor(x)]
+  #mrmps[,continent:=factor(continent, levels=unique(mps$continent))]
+
+
+  mappingRate.plot <- ggplot(data=mrmps, aes(x=xf, y=mr, color=continent, fill=continent)) +
   geom_point(pch=21, alpha=.5, size=2) +
-  facet_grid(chr~set, scales="free_x") +
+  facet_grid(chr~set, scales="free_x", space="free_x") +
+  geom_point(data=mrmps[propMissing>.1], aes(x=xf, y=mr), color="black", size=.5) +
   theme(axis.text.x = element_blank(), panel.spacing = unit(1, "lines"))
 
+  summaryPlot <- summaryStat.plot + mappingRate.plot
+
+  ggsave(summaryPlot, file="~/summaryPlot.Aug9_2020.001.50.pdf")
 
 
 
