@@ -8,7 +8,7 @@
   library(Rsamtools)
 
 ### open GDS file
-  gds.fn <- "/scratch/aob2x/dest/dest.July6_2020.001.10.ann.gds"
+  gds.fn <- "/scratch/aob2x/dest/dest.Aug9_2020.001.50.ann.gds"
   genofile <- seqOpen(gds.fn, allow.duplicate=T)
 
 
@@ -66,22 +66,42 @@
     melBam <- gsub("mark_duplicates_report.txt", "mel.bam", fns[grepl(samp.i, fns)])
     melIdx <- paste(melBam, "bai", sep=".")
 
-    simidx.out <- as.data.table(idxstatsBam(file=simBam, index=simIdx))[grepl("2L|2R|3L|3R|X", seqnames)][!grepl("Het|het|Sac|Sca", seqnames)]
-    melidx.out <- as.data.table(idxstatsBam(file=melBam, index=melIdx))[grepl("2L|2R|3L|3R|X", seqnames)][!grepl("Het|het|Sac|Sca", seqnames)]
+    simidx.out <- as.data.table(idxstatsBam(file=simBam, index=simIdx))[grepl("2L|2R|3L|3R|X|^4$|Y", seqnames)][!grepl("Het|het|Sac|Sca", seqnames)]
+    melidx.out <- as.data.table(idxstatsBam(file=melBam, index=melIdx))[grepl("2L|2R|3L|3R|X|^4$|Y", seqnames)][!grepl("Het|het|Sac|Sca", seqnames)]
 
     idx.out <- merge(melidx.out, simidx.out, by="seqnames")
 
-    data.table(propSim=sum(idx.out$mapped.y)/(sum(idx.out$mapped.y) + sum(idx.out$mapped.x)),
-              sampleId=samp.i)
+    idx.out[,nReads:=mapped.x + mapped.y]
+    idx.out[,simChr:=grepl("sim", seqnames)]
+    idx.out[,chr:=gsub("sim_", "", seqnames)]
+    idx.out[,nReadsNorm:=nReads/seqlength.x]
 
+
+    idx.out.ag <- idx.out[,list(propSim=nReads[simChr==T]/sum(nReads),
+                                propSimNorm=nReadsNorm[simChr==T]/sum(nReadsNorm),
+                                nMelReads=nReads[simChr==F],
+                                melChrLen=seqlength.x[simChr==F],
+                                sampleId=samp.i),
+             list(chr)]
+   idx.out.ag[,mappingEffort:=nMelReads/melChrLen]
+
+
+    idx.out.ag
   }
   simContam <- rbindlist(simContam)
-  setkey(mp, sampleId)
-  setkey(simContam, sampleId)
-  mps <- merge(mp, simContam, all.x=T)
+  simContam.ag <- simContam[,list(propSimNorm=mean(propSimNorm, na.rm=T)), sampleId]
 
-  save(mps, file="~/mps.Rdata")
-  save(mps, file="/scratch/aob2x/dest/DEST/populationInfo/mps.Rdata")
+
+  setkey(mp, sampleId)
+  setkey(simContam.ag, sampleId)
+
+
+
+
+  mps <- merge(mp, simContam.ag, all.x=T)
+
+  save(mps, simContam, file="~/mps.Rdata")
+  save(mps, simContam, file="/scratch/aob2x/dest/DEST/populationInfo/mps.Rdata")
 
 ###
   # scp aob2x@rivanna.hpc.virginia.edu:~/mps.Rdata ~/.
@@ -93,32 +113,53 @@
 
 ### load adata
   load("~/mps.Rdata")
+  setnames(mps, "mu", "AveReadDepth")
 
 ### a few small fixes
   mps[continent=="North_America", continent:="NorthAmerica"]
 
-  mps[,effRD:=(mu.r * 2*nFlies) / (mu.r + 2*nFlies)]
-  setnames(mps, "mu", "AveReadDepth")
+  mps[,effRD:=(AveReadDepth * 2*nFlies) / (AveReadDepth + 2*nFlies)]
 
 ### rank x-axis to mean read depth
   mps <- mps[auto==T]
   mps[,x:=rank(AveReadDepth, ties.method="first")]
-  mps[,x.id:=factor(sampleId, levels=mps$sampleId[mps$mu.r])]
+  mps[,x.id:=factor(sampleId, levels=mps$sampleId[mps$AveReadDepth])]
 
   mps[,propMissing:=nmissing/10000]
 
 ### wide to long
   mpsl <- melt(mps,
               id.vars=c("x", "sampleId", "continent", "auto", "set"),
-              measure.vars=c("AveReadDepth", "propMissing", "nFlies", "effRD", "pcrDup", "propSim"))
+              measure.vars=c("AveReadDepth", "propMissing", "nFlies", "effRD", "pcrDup", "propSimNorm"))
 
   mpsl[,xf:=as.factor(x)]
 
-### plot
+### summary plot
   summaryStat.plot <- ggplot(data=mpsl, aes(x=xf, y=value, color=continent, fill=continent)) +
           geom_point(pch=21, alpha=.5, size=2) +
           facet_grid(variable~set, scales="free", space="free_x") +
+          geom_point(data=mpsl[sampleId%in%mps[propMissing>.1]$sampleId], aes(x=xf, y=value), color="black", size=.5) +
           theme(axis.text.x = element_blank(), panel.spacing = unit(1, "lines"))
+
+
+### mapping rates per chr
+  mappingRat.ag <- simContam[,list(sumMelReads=sum(nMelReads), sumMelGenome=sum(melChrLen)), list(sampleId)]
+  setkey(mappingRat.ag, sampleId)
+  mappingRate <- merge(simContam, mappingRat.ag, by="sampleId")
+  mappingRate[,mr:=(nMelReads/sumMelReads)/(melChrLen/sumMelGenome)]
+
+  mrmps <- merge(mps, mappingRate, by="sampleId")
+  mrmps[,chr:=factor(chr, levels=c("2L", "2R", "3L", "3R", "X", "Y", "4"))]
+
+
+  mappingRate.plot <- ggplot(data=mrmps, aes(x=sampleId, y=mr, color=continent, fill=continent)) +
+  geom_point(pch=21, alpha=.5, size=2) +
+  facet_grid(chr~set, scales="free_x") +
+  theme(axis.text.x = element_blank(), panel.spacing = unit(1, "lines"))
+
+
+
+
 
   ggsave(summaryStat.plot, file="~/summaryStat_plot.pdf", h=10, w=8)
 

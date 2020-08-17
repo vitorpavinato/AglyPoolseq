@@ -12,7 +12,6 @@ module load intel/18.0 intelmpi/18.0 R/3.6.3; R
   fns <- system("ls /project/berglandlab/DEST/dest_mapped/*/*/*mel.bam", intern=T)
 
 
-
 mappingRate <- foreach(fn.i=fns)%do%{
   #fn.i=fns[1]
   print(fn.i)
