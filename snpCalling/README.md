@@ -27,8 +27,6 @@ sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001 50 Aug9_2020
 ```bash
 sbatch ${wd}/DEST/snpCalling/annotate.sh 001 50 Aug9_2020
 ```
-sacct -j 14268555
-
 
 
 

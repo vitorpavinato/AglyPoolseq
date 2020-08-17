@@ -250,13 +250,16 @@ if [ $do_prep -eq "1" ]; then
   mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
   rm $output/$sample/${sample}.contaminated_realigned.bai
 
-  samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
+  #samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
   check_exit_status "mpileup" $?
 
 fi
 
 if [ $do_poolsnp -eq "1" ]; then
+
+  samtools mpileup $output/$sample/${sample}.mel.bam -B -Q ${base_quality_threshold} -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
+
 
   python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
   --mpileup $output/$sample/${sample}.mel_mpileup.txt \
