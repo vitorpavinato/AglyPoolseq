@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 #SBATCH -J dockerMap # A single job name for the array
-#SBATCH --ntasks-per-node=10 # one core
+##SBATCH --ntasks-per-node=10 # one core
+#SBATCH -c 10
 #SBATCH -N 1 # on one node
 #SBATCH -t 12:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
 #SBATCH --mem 5G
