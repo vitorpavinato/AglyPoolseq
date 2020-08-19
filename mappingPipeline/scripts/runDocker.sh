@@ -17,7 +17,7 @@
   module load singularity
 
 ### define a few things
-  otputDir=/project/berglandlab/DEST/dest_mapped/pipeline_output
+  outputDir=/project/berglandlab/DEST/dest_mapped/pipeline_output
   wd=/scratch/aob2x/dest
 
 ### check
@@ -29,13 +29,16 @@
   pop=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
   srx=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
+  echo $pop
+  echo $src
+
 ### run docker
   singularity run \
   ${wd}/dmelsync_hpc.sif \
   /scratch/aob2x/fastq/${srx}_1.fastq.gz \
   /scratch/aob2x/fastq/${srx}_2.fastq.gz \
   ${pop} \
-  ${otputDir} \
+  ${outputDir} \
   -c $SLURM_CPUS_PER_TASK \
   --max-cov 0.95 \
   --min-cov 4
