@@ -39,7 +39,7 @@
   /scratch/aob2x/fastq/${srx}_2.fastq.gz \
   ${pop} \
   ${outputDir} \
-  -c $SLURM_CPUS_PER_TASK \
+  --cores $SLURM_CPUS_PER_TASK \
   --max-cov 0.95 \
   --min-cov 4 \
   --dont-prep \
