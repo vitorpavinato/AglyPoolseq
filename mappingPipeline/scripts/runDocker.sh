@@ -11,7 +11,8 @@
 #SBATCH --account berglandlab
 
 
-### run as:
+### test run as: sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
+
 
 ### modules
   module load singularity
