@@ -41,7 +41,7 @@
   ${outputDir} \
   -c $SLURM_CPUS_PER_TASK \
   --max-cov 0.95 \
-  --min-cov 4
+  --min-cov 4 \
   --dont-prep \
   --do-snape \
   --do_poolsnp \

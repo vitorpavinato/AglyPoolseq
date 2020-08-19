@@ -33,10 +33,10 @@ singularity pull docker://jho5ze/dmelsync:hpc
 sbatch -array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l ) ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 ```
 
-sbatch -array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
+sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
+sacct -j 14432574
 
-
-
+cat /scratch/aob2x/dest/slurmOutput/dockerMap.14432574_10
 
 
 
