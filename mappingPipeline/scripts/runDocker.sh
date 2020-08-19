@@ -30,7 +30,7 @@
   srx=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo $pop
-  echo $src
+  echo $srx
 
 ### run docker
   singularity run \
