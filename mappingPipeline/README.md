@@ -22,18 +22,42 @@ sbatch ${wd}/DEST/mappingPipeline/scripts/check_fastq_encoding.sh
 grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 ```
 
-
 ### 3. Build singularity container from docker image
 ```bash
-    module load singularity
-    singularity pull docker://jho5ze/dmelsync:hpc
+module load singularity
+singularity pull docker://jho5ze/dmelsync:hpc
 ```
 
+### 4. Make jobs file
+``` bash
+${wd}/DEST/mappingPipeline/scripts/make_mappingPipeline_jobs.sh
+```
 
-### 4. Run the singularity container
+### 4. Run the singularity container across list of populations
 ```bash
-singularity run dmelsync_hpc.sif <read_1> <read_2> <sample_name> <output_folder> --cores <optional> --max_cov <optional> --min_cov <optional>
+${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 ```
+
+
+
+
+
+
+
+
+### 5. Docker info
+singularity run \
+dmelsync_hpc.sif \
+<read_1> <read_2> \
+<sample_name> \
+<output_folder> \
+--cores <optional> \
+--max_cov <optional> \
+--min_cov <optional>
+--do_prep 0 \
+--do_snape 1 \
+--do_poolsnp 1
+
 #### Input
 * read_1 full path
 * read_2 full path
