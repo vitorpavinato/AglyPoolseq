@@ -28,16 +28,12 @@ module load singularity
 singularity pull docker://jho5ze/dmelsync:hpc
 ```
 
-### 4. Make jobs file
-``` bash
-${wd}/DEST/mappingPipeline/scripts/make_mappingPipeline_jobs.sh
-```
-
 ### 4. Run the singularity container across list of populations
 ```bash
-${wd}/DEST/mappingPipeline/scripts/runDocker.sh
+sbatch -array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l ) ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 ```
 
+sbatch -array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 
 
 
