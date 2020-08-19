@@ -34,9 +34,9 @@ sbatch -array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | 
 ```
 
 sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
-sacct -j 14432574
+sacct -j 14432617
 
-cat /scratch/aob2x/dest/slurmOutput/dockerMap.14432574_10
+cat /scratch/aob2x/dest/slurmOutput/dockerMap.14432580_10.out
 
 
 

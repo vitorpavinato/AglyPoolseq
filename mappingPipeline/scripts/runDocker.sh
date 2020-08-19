@@ -43,6 +43,7 @@
   --cores $SLURM_CPUS_PER_TASK \
   --max-cov 0.95 \
   --min-cov 4 \
+  --base-quality-threshold 25 \
   --dont-prep \
   --do-snape \
   --do_poolsnp \
