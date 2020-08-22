@@ -30,16 +30,9 @@ singularity pull docker://jho5ze/dmelsync:hpc
 
 ### 4. Run the singularity container across list of populations
 ```bash
-sbatch -array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l ) ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
+sbatch --array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l ) \
+${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 ```
-
-sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
-sacct -j 14432617
-
-cat /scratch/aob2x/dest/slurmOutput/dockerMap.14432580_10.out
-
-
-
 
 ### 5. Docker info
 singularity run \

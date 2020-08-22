@@ -13,8 +13,8 @@
 
 
 ### test run as: sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
-# sacct -j 14436999
-
+# sacct -j 14446076
+# cat /scratch/aob2x/dest/slurmOutput/dockerMap.14446076_10.out
 ### modules
   module load singularity
 
@@ -36,7 +36,7 @@
 
   touch /scratch/aob2x/fastq/${srx}_1.fastq.gz
   touch /scratch/aob2x/fastq/${srx}_2.fastq.gz
-  
+
 ### run docker
   singularity run \
   ${wd}/dmelsync_hpc.sif \
