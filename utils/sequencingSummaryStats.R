@@ -7,41 +7,55 @@
   library(foreach)
   library(Rsamtools)
 
+### functions
+  getRD <- function(gds.fn, q) {
+    ### open GDS file
+      genofile <- seqOpen(gds.fn, allow.duplicate=T)
+
+    ### get SNP index data.table
+      snps.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
+                            pos=seqGetData(genofile, "position"),
+                            variant.id=seqGetData(genofile, "variant.id"),
+                            nAlleles=seqNumAllele(genofile))
+
+    ### get read depths
+      nSNPs <- 10000
+      seqSetFilter(genofile, variant.id=as.numeric(sample(as.character(snps.dt[nAlleles==2]$variant.id), nSNPs)))
+      #tmp.ad <- seqGetData(genofile, "annotation/format/AD")
+      #tmp.rd <- seqGetData(genofile, "annotation/format/RD")
+      tmp.dp <- seqGetData(genofile, "annotation/format/DP")
+
+      dat <- data.table(dp=expand.grid(tmp.dp$data)$Var1,
+                        sampleId=rep(seqGetData(genofile, "sample.id"), dim(tmp.dp$data)[2]),
+                        variant.id=rep(seqGetData(genofile, "variant.id"), each=dim(tmp.dp$data)[1]))
+      dat[,variant.id:=as.numeric(variant.id)]
+
+      setkey(snps.dt, variant.id)
+      setkey(dat, variant.id)
+
+      dat <- merge(dat, snps.dt)
+      setkey(dat, chr)
+      dat.ag <- dat[J(c("2L", "2R", "3L", "3R", "X")),
+                      list(mu=mean(dp, na.rm=T), nmissing=sum(is.na(dp)), q=q), list(sampleId, auto=!(chr=="X"))]
+
+      setnames(dat.ag, c("mu", "nmissing"), paste(c("mu", "nmissing"), q, sep="."))
+      setkey(dat.ag, sampleId, auto)
+
+      seqClose(genofile)
+      return(dat.ag)
+  }
+
 ### open GDS file
-  gds.fn <- "/scratch/aob2x/dest/dest.Aug9_2020.001.50.ann.gds"
-  genofile <- seqOpen(gds.fn, allow.duplicate=T)
+  dat.q25 <- getRD(gds.fn="/project/berglandlab/DEST/dest.Aug22_2020.001.50.ann.gds", q=25)
+  dat.q15 <- getRD(gds.fn="/project/berglandlab/DEST/dest.Aug9_2020.001.50.ann.gds", q=15)
 
-
-### get SNP index data.table
-  snps.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
-                        pos=seqGetData(genofile, "position"),
-                        variant.id=seqGetData(genofile, "variant.id"),
-                        nAlleles=seqNumAllele(genofile))
-
-### get read depths
-  nSNPs <- 10000
-  seqSetFilter(genofile, variant.id=as.numeric(sample(as.character(snps.dt[nAlleles==2]$variant.id), nSNPs)))
-  #tmp.ad <- seqGetData(genofile, "annotation/format/AD")
-  #tmp.rd <- seqGetData(genofile, "annotation/format/RD")
-  tmp.dp <- seqGetData(genofile, "annotation/format/DP")
-
-  dat <- data.table(dp=expand.grid(tmp.dp$data)$Var1,
-                    sampleId=rep(seqGetData(genofile, "sample.id"), dim(tmp.dp$data)[2]),
-                    variant.id=rep(seqGetData(genofile, "variant.id"), each=dim(tmp.dp$data)[1]))
-  dat[,variant.id:=as.numeric(variant.id)]
-
-  setkey(snps.dt, variant.id)
-  setkey(dat, variant.id)
-
-  dat <- merge(dat, snps.dt)
-  setkey(dat, chr)
-  dat.ag <- dat[J(c("2L", "2R", "3L", "3R", "X")),
-                  list(mu=mean(dp, na.rm=T), nmissing=sum(is.na(dp))), list(sampleId, auto=!(chr=="X"))]
+  dat <- merge(dat.q25, dat.q15)
+  summary(dat$mu.25/dat$mu.15)
 
 ### incorporate metadata
   samps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
 
-  m <- merge(dat.ag, samps)
+  m <- merge(dat, samps, by="sampleId")
 
 
 ### pull in PCR dup rate
@@ -113,12 +127,14 @@
 
 ### load adata
   load("~/mps.Rdata")
-  setnames(mps, "mu", "AveReadDepth")
+  setnames(mps, "mu.15", "AveReadDepth.15")
+  setnames(mps, "mu.25", "AveReadDepth.25")
 
 ### a few small fixes
   mps[continent=="North_America", continent:="NorthAmerica"]
 
-  mps[,effRD:=(AveReadDepth * 2*nFlies) / (AveReadDepth + 2*nFlies)]
+  mps[,effRD.15:=(AveReadDepth.15 * 2*nFlies) / (AveReadDepth.15 + 2*nFlies)]
+  mps[,effRD.25:=(AveReadDepth.25 * 2*nFlies) / (AveReadDepth.25 + 2*nFlies)]
 
 ### rank x-axis to mean read depth
   mps <- mps[auto==T]

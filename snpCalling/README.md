@@ -20,12 +20,12 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/sn
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001 50 Aug9_2020
+sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh 001 50 Aug22_2020
 ```
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
-sbatch ${wd}/DEST/snpCalling/annotate.sh 001 50 Aug9_2020
+sbatch ${wd}/DEST/snpCalling/annotate.sh 001 50 Aug22_2020
 ```
 
 

@@ -11,7 +11,7 @@
 #SBATCH --account biol8083
 
 ### sbatch ${wd}/DEST/misc_obsolete/move.Aug22_2020.001.50.sh
-sacct -j 14318111
+# sacct -j 14487964
 
 wd="/scratch/aob2x/dest"
 rsync ${wd}/dest.Aug22_2020.001.50.ann.gds /project/berglandlab/DEST/
