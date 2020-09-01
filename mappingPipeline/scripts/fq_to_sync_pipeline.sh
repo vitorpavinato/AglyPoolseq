@@ -314,36 +314,36 @@ fi
 if [ $do_snape -eq "1" ]; then
 
   /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
-    ${sample}.mel_mpileup.txt \
-    $output \
-    $sample \
-    $theta \
-    $D \
-    $priortype \
-    $fold \
-    $nflies
+  ${sample}.mel_mpileup.txt \
+  $output \
+  $sample \
+  $theta \
+  $D \
+  $priortype \
+  $fold \
+  $nflies
 
   check_exit_status "Mpileup2SNAPE" $?
 
   gzip -f $output/$sample/${sample}.SNAPE.output.txt
 
-    python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
-      --input $output/$sample/${sample}.SNAPE.output.txt.gz \
-      --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
-      --output $output/$sample/${sample}.SNAPE
+  python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
+  --input $output/$sample/${sample}.SNAPE.output.txt.gz \
+  --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
+  --output $output/$sample/${sample}.SNAPE
 
   check_exit_status "SNAPE2SYNC" $?
 
-    python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
-    --sync $output/$sample/${sample}.SNAPE.sync.gz \
-    --output $output/$sample/${sample}.SNAPE.complete \
-    --indel $output/$sample/${sample}.indel \
-    --coverage $output/$sample/${sample}.cov \
-    --mincov $min_cov \
-    --maxcov $max_cov \
-    --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
-    --maxsnape $maxsnape \
-    --SNAPE
+  python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
+  --sync $output/$sample/${sample}.SNAPE.sync.gz \
+  --output $output/$sample/${sample}.SNAPE.complete \
+  --indel $output/$sample/${sample}.indel \
+  --coverage $output/$sample/${sample}.cov \
+  --mincov $min_cov \
+  --maxcov $max_cov \
+  --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+  --maxsnape $maxsnape \
+  --SNAPE
 
   check_exit_status "MaskSYNC_SNAPE_Complete" $?
 

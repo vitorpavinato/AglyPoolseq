@@ -34,6 +34,11 @@ singularity pull docker://jho5ze/dmelsync:hpc
 sbatch --array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l ) \
 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 ```
+sacct -j 14767917
+
+
+
+
 
 ### 5. Docker info
 singularity run \

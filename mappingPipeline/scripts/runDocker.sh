@@ -30,9 +30,11 @@
   #SLURM_ARRAY_TASK_ID=10
   pop=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
   srx=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  numFlies=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo $pop
   echo $srx
+  echo $numFlies
 
   touch /scratch/aob2x/fastq/${srx}_1.fastq.gz
   touch /scratch/aob2x/fastq/${srx}_2.fastq.gz
@@ -48,6 +50,7 @@
   --max-cov 0.95 \
   --min-cov 4 \
   --base-quality-threshold 25 \
+  --num-flies ${numFlies} \
   --dont-prep \
   --do-snape  #\
   #--do_poolsnp \
