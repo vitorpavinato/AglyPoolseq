@@ -24,6 +24,7 @@ grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 
 ### 3. Build singularity container from docker image
 ```bash
+cd ${wd}
 module load singularity
 singularity pull docker://jho5ze/dmelsync:hpc
 ```

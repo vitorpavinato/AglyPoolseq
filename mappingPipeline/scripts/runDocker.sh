@@ -49,5 +49,5 @@
   --min-cov 4 \
   --base-quality-threshold 25 \
   --dont-prep \
-  --do-snape \
-  --do_poolsnp \
+  --do-snape  #\
+  #--do_poolsnp \
