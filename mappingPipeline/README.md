@@ -26,7 +26,8 @@ grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 ```bash
 cd ${wd}
 module load singularity
-singularity pull docker://jho5ze/dmelsync:hpc
+#singularity pull docker://jho5ze/dmelsync:hpc
+singularity pull docker://alanbergland/dest_mapping:latest
 ```
 
 ### 4. Run the singularity container across list of populations
@@ -34,10 +35,6 @@ singularity pull docker://jho5ze/dmelsync:hpc
 sbatch --array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l ) \
 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 ```
-sacct -j 14767917
-
-
-
 
 
 ### 5. Docker info

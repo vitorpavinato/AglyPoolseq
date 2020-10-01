@@ -4,7 +4,7 @@ args = commandArgs(trailingOnly=TRUE)
 job=args[1]
 tmpdir=args[2]
 
-#job="mitochondrion_genome_1_19524"; tmpdir="/scratch/aob2x/test"
+#job="2L_138316_276631"; tmpdir="/dev/shm/aob2x/2"
 job=gsub("mitochondrion_genome", "mitochondrionGenome", job)
 jobId=gsub(",", "_", job)
 
@@ -16,9 +16,10 @@ jobId=gsub(",", "_", job)
   files <- list.files(tmpdir, pattern=jobId)
   setwd(tmpdir)
 
+  #files <- files[-1]
 ### import
   o <- foreach(files.i=files, .errorhandling="pass")%do%{
-    #files.i=files[1]
+    #files.i=files[10]
     tmp <- fread(files.i)
     if(dim(tmp)[1]==0) {
       tmp <- data.table(V1=tstrsplit(jobId, "_")[[1]],
@@ -30,6 +31,7 @@ jobId=gsub(",", "_", job)
     tmp
   }
   o <- rbindlist(o, use.names=T, fill=T)
+  o[,pop:=gsub(".SNAPE.monomorphic", "", pop)]
 
 ### long to wide
   ow <- dcast(o, V1+V2~pop, value.var="V4")

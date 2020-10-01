@@ -10,6 +10,8 @@
   > RUN: `makeJointSampleInfo.R`
   > Outputs `DEST/populationInfo/samps.csv`
 
+## some basic summary statistics
+
 ## Make figures
   ## Map figure
   > RUN: `sbatch makeNiceMap.sh`

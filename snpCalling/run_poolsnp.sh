@@ -22,17 +22,33 @@
 module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3.6.3 python/3.6.6 vcftools/0.1.16
 #module spider python/3.7.7
 
+##
+
 ## working & temp directory
   wd="/scratch/aob2x/dest"
-  syncPath1="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
-  syncPath2="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
   outdir="/scratch/aob2x/dest/sub_vcfs"
-  maf=${1}
-  mac=${2}
-  #maf=01; mac=50
+  popSet=${1}
+  method=${2}
+  maf=${3}
+  mac=${4}
+  #maf=01; mac=50; popSet="PoolSeq"; method="SNAPE"
+
+## get list of SNYC files based on popSet & method
+### full list
+  syncPath1orig="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
+  syncPath2orig="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
+
+### target pops
+  if [ "${popSet}"=="PoolSeq" ]; then
+    syncPath1=""
+    syncPath2=${syncPath2orig}
+  elif [ "${popSet}"=="all" ]; then
+    syncPath1=${syncPath1orig}
+    syncPath2=${syncPath2orig}
+  fi
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=994
+  #SLURM_ARRAY_TASK_ID=2
   job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
@@ -80,8 +96,11 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 
   # syncPath1=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz; syncPath2=/project/berglandlab/DEST/dest_mapped/pipeline_output/UK_Mar_14_12/UK_Mar_14_12.masked.sync.gz
 
+  if [ ${method} -eq "SNAPE" ]; then
+    parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep "SNAPE" | grep "monomorphic" ) ::: ${job} ::: ${tmpdir}
+  elif [ ${method} -eq "PoolSNP" ]; then
+    parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
 
-  parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
 
 ### paste function
   echo "paste"
@@ -91,21 +110,33 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 ### run through PoolSNP
   echo "poolsnp"
 
+  if [ ${method} -eq "SNAPE" ]; then
+    cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
+    --sync - \
+    --min-cov 4 \
+    --max-cov 0.95 \
+    --miss-frac 0.5 \
+    --min-count 0 \
+    --min-freq 0 \
+    --posterior-prob 0.9 \
+    --names $( cat ${tmpdir}/allpops.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
 
-  cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
-  --sync - \
-  --min-cov 4 \
-  --max-cov 0.95 \
-  --min-count ${mac} \
-  --min-freq 0.${maf} \
-  --miss-frac 0.5 \
-  --names $( cat ${tmpdir}/allpops.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${maf}.${mac}.vcf
+  elif [ ${method} -eq "PoolSNP" ]; then
+    cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
+    --sync - \
+    --min-cov 4 \
+    --max-cov 0.95 \
+    --min-count ${mac} \
+    --min-freq 0.${maf} \
+    --miss-frac 0.5 \
+    --names $( cat ${tmpdir}/allpops.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
+  fi
 
 ### compress and clean up
   echo "compress and clean"
 
-  cat ${tmpdir}/${jobid}.${maf}.${mac}.vcf | vcf-sort | bgzip -c > ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
-  tabix -p vcf ${outdir}/${jobid}.${maf}.${mac}.vcf.gz
+  cat ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf | vcf-sort | bgzip -c > ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf.gz
+  tabix -p vcf ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf.gz
 
   #cp ${tmpdir}/allpops* ${outdir}/.
 

@@ -15,7 +15,7 @@
 ### test run as: sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 # sacct -j 14446076
 # cat /scratch/aob2x/dest/slurmOutput/dockerMap.14767917_10.out | grep -v "Reference is N; most frequent allele is calculated in position" | less -S
-# cat /scratch/aob2x/dest/slurmOutput/dockerMap.14767917_10.err | grep -v "warning:" | head
+# cat /scratch/aob2x/dest/slurmOutput/dockerMap.14779079_2.err | tail
 
 ### modules
   module load singularity

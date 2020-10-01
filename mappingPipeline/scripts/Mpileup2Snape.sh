@@ -21,7 +21,7 @@ for chr in {X,Y,mitochondrion_genome}; do
   snape-pooled -nchr $nflies -theta $theta -D $D -priortype $priortype -fold $fold < ${chr} > ${chr}-$sample-SNAPE.txt
 done
 
-for chr in {2L,2R,3L,3R,4,X,Y}; do
+for chr in {2L,2R,3L,3R,4,X,Y,mitochondrion_genome}; do
   rm $chr
 done
 

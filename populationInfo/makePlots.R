@@ -1,5 +1,5 @@
 ### Make basic plots for DEST samples
-### Final data has columsn: sampleId, country, city, collectionDate, lat, long, season, nFlies, locality, type (inbred/pooled), continent
+### Final data has columns: sampleId, country, city, collectionDate, lat, long, season, nFlies, locality, type (inbred/pooled), continent
 ### Alan Bergland, Oct 3, 2018; updated Feb 2020
 
 
