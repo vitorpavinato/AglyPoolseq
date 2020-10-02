@@ -92,15 +92,13 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   export -f subsection
 
   echo "subset"
-
-
   # syncPath1=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz; syncPath2=/project/berglandlab/DEST/dest_mapped/pipeline_output/UK_Mar_14_12/UK_Mar_14_12.masked.sync.gz
 
   if [ ${method} -eq "SNAPE" ]; then
     parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep "SNAPE" | grep "monomorphic" ) ::: ${job} ::: ${tmpdir}
   elif [ ${method} -eq "PoolSNP" ]; then
     parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
-
+  fi
 
 ### paste function
   echo "paste"
