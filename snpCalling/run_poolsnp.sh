@@ -94,9 +94,9 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   echo "subset"
   # syncPath1=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz; syncPath2=/project/berglandlab/DEST/dest_mapped/pipeline_output/UK_Mar_14_12/UK_Mar_14_12.masked.sync.gz
 
-  if [ ${method} -eq "SNAPE" ]; then
+  if [ ${method}=="SNAPE" ]; then
     parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep "SNAPE" | grep "monomorphic" ) ::: ${job} ::: ${tmpdir}
-  elif [ ${method} -eq "PoolSNP" ]; then
+  elif [ ${method}=="PoolSNP" ]; then
     parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
   fi
 
@@ -108,7 +108,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 ### run through PoolSNP
   echo "poolsnp"
 
-  if [ ${method} -eq "SNAPE" ]; then
+  if [ ${method}=="SNAPE" ]; then
     cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
     --sync - \
     --min-cov 4 \
@@ -119,7 +119,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
     --posterior-prob 0.9 \
     --names $( cat ${tmpdir}/allpops.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
 
-  elif [ ${method} -eq "PoolSNP" ]; then
+  elif [ ${method}=="PoolSNP" ]; then
     cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
     --sync - \
     --min-cov 4 \
