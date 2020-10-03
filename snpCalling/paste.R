@@ -3,8 +3,9 @@
 args = commandArgs(trailingOnly=TRUE)
 job=args[1]
 tmpdir=args[2]
+method=args[3]
 
-#job="2L_138316_276631"; tmpdir="/dev/shm/aob2x/2"
+#job="2L_138316_276631"; tmpdir="/dev/shm/aob2x/1/2"; method="PoolSNP"
 job=gsub("mitochondrion_genome", "mitochondrionGenome", job)
 jobId=gsub(",", "_", job)
 
@@ -14,6 +15,11 @@ jobId=gsub(",", "_", job)
 
 ### get input files
   files <- list.files(tmpdir, pattern=jobId)
+  length(files)
+  if(method=="PoolSNP") files <- files[!grepl("SNAPE", files)]
+  if(method=="SNAPE") files <- files[grepl("SNAPE", files)]
+  length(files)
+
   setwd(tmpdir)
 
   #files <- files[-1]
@@ -33,6 +39,9 @@ jobId=gsub(",", "_", job)
   o <- rbindlist(o, use.names=T, fill=T)
   o[,pop:=gsub(".SNAPE.monomorphic", "", pop)]
 
+  dim(o)
+  o[,.N,pop]
+
 ### long to wide
   ow <- dcast(o, V1+V2~pop, value.var="V4")
 
@@ -45,5 +54,5 @@ jobId=gsub(",", "_", job)
   owr <- merge(ow.ref, ow)
 
 ### output
-  write.table(owr, quote=F, row.names=F, col.names=F, sep="\t", file=paste(tmpdir, "/allpops.sites", sep=""))
-  write.table(names(owr)[-c(1,2,3)], quote=F, row.names=F, col.names=F, sep="\t", file=paste(tmpdir, "/allpops.names", sep=""))
+  write.table(owr, quote=F, row.names=F, col.names=F, sep="\t", file=paste(tmpdir, "/allpops.", method, ".sites", sep=""))
+  write.table(names(owr)[-c(1,2,3)], quote=F, row.names=F, col.names=F, sep="\t", file=paste(tmpdir, "/allpops.", method, ".names", sep=""))
