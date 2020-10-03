@@ -21,8 +21,6 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/sn
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE 001 50
 ```
-sacct -j 16258382
-sacct -j 16258383
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
@@ -31,8 +29,8 @@ sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 5
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE 001 50
 ```
 
-sacct -j 16256850
-sacct -j 16256907
+sacct -j 16274411
+sacct -j 16274414
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
