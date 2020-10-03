@@ -31,7 +31,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   method=${2}
   maf=${3}
   mac=${4}
-  #maf=01; mac=50; popSet="PoolSeq"; method="SNAPE"
+  #maf=01; mac=50; popSet="PoolSeq"; method="PoolSNP"
 
 ## get list of SNYC files based on popSet & method
 ### full list
@@ -94,22 +94,25 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   echo "subset"
   # syncPath1=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz; syncPath2=/project/berglandlab/DEST/dest_mapped/pipeline_output/UK_Mar_14_12/UK_Mar_14_12.masked.sync.gz
 
-  if [ ${method}=="SNAPE" ]; then
+  if [[ "${method}" == "SNAPE" ]]; then
+    echo "SNAPE" ${method}
     parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep "SNAPE" | grep "monomorphic" ) ::: ${job} ::: ${tmpdir}
-  elif [ ${method}=="PoolSNP" ]; then
+  elif [[ "${method}" == "PoolSNP" ]]; then
+    echo "PoolSNP" ${method}
     parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
   fi
 
 ### paste function
   echo "paste"
   #find ${tmpdir} -size  0 -print -delete
-  Rscript --no-save --no-restore ${wd}/DEST/snpCalling/paste.R ${job} ${tmpdir}
+  Rscript --no-save --no-restore ${wd}/DEST/snpCalling/paste.R ${job} ${tmpdir} ${method}
 
 ### run through PoolSNP
   echo "poolsnp"
 
-  if [ ${method}=="SNAPE" ]; then
-    cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
+  if [[ "${method}" == "SNAPE" ]]; then
+    echo $method
+    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
     --sync - \
     --min-cov 4 \
     --max-cov 0.95 \
@@ -118,17 +121,19 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
     --min-freq 0 \
     --posterior-prob 0.9 \
     --SNAPE \
-    --names $( cat ${tmpdir}/allpops.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
+    --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
 
-  elif [ ${method}=="PoolSNP" ]; then
-    cat ${tmpdir}/allpops.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
+  elif [[ "${method}"=="PoolSNP" ]]; then
+    echo $method
+
+    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
     --sync - \
     --min-cov 4 \
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
     --miss-frac 0.5 \
-    --names $( cat ${tmpdir}/allpops.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
+    --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
   fi
 
 ### compress and clean up
