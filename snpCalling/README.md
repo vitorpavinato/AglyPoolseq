@@ -21,6 +21,15 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/sn
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE 001 50
 ```
+sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
+sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE 001 50
+
+sacct -j 16292561
+sacct -j 16292723
+
+ls -lh 2L_1_138315*
+
+cat /scratch/aob2x/dest/slurmOutput/split_and_run/
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash

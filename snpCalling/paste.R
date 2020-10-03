@@ -16,8 +16,11 @@ jobId=gsub(",", "_", job)
 ### get input files
   files <- list.files(tmpdir, pattern=jobId)
   length(files)
-  if(method=="PoolSNP") files <- files[!grepl("SNAPE", files)]
-  if(method=="SNAPE") files <- files[grepl("SNAPE", files)]
+  if(method=="PoolSNP") {
+    files <- files[!grepl("SNAPE", files)]
+  } else if(method=="SNAPE") {
+    files <- files[grepl("SNAPE", files)]
+  }
   length(files)
 
   setwd(tmpdir)
