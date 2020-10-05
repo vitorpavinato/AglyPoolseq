@@ -17,4 +17,4 @@ wd="/scratch/aob2x/dest"
 rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.gds /project/berglandlab/DEST/
 rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz /project/berglandlab/DEST/
 rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz.tbi /project/berglandlab/DEST/
-#rsync ${wd}/dest.Aug9_2020.001.50.header.bcf /project/berglandlab/DEST/dest.July6_2020.001.10.bcf
+rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.header.bcf /project/berglandlab/DEST/dest.PoolSeq.PoolSNP.001.50.bcf
