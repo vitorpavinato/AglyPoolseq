@@ -21,15 +21,6 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/sn
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE 001 50
 ```
-sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
-sbatch --array=1 ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE 001 50
-
-sacct -j 16292561
-sacct -j 16292723
-
-ls -lh 2L_1_138315*
-
-cat /scratch/aob2x/dest/slurmOutput/split_and_run/
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
@@ -38,12 +29,14 @@ sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 5
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE 001 50
 ```
 
-sacct -j 16274411
-sacct -j 16274414
+sacct -j 16393287
+sacct -j 16393288
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
-sbatch ${wd}/DEST/snpCalling/annotate.sh 001 50 Aug22_2020
+#sbatch ${wd}/DEST/snpCalling/annotate.sh 001 50 Aug22_2020
+sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP 001 50
+sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE 001 50
 ```
 
 
