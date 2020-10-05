@@ -14,7 +14,7 @@
 # sacct -j 14487964
 
 wd="/scratch/aob2x/dest"
-rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.gds /project/berglandlab/DEST/
-rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz /project/berglandlab/DEST/
-rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz.tbi /project/berglandlab/DEST/
-rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.header.bcf /project/berglandlab/DEST/dest.PoolSeq.PoolSNP.001.50.bcf
+rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.gds /project/berglandlab/DEST/gds/.
+rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz /project/berglandlab/DEST/vcf/.
+rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz.tbi /project/berglandlab/DEST/vcf/.
+rsync ${wd}/dest.PoolSeq.PoolSNP.001.50.header.bcf /project/berglandlab/DEST/bcf/.
