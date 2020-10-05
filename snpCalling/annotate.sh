@@ -22,24 +22,24 @@ mac=${4}
 wd=/scratch/aob2x/dest
 
 echo "index"
-  bcftools index ${wd}sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.bcf
-  bcftools index ${wd}sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.bcf
-  bcftools index ${wd}sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.bcf
-  bcftools index ${wd}sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.bcf
-  bcftools index ${wd}sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.bcf
-  bcftools index ${wd}sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.bcf
-  bcftools index ${wd}sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.bcf
+  bcftools index ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.bcf
 
 
 echo "concat"
   bcftools concat \
-  ${wd}sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.bcf \
-  ${wd}sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.bcf \
-  ${wd}sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.bcf \
-  ${wd}sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.bcf \
-  ${wd}sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.bcf \
-  ${wd}sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.bcf \
-  ${wd}sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.bcf \
+  ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.bcf \
+  ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.bcf \
+  ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.bcf \
+  ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.bcf \
+  ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.bcf \
+  ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.bcf \
+  ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.bcf \
   -o ${wd}/dest.${popSet}.${method}.${maf}.${mac}.bcf
 
 echo "convert to vcf & annotate"
