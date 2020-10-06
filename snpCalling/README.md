@@ -21,6 +21,7 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/sn
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE 001 50
 ```
+sacct -j 16428451
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
@@ -29,16 +30,13 @@ sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 5
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE 001 50
 ```
 
-sacct -j 16393287
-sacct -j 16393288
-
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
 #sbatch ${wd}/DEST/snpCalling/annotate.sh 001 50 Aug22_2020
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP 001 50
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE 001 50
 ```
-
+sacct -j 16402982
 
 
 ## 3. Parameter evaluation. Some modifications to introduce internal parallel function. Runs through 3c, I think.
