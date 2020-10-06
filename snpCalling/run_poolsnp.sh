@@ -48,7 +48,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   fi
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=2
+  #SLURM_ARRAY_TASK_ID=1
   job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job

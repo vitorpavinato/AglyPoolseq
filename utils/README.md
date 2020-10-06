@@ -1,3 +1,48 @@
+# Some scripts to generate shared data files after SNP calling
+
+### 0. Define working directory
+```bash
+wd=/scratch/aob2x/dest
+```
+
+### 1. bamMappingRates.R
+  ### makes mps? need to check
+
+### 2. Get counts of private polymorphisms using only PoolSeq samples for both PoolSNP & SNAPE
+```bash
+sbatch --array=1-246 ${wd}/DEST/utils/getPrivateSNPs.sh
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## some scripts to help download population specific files
 ```bash
 wget -i <fileName>
