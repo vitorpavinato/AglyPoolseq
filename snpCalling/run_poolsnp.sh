@@ -31,7 +31,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   method=${2}
   maf=${3}
   mac=${4}
-  #maf=01; mac=50; popSet="PoolSeq"; method="PoolSNP"
+  #maf=01; mac=50; popSet="all"; method="PoolSNP"
 
 ## get list of SNYC files based on popSet & method
 ### full list
@@ -39,10 +39,10 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   syncPath2orig="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
 
 ### target pops
-  if [ "${popSet}"=="PoolSeq" ]; then
+  if [[ "${popSet}" == "PoolSeq" ]]; then
     syncPath1=""
     syncPath2=${syncPath2orig}
-  elif [ "${popSet}"=="all" ]; then
+  elif [[ "${popSet}" == "all" ]]; then
     syncPath1=${syncPath1orig}
     syncPath2=${syncPath2orig}
   fi
@@ -96,10 +96,10 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 
   if [[ "${method}" == "SNAPE" ]]; then
     echo "SNAPE" ${method}
-    parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep "SNAPE" | grep "monomorphic" ) ::: ${job} ::: ${tmpdir}
+    parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} | grep "SNAPE" | grep "monomorphic" ) ::: ${job} ::: ${tmpdir}
   elif [[ "${method}" == "PoolSNP" ]]; then
     echo "PoolSNP" ${method}
-    parallel -j 1 subsection ::: $( ls  ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
+    parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} | grep -v "SNAPE" ) ::: ${job} ::: ${tmpdir}
   fi
 
 ### paste function
