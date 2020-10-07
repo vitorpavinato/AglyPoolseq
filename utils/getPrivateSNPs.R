@@ -7,7 +7,7 @@ args = commandArgs(trailingOnly=TRUE)
 pop.n <- as.numeric(args[1])
 set <- args[2]
 
-# args <- 10
+# pop.n <- 1; set<-"PoolSNP"
 
 ### libraries
   library(data.table)
@@ -53,8 +53,9 @@ set <- args[2]
   }
 
 ### open GDS file
-  if(set==1) genofile <- seqOpen("/project/berglandlab/DEST/gds/dest.PoolSeq.PoolSNP.001.50.ann.gds", allow.duplicate=T)
-  if(set==2) genofile <- seqOpen("/scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.gds", allow.duplicate=T)
+  if(set=="PoolSNP") genofile <- seqOpen("/project/berglandlab/DEST/gds/dest.PoolSeq.PoolSNP.001.50.ann.gds", allow.duplicate=T)
+  if(set=="SNAPE") genofile <- seqOpen("/scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.gds", allow.duplicate=T)
+  if(set=="all") genofile <- seqOpen("/scratch/aob2x/dest/dest.all.PoolSNP.001.50.ann.gds", allow.duplicate=T)
 
 ### make SNP table
   snp.dt <- data.table(chr=seqGetData(genofile, "chromosome"),
@@ -71,4 +72,6 @@ set <- args[2]
   seqResetFilter(genofile)
   pops <- seqGetData(genofile, "sample.id")
   private.dt <- foreach(i=pops[pop.n])%do%getPrivateSNPs(pop.i=i)
-  private.dt <- rbindlist(private.dt)
+  private.dt
+
+  seqClose(genofile)
