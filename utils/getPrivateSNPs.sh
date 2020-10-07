@@ -15,7 +15,7 @@
 ### run as: sbatch --array=1-246 ${wd}/DEST/utils/getPrivateSNPs.sh
 ### sacct -j 13029741
 
-module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
+module load intel/18.0 intelmpi/18.0 R/3.6.3
 
 wd="/scratch/aob2x/dest"
 
