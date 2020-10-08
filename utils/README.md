@@ -13,4 +13,5 @@ wd=/scratch/aob2x/dest
 ```bash
 sbatch --array=1-246 ${wd}/DEST/utils/getPrivateSNPs.sh
 ```
-sbatch --array=1 ${wd}/DEST/utils/getPrivateSNPs.sh
+#sbatch --array=1 ${wd}/DEST/utils/getPrivateSNPs.sh
+#sacct -j 16534019
