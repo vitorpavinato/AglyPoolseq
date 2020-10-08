@@ -33,7 +33,7 @@ parser.add_option("--coverage", dest="cov", help="Python Object file with the co
 parser.add_option("--maxcov", dest="maxcov", help="The maximum coverage threshold percentile, e.g. 0.9 ")
 parser.add_option("--mincov", dest="mincov", help="The minimum coverage threshold: e.g. 10")
 parser.add_option("--SNAPE", action="store_true", default=False, dest="snape", help="Parsing SNAPE sync file")
-parser.add_option("--maxsnape", dest="maxsnape", help="e.g. 10", type="float")
+parser.add_option("--maxsnape", dest="maxsnape", help="e.g. 0.9", type="float")
 
 
 parser.add_option_group(group)
@@ -115,8 +115,9 @@ if options.snape:
     for l in load_data(options.sync):
         C,P,R,S,I=l.split()
         info = float(I.split(":")[4])
+        ref_info = float(I.split(":")[5])
         COV=len(sync2string(S))
-        if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or (info <= float(options.maxsnape) and info >= float(1 - float(options.maxsnape))):
+        if int(P) in exclude[C] or COV < int(options.mincov) or COV > maximumcov[C] or (info < float(options.maxsnape) and info > float(1 - float(options.maxsnape))):
             SO.write("\t".join([C,P,R,".:.:.:.:.:."])+"\n")
             if Start=="":
                 Start=int(P)
@@ -145,7 +146,28 @@ if options.snape:
                 elif R == "G":
                     g_counts = nucleotides[3]
                 else:
-                    print("ERROR, reference is not a nucleotide")
+                    print("ERROR, reference is not a nucleotide " + C + " " + P)
+                    a_counts = nucleotides[0]
+                    t_counts = nucleotides[1]
+                    c_counts = nucleotides[2]
+                    g_counts = nucleotides[3]
+                SO.write("\t".join([C,P,R])+ "\t" + str(a_counts) + ":" + str(t_counts) + ":" + str(c_counts) + ":" + str(g_counts) + ":0:0\n")
+            elif info >= float(options.maxsnape) and ref_info >= float(options.maxsnape):
+                nucleotides = S.split(":")
+                a_counts = nucleotides[0]
+                t_counts = nucleotides[1]
+                c_counts = nucleotides[2]
+                g_counts = nucleotides[3]
+                if R == "A":
+                    a_counts = 0
+                elif R == "T":
+                    t_counts = 0
+                elif R == "C":
+                    c_counts = 0
+                elif R == "G":
+                    g_counts = 0
+                else:
+                    print("ERROR, reference is not a nucleotide " + C + " " + P)
                 SO.write("\t".join([C,P,R])+ "\t" + str(a_counts) + ":" + str(t_counts) + ":" + str(c_counts) + ":" + str(g_counts) + ":0:0\n")
             else:
                 SO.write("\t".join([C,P,R,S])+"\n")
