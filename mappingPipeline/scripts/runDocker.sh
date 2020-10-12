@@ -14,8 +14,8 @@
 
 ### test run as: sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 # sacct -j 14446076
-# cat /scratch/aob2x/dest/slurmOutput/dockerMap.14767917_10.out | grep -v "Reference is N; most frequent allele is calculated in position" | less -S
-# cat /scratch/aob2x/dest/slurmOutput/dockerMap.14779079_2.err | tail
+# cat /scratch/aob2x/dest/slurmOutput/dockerMap.16786082_84.out | grep -v "Reference is N; most frequent allele is calculated in position" | less -S
+# cat /scratch/aob2x/dest/slurmOutput/dockerMap.16786082_84.err | tail
 
 ### modules
   module load singularity
@@ -42,6 +42,8 @@
   touch /scratch/aob2x/fastq/${srx}_2.fastq.gz
 
 ### run docker
+
+
   singularity run \
   ${wd}/dest_mapping_latest.sif \
   /scratch/aob2x/fastq/${srx}_1.fastq.gz \

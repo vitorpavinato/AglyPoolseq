@@ -35,7 +35,7 @@ singularity pull docker://alanbergland/dest_mapping:latest
 sbatch --array=1-$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l ) \
 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
 ```
-
+sacct -j 16786082
 
 ### 5. Docker info
 singularity run \
