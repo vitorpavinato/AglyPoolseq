@@ -57,4 +57,4 @@ sbatch --array=1-$( ls /scratch/aob2x/dest/sub_bcf_paramTest/dest.June14_2020.ma
 ```
 
 
-## 4.
+## 4. Generate liftover table for polymorphic sites (dm6 -> dm3/r5)
