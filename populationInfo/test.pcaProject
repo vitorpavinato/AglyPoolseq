@@ -1,0 +1,5 @@
+new("pcaProject", projDir = "/sfs/lustre/bahamut/scratch/aob2x/drosRTEC/LEA/", 
+    pcaDir = "test.pca/", n = 246L, L = 100000L, K = 10L, center = TRUE, 
+    scale = FALSE, pcaProject.file = "test.pcaProject", input.file = "test.lfmm", 
+    eigenvalue.file = "test.eigenvalues", eigenvector.file = "test.eigenvectors", 
+    sdev.file = "test.sdev", projection.file = "test.projections")

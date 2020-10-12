@@ -1,0 +1,2 @@
+ERROR: Need to supply <fastq_file_1_path> <fastq_file_2_path> <sample_name> <output_dir> as positional arguments, and no others
+/var/spool/slurm/slurmd/job14432566/slurm_script: line 43: --dont-prep: command not found
