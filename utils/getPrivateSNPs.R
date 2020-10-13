@@ -40,7 +40,7 @@ set <- args[2]
                           n=length(pop.ac)),
                       list(chr, pop, set)]
 
-      out.fn <- gsub(".delim", ".summary.delim", out.fn)
+      out.fn <- gsub(".csv", ".summary.delim", out.fn)
       write.table(pop.ag, out.fn, sep="\t", quote=F, row.names=F)
     }
 
