@@ -13,13 +13,7 @@ wd=/scratch/aob2x/dest
   ```bash
   sbatch --array=1-246 ${wd}/DEST/utils/getPrivateSNPs.sh
   ```
-  #sbatch --array=1 ${wd}/DEST/utils/getPrivateSNPs.sh
-  #sacct -j 16534019 | grep "TIMEOUT" | cut -f1 -d' ' | cut -f2 -d'_' | tr '\n' ','
-
-
-  sbatch --array=2,4,5,6,7,8,9,11,14,15,16,17,18,19,20,21,22,23,25,26,28,29,30,31,32,33,34,37,38,39,40,41,43,46,47,49,50,51,52,55,56,57,58,59,60,61,62,63,64,65,66,69,70,71,72,74,75,76,77,78,79,81,82,84,85,87,88,89,90,91,93,94,95,98,99,100,102,104,110,113,114,115,117,118,119,120,121,122,123,124,126,128,139,142,143,144,145,150,151,152,153,154,155,157,161,163,170,173,174,177,182,183,188,192,195,196,197,200,203,206,210,211,215,217,218,224,236,237,240,242,246 \
-  ${wd}/DEST/utils/getPrivateSNPs.sh
-  sacct -j 16901160
+  sacct -j 16914500
 
 ## 3. Make liftover of polymorphic locations to dm3 coordinates
 ### 3a. download liftover file; liftOver utility assumed to exist somewhere
