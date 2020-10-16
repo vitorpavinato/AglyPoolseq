@@ -12,8 +12,11 @@
 
 
 
-### run as: sbatch --array=1-246 ${wd}/DEST/utils/pnps.PrivateSNPs.sh
-### sacct -j 13029741
+### run as: sbatch --array=2-246 ${wd}/DEST/utils/pnps.PrivateSNPs.sh
+### sacct -j 17166145
+
+### run as: sbatch --array=1 ${wd}/DEST/utils/pnps.PrivateSNPs.sh
+### sacct -j 17164717
 
 module load intel/18.0 intelmpi/18.0 R/3.6.3
 
