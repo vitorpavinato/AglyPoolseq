@@ -44,7 +44,7 @@ set <- args[2]
       message(pop)
 
     ### tabulate basic characteristics of MAF, AC, etc. for private SNPs
-
+      message("get private")
       # priv.pop <- priv.pop[1:500]
 
       seqSetFilter(genofile.priv, variant.id=priv.pop$id, sample.id=pop)
@@ -70,6 +70,7 @@ set <- args[2]
         priv.pop[,ann:=snp.dt1.an$col]
 
   ### get common matched control SNPs
+    message("get control")
     seqResetFilter(genofile.common)
     seqSetFilter(genofile.common, sample.id=pop, variant.id=snp.dt.common$id)
 
@@ -110,6 +111,7 @@ set <- args[2]
       control.SNPs[,pop:=pop]
 
   ### tabulate pnps
+    message("save")
     priv.pop[,class:="private"]
     control.SNPs[,class:="common"]
     m <- rbind(priv.pop, control.SNPs, fill=T)
