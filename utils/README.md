@@ -12,6 +12,12 @@ wd=/scratch/aob2x/dest
 ### 2a. Generate output for each population
   ```bash
   sbatch --array=1-246 ${wd}/DEST/utils/getPrivateSNPs.sh
+
+  tar czvf /project/berglandlab/DEST/privateSNPs/privateSNPs.SNAPE.tar.gz ${wd}/privateSNPs/*SNAPE.csv
+  tar czvf /project/berglandlab/DEST/privateSNPs/privateSNPs.PoolSNP.tar.gz ${wd}/privateSNPs/*PoolSNP.csv
+
+  tar czvf /project/berglandlab/DEST/privateSNPs/privateSNPs.summary.tar.gz ${wd}/privateSNPs/*summary.delim
+  
   ```
   sacct -j 16914500
 
