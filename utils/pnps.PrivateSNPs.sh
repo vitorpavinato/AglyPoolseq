@@ -24,7 +24,7 @@
 ### sacct -j 17196415
 
 ### sbatch --array=102,114,151 ${wd}/DEST/utils/pnps.PrivateSNPs.sh
-### sacct -j 17196415
+### sacct -j 17211415
 
 module load intel/18.0 intelmpi/18.0 R/3.6.3
 

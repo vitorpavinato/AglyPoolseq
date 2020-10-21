@@ -43,8 +43,11 @@
 ### run docker
 
 
+  #singularity run \
+  #${wd}/dest_mapping_latest.sif \
+
   singularity run \
-  ${wd}/dest_mapping_latest.sif \
+  ${wd}/dmelsync_hpc.sif \
   /scratch/aob2x/fastq/${srx}_1.fastq.gz \
   /scratch/aob2x/fastq/${srx}_2.fastq.gz \
   ${pop} \

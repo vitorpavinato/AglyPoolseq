@@ -1,4 +1,4 @@
-module load intel/18.0 intelmpi/18.0 R/3.6.3; R
+#module load intel/18.0 intelmpi/18.0 R/3.6.3; R
 
 
 ### libraries
