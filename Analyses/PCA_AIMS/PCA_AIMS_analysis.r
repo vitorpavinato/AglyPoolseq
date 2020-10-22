@@ -163,15 +163,25 @@ ggsave("PCA_figure.pdf",( (DEST_Woldwide_PCA12+DEST_Woldwide_PCA13)/(Wolrd_PC1+W
 
 #load("./DEST_DGN_AllSNPs_Metadata.Rdata")
 
+################################## ###################### ######################
+# Train Continental Cluster Model 
+################################## ###################### ######################
+
 left_join(data.frame(sampleId=rownames(dat_filt_maf_LD500_naimp)),
           DEST_DGN_metadata[,c("sampleId","Continental_clusters")]
       ) -> dat_filt_maf_LD500_naimp_labels
 
 rownames(dat_filt_maf_LD500_naimp) == dat_filt_maf_LD500_naimp_labels$sampleId
 
+#Checkpoint
+save(
+	dat_filt_maf_LD500_naimp,
+	dat_filt_maf_LD500_naimp_labels, 
+	file = "./data_to_train_Cluster_DAPC.Rdata"
+	)
+
 # Train model on continental cluster
 xval_cluster <- xvalDapc(dat_filt_maf_LD500_naimp, as.factor(dat_filt_maf_LD500_naimp_labels$Intracontinent_cluster), n.pca.max = 300, training.set = 0.9,result = "groupMean", center = TRUE, scale = FALSE, n.pca = NULL, n.rep = 30, xval.plot = FALSE)
-
 
 #save(xval_cluster, file = "./xval_DAPC_optimization.Rdata")
 #load("./xval_DAPC_optimization.Rdata")
@@ -180,8 +190,10 @@ xval_cluster <- xvalDapc(dat_filt_maf_LD500_naimp, as.factor(dat_filt_maf_LD500_
 xval$`Cross-Validation Results` %>% ggplot(aes(x=n.pca, y=success))  + geom_point(shape = 21, size = 3, fill = "grey") + geom_vline(xintercept = 40, linetype = "dashed") + xlab("Number of PCs retained") + ylab("Probability of Successul Prediction") + theme_classic() -> cross_val_results
 ggsave("cross_val_results.pdf",cross_val_results,  width =4, height = 4)
 
-
+################################## ###################### ######################
 # Train model on country/state model
+################################## ###################### ######################
+
 # Make some corrections to the prior label
 left_join(data.frame(sampleId=rownames(dat_filt_maf_LD500_naimp)),
           samps[,c("sampleId","locality")]
@@ -198,8 +210,26 @@ dat_filt_maf_LD500_naimp_States[c(255),"locality"] = "CA"
 
 dat_filt_maf_LD500_naimp_States %<>% separate(locality, into = c("State","City"), sep = "_")
 
-rownames(dat_filt_maf_LD500_naimp) == dat_filt_maf_LD500_naimp_States$sampleId
+dat_filt_maf_LD500_naimp_States$State %>% table %>% as.data.frame() -> State_Count
+names(State_Count)[1]="State"
 
+# We have to reduce the data set to popualtions with N >= 3 to train the model.
+State_Count[which(as.numeric(State_Count$Freq) >= 3 ),] %>% .$State %>% as.character -> StatesToKeep
 
-xval_state <- xvalDapc(dat_filt_maf_LD500_naimp, as.factor(dat_filt_maf_LD500_naimp_States$State), n.pca.max = 300, training.set = 0.9,result = "groupMean", center = TRUE, scale = FALSE, n.pca = NULL, n.rep = 30, xval.plot = FALSE)
+dat_filt_maf_LD500_naimp_States %>% .[which(.$State %in% StatesToKeep), "sampleId"] -> Samples_to_Keep
+
+dat_filt_maf_LD500_naimp %>% .[which(rownames(.) %in%  Samples_to_Keep),] -> dat_filt_maf_LD500_naimp_forStateTrain
+
+dat_filt_maf_LD500_naimp_States %>% .[which(.$sampleId %in%  Samples_to_Keep),] -> dat_filt_maf_LD500_naimp_Labels_StatesTrain
+
+rownames(dat_filt_maf_LD500_naimp_forStateTrain) == dat_filt_maf_LD500_naimp_Labels_StatesTrain$sampleId
+
+#Checkpoint
+save(
+	dat_filt_maf_LD500_naimp_forStateTrain,
+	dat_filt_maf_LD500_naimp_Labels_StatesTrain, 
+	file = "./data_to_train_State_DAPC.Rdata"
+	)
+
+xval_state <- xvalDapc(dat_filt_maf_LD500_naimp_forStateTrain, as.factor(dat_filt_maf_LD500_naimp_Labels_StatesTrain$State), n.pca.max = 300, training.set = 0.9,result = "groupMean", center = TRUE, scale = FALSE, n.pca = NULL, n.rep = 30, xval.plot = FALSE)
 
