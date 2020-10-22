@@ -1,3 +1,11 @@
+#ijob -A jcbnunez -c 2 --mem=120G  --partition=largemem
+#module load gcc/7.1.0  
+#module load openmpi/3.1.4
+#module load gdal
+#module load proj
+#module load goolf R/4.0.0
+#R
+
 library(adegenet)
 library(tidyverse)
 library(magrittr)
@@ -232,4 +240,127 @@ save(
 	)
 
 xval_state <- xvalDapc(dat_filt_maf_LD500_naimp_forStateTrain, as.factor(dat_filt_maf_LD500_naimp_Labels_StatesTrain$State), n.pca.max = 300, training.set = 0.9,result = "groupMean", center = TRUE, scale = FALSE, n.pca = NULL, n.rep = 30, xval.plot = FALSE)
+
+#Plot the calibration of both prior groups
+
+rbind(
+mutate(data.frame(MSA=xval_cluster$`Mean Successful Assignment by Number of PCs of PCA`), prior = "cluster", PC = rownames(xval_cluster$`Mean Successful Assignment by Number of PCs of PCA`)),
+mutate(data.frame(MSA=xval_state$`Mean Successful Assignment by Number of PCs of PCA`), prior = "state",  PC = rownames(xval_state$`Mean Successful Assignment by Number of PCs of PCA`))
+) %>% ggplot(aes(x=as.numeric(PC), y=as.numeric(MSA), color = prior)) + geom_line(size = 1.5) + geom_vline(xintercept = 40, linetype = "dashed") + theme_classic() + theme(legend.position = "bottom") + ylab("Mean Successful Assignment") + xlab("Number of PCs retained") -> MSA_DAPX_xval
+
+ggsave("MSA_DAPX_xval.pdf",MSA_DAPX_xval,  width =4, height = 4)
+
+################################## ###################### ######################
+# Find SNPs corrrelated to the first 40 PCs
+################################## ###################### ######################
+
+load("./DEST_DGN_AllSNPs_Metadata.Rdata")
+
+dat_filt_maf_LD500_naimp %>% PCA(scale.unit = F, graph = F, ncp = 40) -> LD500_naimp_PCA_40PCs_object
+
+save(LD500_naimp_PCA_40PCs_object, file = "./LD500_naimp_PCA_40PCs_object.Rdata")
+
+################################## ###################### ######################
+# Run Correlation Analysys
+################################## ###################### ######################
+
+## Run the script --> Run_SNP_PC_correlations_array.r
+## This is a cluster array launched with --> submit_R_dimdec_array.sh
+
+################################## ###################### ######################
+# Analyse correlation analysis
+################################## ###################### ######################
+
+load("./LD500_naimp_PCA_40PCs_object.Rdata")
+PC_coors = read.table("./PCs_1to40.corrs.txt", head = F, sep = "\t")
+names(PC_coors) = c("cor","pval","SNPid","PC")
+PC_coors$cor = as.numeric(PC_coors$cor)
+PC_coors$pval = as.numeric(PC_coors$pval)
+
+data.frame(N_snps= floor((LD500_naimp_PCA_40PCs_object$eig[,2]/100)*50000) ) %>% mutate(PC = rownames(.)) %>% separate(PC, into = c("comp","PC"), sep = " ") %>% .[1:40,] -> Markers_to_choose_50000
+
+AIM_set50000=list()
+for(i in 1:40){
+
+N_markers = Markers_to_choose_50000$N_snps[which(Markers_to_choose_50000$PC == i)]
+
+PC_coors[order(PC_coors$pval),]   %>% .[which(.$PC == i),] %>% head(N_markers) -> selected_markers
+
+AIM_set50000[[i]] = selected_markers
+
+}
+
+do.call(rbind, AIM_set50000) %>% 
+arrange(desc(pval)) %>% 
+group_by(SNPid) %>% slice(1) -> AIMS_Subset
+
+save(AIMS_Subset, file = "./AIM_SNPs.Rdata")
+
+# How many SNPs per PC
+AIMS_Subset %>% group_by(PC) %>% summarize(N=n()) %>% ggplot(aes(x=PC, y=N)) + geom_bar(stat = "identity") + xlab("PC") + ylab("SNP number") + theme_classic() -> barplot_PCsNSNPs
+
+#ggsave("barplot_PCsNSNPs.pdf",barplot_PCsNSNPs,  width =3, height = 3)
+
+# What are the SNP correlations
+AIMS_Subset %>% ggplot(aes(x=as.factor(PC),y=abs(cor))) + geom_boxplot(outlier.shape = NA, fill = "gray") + theme_classic() + theme(legend.position = "top") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + xlab("PC (1-40)") + ylab("Abs. val. Correlation") -> PCA_correaltion_plot
+
+ggsave("PCA_corr_Num_plot.pdf",(barplot_PCsNSNPs+PCA_correaltion_plot),  width =8, height = 4)
+
+################################## ###################### ######################
+# Analyse correlation analysis
+################################## ###################### ######################
+
+load("./DEST_DGN_AllSNPs_Metadata.Rdata")
+load("./AIM_SNPs.Rdata")
+
+dat_filt_maf_LD500_naimp[,which(colnames(dat_filt_maf_LD500_naimp) %in% AIMS_Subset$SNPid)] -> datSNPs_AIMset
+
+dim(datSNPs_AIMset)[1] == dim(DEST_DGN_metadata)[1]
+
+xval_AIMset <- xvalDapc(datSNPs_AIMset, DEST_DGN_metadata$Continental_clusters, n.pca.max = 50, training.set = 0.9,result = "groupMean", center = TRUE, scale = FALSE,n.pca = NULL, n.rep = 30, xval.plot = FALSE)
+
+################################## ###################### ######################
+# Do a LOOCV on the continental cluster
+################################## ###################### ######################
+
+## Run the script --> LOOCV_Cluster.r
+## This is a cluster array launched with --> submit_R_LOOCV_cluster.sh
+
+################################## ###################### ######################
+# Plot LOOCV on the state cluster
+################################## ###################### ######################
+
+## Run the script --> LOOCV_State.r
+## This is a cluster array launched with --> submit_R_LOOCV_state.sh
+
+################################## ###################### ######################
+# LOOCV analysis
+################################## ###################### ######################
+
+
+## ---- > PENDING <------ ##
+
+
+
+################################## ###################### ######################
+# Genomic Landscape of Aims
+################################## ###################### ######################
+
+load("./AIM_SNPs.Rdata")
+
+AIMS_Subset %>% .[which(.$PC %in% c(1) ),] %>% separate(SNPid, remove = F, into = c("chr","pos","id")) %>% ggplot( aes(x=(1:dim(.)[1]) ,y = abs(cor), color = chr )) + geom_point(alpha = 0.5) + theme_classic() + theme(legend.position = "bottom") +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + xlab("Genomic Position") + ylab("|Cor.| to PC 1") -> SNP_positions
+
+ggsave("SNP_positions.pdf",SNP_positions,  width =6, height =2)
+
+
+
+
+
+
+
+
 
