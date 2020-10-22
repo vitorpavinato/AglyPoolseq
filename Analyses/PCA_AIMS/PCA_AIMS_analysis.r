@@ -165,6 +165,46 @@ ggplot(data = world) +
 
 ggsave("PCA_figure.pdf",( (DEST_Woldwide_PCA12+DEST_Woldwide_PCA13)/(Wolrd_PC1+Wolrd_PC3) ),  width = 8, height = 6)
 
+
+##################################
+# Anova on PCA
+##################################
+
+PCA_coords_metadata %>% .[,c(1:50, which(names(.) %in% c("sampleId", "lat","long")) )] %>% melt(id = c("sampleId", "lat","long")) -> PCA_coords_melt
+
+as.character(unique(PCA_coords_melt$variable)) -> dims_to_study
+
+lm_out=list()
+for(i in 1:50){
+
+temp_lat = summary(lm(lat ~ value, data = PCA_coords_melt[which(PCA_coords_melt$variable == dims_to_study[i] ),]))
+
+temp_long = summary(lm(long ~ value, data = PCA_coords_melt[which(PCA_coords_melt$variable == dims_to_study[i] ),]))
+
+
+lm_out[[i]] = 	rbind(
+					c( temp_lat$coefficients[2,], i, "lat"),
+					c( temp_long$coefficients[2,], i, "long")
+					)
+} #i
+
+do.call(rbind, lm_out) %>% as.data.frame -> lat_long_lms
+
+lat_long_lms[,1:4] = apply(lat_long_lms[,1:4], 2, as.numeric)
+
+lat_long_lms %>% ggplot(aes(x=as.numeric(V5), y=Estimate, ymin =Estimate-`Std. Error`, ymax=Estimate+`Std. Error`, fill = -log10(`Pr(>|t|)`)) ) + geom_errorbar() + geom_point(shape = 21) + facet_wrap(~V6) -> est_lms
+
+ggsave("est_lms.pdf",est_lms,  width = 8, height = 6)
+
+lat_long_lms %>% ggplot( aes(x=as.numeric(V5), y = -log10(`Pr(>|t|)`), fill = -log10(`Pr(>|t|)`)) ) + geom_point(shape = 21, size =3, fill = "grey") + facet_wrap(~V6) + geom_hline(yintercept = -log10(0.05)) + geom_hline(yintercept = -log10(0.05/50)) + theme_classic() + xlim(1,50) + coord_trans( y="log10") -> est_pvals
+
+ggsave("est_pvals.pdf",est_pvals,  width = 12, height = 1.4)
+
+write.table( lat_long_lms, 
+             file = "./lat_long_lms.txt", 
+             sep = "\t",quote = F ,row.names = F, col.names = T, append = F)
+
+
 ################################## ###################### ######################
 # Part 3 -- Train DAPC to discover demography informative eigenvectors 
 ################################## ###################### ######################
