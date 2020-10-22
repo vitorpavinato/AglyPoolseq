@@ -339,9 +339,22 @@ xval_AIMset <- xvalDapc(datSNPs_AIMset, DEST_DGN_metadata$Continental_clusters, 
 # LOOCV analysis
 ################################## ###################### ######################
 
+LOOCV_cluster = read.table("./DAPC_Cluster_LOOVC.txt", head = F, sep = "\t")
+LOOCV_cluster %<>% mutate(test = "Cluster")
+names(LOOCV_cluster)[1:8] = c("DAPC_Label","DAPC_P","Real_Label","Real_P","id","sampleId","nPC","nDA")
 
-## ---- > PENDING <------ ##
+LOOCV_state = read.table("./DAPC_State_LOOVC.txt", head = F, sep = "\t")
+LOOCV_state %<>% mutate(test = "State")
+names(LOOCV_state)[1:8] = c("DAPC_Label","DAPC_P","Real_Label","Real_P","id","sampleId","nPC","nDA")
 
+LOOCV_cluster %>% ggplot(aes(x=as.numeric(Real_P), y=as.numeric(DAPC_P), fill = test ))  + geom_jitter(size = 5,shape =21, alpha =0.5)  + theme_classic() + ylab("DAPC Posterior") + xlab("Label Posterior") + theme(legend.position = "none") -> posteriors_Clusters
+posteriors_Clusters <- ggMarginal(posteriors_Clusters, type="histogram")
+
+LOOCV_state %>% ggplot(aes(x=as.numeric(Real_P), y=as.numeric(DAPC_P), fill = test ))  + geom_jitter(size = 5,shape =21, alpha =0.5)  + theme_classic() + ylab("DAPC Posterior") + xlab("Label Posterior") + theme(legend.position = "none") -> posteriors_State
+posteriors_State <- ggMarginal(posteriors_State, type="histogram")
+
+ggsave("posteriors_LOOCVs_cluster.pdf",(posteriors_Clusters),  width =4, height = 4)
+ggsave("posteriors_LOOCVs_state.pdf",(posteriors_State),  width =4, height = 4)
 
 
 ################################## ###################### ######################
@@ -355,12 +368,3 @@ AIMS_Subset %>% .[which(.$PC %in% c(1) ),] %>% separate(SNPid, remove = F, into 
         axis.ticks.x=element_blank()) + xlab("Genomic Position") + ylab("|Cor.| to PC 1") -> SNP_positions
 
 ggsave("SNP_positions.pdf",SNP_positions,  width =6, height =2)
-
-
-
-
-
-
-
-
-
