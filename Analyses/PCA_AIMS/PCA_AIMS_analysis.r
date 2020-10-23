@@ -28,6 +28,8 @@ library(patchwork)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(ggExtra)
+library(vcfR)
+
 
 source("./ThinLDinR_SNPtable.R")
 
@@ -408,3 +410,39 @@ AIMS_Subset %>% .[which(.$PC %in% c(1) ),] %>% separate(SNPid, remove = F, into 
         axis.ticks.x=element_blank()) + xlab("Genomic Position") + ylab("|Cor.| to PC 1") -> SNP_positions
 
 ggsave("SNP_positions.pdf",SNP_positions,  width =6, height =2)
+
+################################## ###################### ######################
+# Test on Individual Samples
+################################## ###################### ######################
+
+load("./data_to_train_State_DAPC.Rdata")
+load("./AIM_SNPs.Rdata")
+
+OW_vcf = read.vcfR("OW_to_predict.recode.vcf.gz")
+
+OW_vcf_gl <- vcfR2genlight(OW_vcf)
+
+tab(OW_vcf_gl) -> OW_vcf_DF
+
+data.frame(AIMS_Subset$SNPid) %>% separate(AIMS_Subset.SNPid, into = c("chr", "pos", "id") ) %>% mutate(OW_lift = paste(chr, pos, sep = "_")) -> AIM_large_set_OWlift
+
+OW_vcf_DF[,which(colnames(OW_vcf_DF) %in% AIM_large_set_OWlift$OW_lift)] %>% colnames(.)-> OW_intercept
+
+AIM_large_set_OWlift %>% .[which(.$OW_lift %in% OW_intercept),] %>% mutate(SNPid = paste(chr,pos,id, sep = "_" )) -> SNPS_to_retrain
+
+
+###
+#dat_filt_maf_LD500_naimp_forStateTrain  
+#dat_filt_maf_LD500_naimp_Labels_StatesTrain$State
+
+xval_OW_retrain<- xvalDapc(dat_filt_maf_LD500_naimp_forStateTrain[,which(colnames(dat_filt_maf_LD500_naimp_forStateTrain) %in% SNPS_to_retrain$SNPid)], dat_filt_maf_LD500_naimp_Labels_StatesTrain$State, n.pca.max = 300, training.set = 0.9,result = "groupMean", center = TRUE, scale = FALSE,n.pca = NULL, n.rep = 30, xval.plot = TRUE)
+
+###
+OW_vcf_DF[,which(colnames(OW_vcf_DF) %in% SNPS_to_retrain$OW_lift)] ->OW_LargeSet_normalized
+
+OW_LargeSet_normalized = OW_LargeSet_normalized/2
+
+pred.OW <- predict.dapc(xval_OW_retrain$DAPC, 
+                        newdata=OW_LargeSet_normalized
+)
+
