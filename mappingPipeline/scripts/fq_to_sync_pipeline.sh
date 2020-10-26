@@ -21,7 +21,7 @@ priortype="informative"
 fold="unfolded"
 maxsnape=0.9
 nflies=40
-base_quality_threshold=15
+base_quality_threshold=25
 illumina_quality_coding=1.8
 minIndel=5
 do_prep=1
@@ -250,13 +250,19 @@ if [ $do_prep -eq "1" ]; then
   mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
   rm $output/$sample/${sample}.contaminated_realigned.bai
 
-  samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
+  #samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
   check_exit_status "mpileup" $?
 
 fi
 
 if [ $do_poolsnp -eq "1" ]; then
+
+  samtools mpileup $output/$sample/${sample}.mel.bam \
+  -B \
+  -Q ${base_quality_threshold} \
+  -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
+
 
   python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
   --mpileup $output/$sample/${sample}.mel_mpileup.txt \
@@ -268,7 +274,7 @@ if [ $do_poolsnp -eq "1" ]; then
 
   check_exit_status "Mpileup2Sync" $?
 
-  #For the non-snape output
+  #For the PoolSNP output
   python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
   --sync $output/$sample/${sample}.sync.gz \
   --output $output/$sample/${sample} \
@@ -308,23 +314,23 @@ fi
 if [ $do_snape -eq "1" ]; then
 
   /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
-    ${sample}.mel_mpileup.txt \
-    $output \
-    $sample \
-    $theta \
-    $D \
-    $priortype \
-    $fold \
-    $nflies
+  ${sample}.mel_mpileup.txt \
+  $output \
+  $sample \
+  $theta \
+  $D \
+  $priortype \
+  $fold \
+  $nflies
 
   check_exit_status "Mpileup2SNAPE" $?
 
-  gzip $output/$sample/${sample}.SNAPE.output.txt
+  gzip -f $output/$sample/${sample}.SNAPE.output.txt
 
   python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
-    --input $output/$sample/${sample}.SNAPE.output.txt.gz \
-    --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
-    --output $output/$sample/${sample}.SNAPE
+  --input $output/$sample/${sample}.SNAPE.output.txt.gz \
+  --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
+  --output $output/$sample/${sample}.SNAPE
 
   check_exit_status "SNAPE2SYNC" $?
 

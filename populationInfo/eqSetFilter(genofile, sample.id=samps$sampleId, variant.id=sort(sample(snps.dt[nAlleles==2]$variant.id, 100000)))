@@ -1,0 +1,182 @@
+pca                    package:LEA                     R Documentation
+
+_P_r_i_n_c_i_p_a_l _C_o_m_p_o_n_e_n_t _A_n_a_l_y_s_i_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     The ‘pca’ function performs a principal component analysis of a
+     genotypic matrix encoded in one of the following formats: ‘lfmm’,
+     ‘geno’, ‘ancestrymap’, ‘ped’ or ‘vcf’.  The ‘pca’ function
+     computes eigenvalues, eigenvectors, and standard deviations for
+     all principal components and the projections of individuals on
+     each component. The‘pca’ function returns an object of class
+     "pcaProject" containing the output data and the input parameters.
+
+_U_s_a_g_e:
+
+     pca (input.file, K, center = TRUE, scale = FALSE)
+     
+_A_r_g_u_m_e_n_t_s:
+
+input.file: A character string containg the path to the genotype input
+          file, a genotypic matrix in the ‘lfmm’ format.
+
+       K: An integer corresponding to the number of principal
+          components calculated. By default, all principal components
+          are calculated.
+
+  center: A boolean option. If TRUE, the data matrix is centered
+          (default: TRUE).
+
+   scale: A boolean option. If TRUE, the data matrix is centered and
+          scaled (default: FALSE).
+
+_V_a_l_u_e:
+
+     ‘pca’ returns an object of class ‘pcaProject’ containing the
+     following components:
+
+eigenvalues: The vector of eigenvalues.
+
+eigenvectors: The matrix of eigenvectors (one column for each
+          eigenvector).
+
+    sdev: The vector of standard deviations.
+
+projections: The matrix of projections (one column for each
+          projection).
+     The following methods can be applied to the object of class
+     pcaProject returned by ‘pca’:
+
+    plot: Plot the eigenvalues.
+
+    show: Display information on analysis.
+
+ summary: Summarize analysis.
+
+tracy.widom: Perform Tracy-Widom tests for eigenvalues.
+
+load.pcaProject(file.pcaProject): Load the file containing a pcaProject
+          object and return the pcaProject object.
+
+remove.pcaProject(file.pcaProject): Erase a ‘pcaProject’ object.
+          Caution: All the files associated with the ‘pcaProject’
+          object will be removed except the genotype file.
+
+export.pcaProject(file.pcaProject): Create a zip file containing the
+          full ‘pcaProject’ object. It allows users to move the project
+          to a new directory or a new computer (using import). If you
+          want to overwrite an existing export, use the option ‘force
+          == TRUE’.
+
+import.pcaProject(file.pcaProject): Import and load an ‘pcaProject’
+          object from a zip file (made with the export function) into
+          the chosen directory. If you want to overwrite an existing
+          project, use the option ‘force == TRUE’.
+
+_A_u_t_h_o_r(_s):
+
+     Eric Frichot
+
+_S_e_e _A_l_s_o:
+
+     ‘lfmm.data’ ‘snmf’ ‘lfmm’ ‘tutorial’
+
+_E_x_a_m_p_l_e_s:
+
+     # Create a genotype file "genotypes.lfmm"
+     # with 1000 SNPs for 165 individuals.
+     data("tutorial")
+     write.lfmm(tutorial.R,"genotypes.lfmm")
+     
+     #################
+     # Perform PCA   #
+     #################
+     
+     # run PCA
+     # Available options: K (the number of PCs), 
+     #                    center and scale. 
+     # Creation of  genotypes.pcaProject - the pcaProject object.
+     #               a directory genotypes.pca containing:
+     #  genotypes.eigenvalues - eigenvalues,    
+     #  genotypes.eigenvectors - eigenvectors,
+     #  genotypes.sdev - standard deviations,
+     #  genotypes.projections - projections,
+     
+     # Create a pcaProject object: pc.
+     pc <- pca("genotypes.lfmm", scale = TRUE)
+     
+     #######################
+     # Display information #
+     #######################
+     
+     # Display information on analysis.
+     show(pc)
+     
+     # Summarize analysis.
+     summary(pc)
+     
+     #####################
+     # Graphical outputs #
+     #####################
+     
+     par(mfrow=c(2,2))
+     
+     # Plot eigenvalues.
+     plot(pc, lwd=5, col="blue", cex = .7, xlab=("Factors"), ylab="Eigenvalues")
+     
+     # PC1-PC2 plot.
+     plot(pc$projections)
+     # PC3-PC4 plot.
+     plot(pc$projections[,3:4])
+     
+     # Plot standard deviations.
+     plot(pc$sdev)
+     
+     #############################
+     # Perform Tracy-Widom tests #
+     #############################
+     
+     # Perfom Tracy-Widom tests for all eigenvalues.
+     # Create file: genotypes.tracyWidom - tracy-widom test information, 
+     #          in the directory genotypes.pca/.
+     tw <- tracy.widom(pc)
+     
+     # Plot the percentage of variance explained by each component.
+     plot(tw$percentage)
+     
+     # Show p-values for the Tracy-Widom tests. 
+     tw$pvalues
+     
+     ##########################
+     # Manage a pca project   #
+     ##########################
+     
+     # All the project files for a given input matrix are 
+     # automatically saved into a pca project directory.
+     # The name of the pcaProject file is the same name as 
+     # the name of the input file with a .pcaProject extension 
+     # ("genotypes.pcaProject").
+     # The name of the pcaProject directory is the same name as
+     # the name of the input file with .pca extension ("genotypes.pca/")
+     # There is only one pca Project for each input file including all the runs.
+     
+     # An pcaProject can be load in a different session.
+     project = load.pcaProject("genotypes.pcaProject") 
+     
+     # An pcaProject can be exported to be imported in another directory
+     # or in another computer
+     export.pcaProject("genotypes.pcaProject")
+     
+     dir.create("test", showWarnings = TRUE)
+     #import
+     newProject = import.pcaProject("genotypes_pcaProject.zip", "test")
+     # remove
+     remove.pcaProject("test/genotypes.pcaProject")
+     
+     
+     # A pcaProject can be erased.
+     # Caution: All the files associated with the project will be removed.
+     remove.pcaProject("genotypes.pcaProject")
+     
+

@@ -1,5 +1,5 @@
 ### Make basic plots for DEST samples
-### Final data has columsn: sampleId, country, city, collectionDate, lat, long, season, nFlies, locality, type (inbred/pooled), continent
+### Final data has columns: sampleId, country, city, collectionDate, lat, long, season, nFlies, locality, type (inbred/pooled), continent
 ### Alan Bergland, Oct 3, 2018; updated Feb 2020
 
 
@@ -20,7 +20,8 @@
 
 
 ### set working directory
-	setwd("/scratch/aob2x/dest")
+	#setwd("/scratch/aob2x/dest")
+	setwd("/Users/alanbergland/Documents/GitHub/")
 
 ### load data
   samps <- fread("./DEST/populationInfo/samps.csv")
@@ -34,7 +35,7 @@
 							maxDelta=max(yday) - min(yday),
 							lat=mean(lat),
 							long=mean(long)),
-					list(locality, year, continent)]
+					list(locality, year, continent, set)]
 
 		setkey(samps.ag, locality, year)
 		setkey(samps, locality, year)
@@ -50,6 +51,7 @@
 		scale_x_date(date_labels = "%b", limits = as.Date(c(110,355), origin = as.Date("2018-01-01"))) +
 		xlab("Collection Date") + ylab("Latitude")
 
+
 		ggsave(multi_sample, file="./DEST/populationInfo/multiSample.pdf")
 
 
@@ -57,7 +59,7 @@
 
 	world <- as.data.table(map_data("world"))
 
-	samps.ag.ag <- samps.ag[,list(n=sum(nTime), lat=mean(lat), long=mean(long)), list(locality)]
+	samps.ag.ag <- samps.ag[,list(n=sum(nTime), lat=mean(lat), long=mean(long)), list(locality, set)]
 
 ### make maps
 
@@ -68,15 +70,15 @@
 	# [long>=min.long.eu & long<= max.long.eu][lat>=min.lat.eu & lat<=max.lat.eu]
 	#[longitude>=min.long.eu & longitude<= max.long.eu][latitude>=min.lat.eu & latitude<=max.lat.eu]
 
-
-	world <- 	ggplot() +
+	world.plot <- 	ggplot() +
 				geom_polygon(data = world,
 							aes(x=long, y = lat, group = group), fill="lightgrey") +
 				geom_point(data = samps.ag.ag,
-							aes(x=long, y=lat, size=I((n-1)/2 + 4)), alpha=.5) +
+							aes(x=long, y=lat, size=I((n-1)/2 + 4), color=set), alpha=.5) +
 				xlab("Longitude") + ylab("Latitude") + scale_fill_manual(values="black")
 
-	ggsave(world, file="./DEST/populationInfo/worldPlot.pdf", height=4, width=6)
+
+	ggsave(world.plot, file="./DEST/populationInfo/worldPlot.pdf", height=4, width=6)
 
 
 	## north america

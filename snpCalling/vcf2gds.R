@@ -1,9 +1,7 @@
 #module load intel/18.0 intelmpi/18.0 R/3.6.0; R
 
 library(SeqArray)
-library(data.table)
-library(foreach)
-library(ggplot2)
+
 
 #seqVCF2GDS("/scratch/aob2x/dest/dest.June14_2020.ann.vcf", "/scratch/aob2x/dest.June14_2020.ann.gds", storage.option="ZIP_RA")
 
