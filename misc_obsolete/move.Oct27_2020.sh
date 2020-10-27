@@ -11,7 +11,7 @@
 #SBATCH --account biol8083
 
 ### sbatch ${wd}/DEST/misc_obsolete/move.Oct27_2020.sh SNAPE 001 50
-# sacct -j 17036246
+# sacct -j 17957316
 
 
 module load htslib bcftools intel/18.0 intelmpi/18.0 parallel R/3.6.3
@@ -23,11 +23,13 @@ maf=${3}
 mac=${4}
 #maf=001; mac=50; popSet="PoolSeq"; method="SNAPE"
 
-wd=/scratch/aob2x/dest
+wd="/scratch/aob2x/dest"
 
+echo "tabix"
 tabix -p vcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf.gz
 
-wd="/scratch/aob2x/dest"
+
+echo "rsync"
 rsync ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.gds /project/berglandlab/DEST/gds/.
 rsync ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf.gz /project/berglandlab/DEST/vcf/.
 rsync ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf.gz.tbi /project/berglandlab/DEST/vcf/.
