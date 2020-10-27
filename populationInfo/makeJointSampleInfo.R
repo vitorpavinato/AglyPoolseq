@@ -1,9 +1,6 @@
 ### Make joint popInfo file for DEST
-### Final data has columsn: sampleId, country, city, collectionDate, lat, long, season, nFlies, locality, type (inbred/pooled), continent
 
-
-### ijob -c1 -p standard -A berglandlab
-### module load intel/18.0 intelmpi/18.0 R/3.6.0; R
+### module load intel/18.0 intelmpi/18.0 R/3.6.3; R
 
 
 ### libraries
@@ -265,6 +262,18 @@
 
 			### the far stations are mostly in Africa
 				table(samps$set, samps$dist_km<20)
+
+
+	#Add in phylogeographic cluster from k-means clustering of PCA (optimal k=4)
+		pca.k <- fread("./DEST/populationInfo/Cluster_Assingment/DEST_Sample_clusters.txt")
+
+		setkey(samps, sampleId)
+		setkey(pca.k, sampleId)
+
+		samps <- merge(samps, pca.k[,c("sampleId", "Continental_clusters"), with=F])
+
+		samps[grepl("AT_gr_12", sampleId), Continental_clusters:="3.Europe_E"]
+		samps[grepl("ES_ba_12", sampleId), Continental_clusters:="1.Europe_W"]
 
 	### save
 		write.csv(samps, "./DEST/populationInfo/samps.csv", quote=F, row.names=F)
