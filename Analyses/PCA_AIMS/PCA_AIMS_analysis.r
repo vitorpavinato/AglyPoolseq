@@ -28,6 +28,8 @@ library(patchwork)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(ggExtra)
+library(vcfR)
+
 
 source("./ThinLDinR_SNPtable.R")
 
@@ -164,6 +166,46 @@ ggplot(data = world) +
 #ggsave("Wolrd_PC2.pdf",(Wolrd_PC2),  width = 6, height = 4)
 
 ggsave("PCA_figure.pdf",( (DEST_Woldwide_PCA12+DEST_Woldwide_PCA13)/(Wolrd_PC1+Wolrd_PC3) ),  width = 8, height = 6)
+
+
+##################################
+# Anova on PCA
+##################################
+
+PCA_coords_metadata %>% .[,c(1:50, which(names(.) %in% c("sampleId", "lat","long")) )] %>% melt(id = c("sampleId", "lat","long")) -> PCA_coords_melt
+
+as.character(unique(PCA_coords_melt$variable)) -> dims_to_study
+
+lm_out=list()
+for(i in 1:50){
+
+temp_lat = summary(lm(lat ~ value, data = PCA_coords_melt[which(PCA_coords_melt$variable == dims_to_study[i] ),]))
+
+temp_long = summary(lm(long ~ value, data = PCA_coords_melt[which(PCA_coords_melt$variable == dims_to_study[i] ),]))
+
+
+lm_out[[i]] = 	rbind(
+					c( temp_lat$coefficients[2,], i, "lat"),
+					c( temp_long$coefficients[2,], i, "long")
+					)
+} #i
+
+do.call(rbind, lm_out) %>% as.data.frame -> lat_long_lms
+
+lat_long_lms[,1:4] = apply(lat_long_lms[,1:4], 2, as.numeric)
+
+lat_long_lms %>% ggplot(aes(x=as.numeric(V5), y=Estimate, ymin =Estimate-`Std. Error`, ymax=Estimate+`Std. Error`, fill = -log10(`Pr(>|t|)`)) ) + geom_errorbar() + geom_point(shape = 21) + facet_wrap(~V6) -> est_lms
+
+ggsave("est_lms.pdf",est_lms,  width = 8, height = 6)
+
+lat_long_lms %>% ggplot( aes(x=as.numeric(V5), y = -log10(`Pr(>|t|)`), fill = -log10(`Pr(>|t|)`)) ) + geom_point(shape = 21, size =3, fill = "grey") + facet_wrap(~V6) + geom_hline(yintercept = -log10(0.05)) + geom_hline(yintercept = -log10(0.05/50)) + theme_classic() + xlim(1,50) + coord_trans( y="log10") -> est_pvals
+
+ggsave("est_pvals.pdf",est_pvals,  width = 12, height = 1.4)
+
+write.table( lat_long_lms, 
+             file = "./lat_long_lms.txt", 
+             sep = "\t",quote = F ,row.names = F, col.names = T, append = F)
+
 
 ################################## ###################### ######################
 # Part 3 -- Train DAPC to discover demography informative eigenvectors 
@@ -339,9 +381,22 @@ xval_AIMset <- xvalDapc(datSNPs_AIMset, DEST_DGN_metadata$Continental_clusters, 
 # LOOCV analysis
 ################################## ###################### ######################
 
+LOOCV_cluster = read.table("./DAPC_Cluster_LOOVC.txt", head = F, sep = "\t")
+LOOCV_cluster %<>% mutate(test = "Cluster")
+names(LOOCV_cluster)[1:8] = c("DAPC_Label","DAPC_P","Real_Label","Real_P","id","sampleId","nPC","nDA")
 
-## ---- > PENDING <------ ##
+LOOCV_state = read.table("./DAPC_State_LOOVC.txt", head = F, sep = "\t")
+LOOCV_state %<>% mutate(test = "State")
+names(LOOCV_state)[1:8] = c("DAPC_Label","DAPC_P","Real_Label","Real_P","id","sampleId","nPC","nDA")
 
+LOOCV_cluster %>% ggplot(aes(x=as.numeric(Real_P), y=as.numeric(DAPC_P), fill = test ))  + geom_jitter(size = 5,shape =21, alpha =0.5)  + theme_classic() + ylab("DAPC Posterior") + xlab("Label Posterior") + theme(legend.position = "none") -> posteriors_Clusters
+posteriors_Clusters <- ggMarginal(posteriors_Clusters, type="histogram")
+
+LOOCV_state %>% ggplot(aes(x=as.numeric(Real_P), y=as.numeric(DAPC_P), fill = test ))  + geom_jitter(size = 5,shape =21, alpha =0.5)  + theme_classic() + ylab("DAPC Posterior") + xlab("Label Posterior") + theme(legend.position = "none") -> posteriors_State
+posteriors_State <- ggMarginal(posteriors_State, type="histogram")
+
+ggsave("posteriors_LOOCVs_cluster.pdf",(posteriors_Clusters),  width =4, height = 4)
+ggsave("posteriors_LOOCVs_state.pdf",(posteriors_State),  width =4, height = 4)
 
 
 ################################## ###################### ######################
@@ -356,11 +411,38 @@ AIMS_Subset %>% .[which(.$PC %in% c(1) ),] %>% separate(SNPid, remove = F, into 
 
 ggsave("SNP_positions.pdf",SNP_positions,  width =6, height =2)
 
+################################## ###################### ######################
+# Test on Individual Samples
+################################## ###################### ######################
+
+load("./data_to_train_State_DAPC.Rdata")
+load("./AIM_SNPs.Rdata")
+
+OW_vcf = read.vcfR("OW_to_predict.recode.vcf.gz")
+
+OW_vcf_gl <- vcfR2genlight(OW_vcf)
+
+tab(OW_vcf_gl) -> OW_vcf_DF
+
+data.frame(AIMS_Subset$SNPid) %>% separate(AIMS_Subset.SNPid, into = c("chr", "pos", "id") ) %>% mutate(OW_lift = paste(chr, pos, sep = "_")) -> AIM_large_set_OWlift
+
+OW_vcf_DF[,which(colnames(OW_vcf_DF) %in% AIM_large_set_OWlift$OW_lift)] %>% colnames(.)-> OW_intercept
+
+AIM_large_set_OWlift %>% .[which(.$OW_lift %in% OW_intercept),] %>% mutate(SNPid = paste(chr,pos,id, sep = "_" )) -> SNPS_to_retrain
 
 
+###
+#dat_filt_maf_LD500_naimp_forStateTrain  
+#dat_filt_maf_LD500_naimp_Labels_StatesTrain$State
 
+xval_OW_retrain<- xvalDapc(dat_filt_maf_LD500_naimp_forStateTrain[,which(colnames(dat_filt_maf_LD500_naimp_forStateTrain) %in% SNPS_to_retrain$SNPid)], dat_filt_maf_LD500_naimp_Labels_StatesTrain$State, n.pca.max = 300, training.set = 0.9,result = "groupMean", center = TRUE, scale = FALSE,n.pca = NULL, n.rep = 30, xval.plot = TRUE)
 
+###
+OW_vcf_DF[,which(colnames(OW_vcf_DF) %in% SNPS_to_retrain$OW_lift)] ->OW_LargeSet_normalized
 
+OW_LargeSet_normalized = OW_LargeSet_normalized/2
 
-
+pred.OW <- predict.dapc(xval_OW_retrain$DAPC, 
+                        newdata=OW_LargeSet_normalized
+)
 
