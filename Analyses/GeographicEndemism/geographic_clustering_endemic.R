@@ -30,6 +30,10 @@ set <- as.numeric(args[1])
   priv.dt <- priv.dt[V3>1]
   priv.dt[,list(.N), list(V3)]
 
+
+  priv.dt[,V7:=paste(V5, V6, V7, sep="")]
+
+
   priv.dt.small <- priv.dt[,list(pops=sample(V7, 100, replace=T), n=.N), list(chr=V1, V3)]
   setkey(priv.dt.small, chr)
 
@@ -44,26 +48,30 @@ set <- as.numeric(args[1])
     if(i%%2==0) message(paste(i, dim(priv.dt.small)[1], sep=" / "))
 
     ### obs
-      set.obs <- samps[J(pops[as.numeric(unlist(tstrsplit(priv.dt.small$pops[i], ";"))[-1])])]
+      set.obs <- samps[J(pops[as.numeric(unlist(tstrsplit(priv.dt.small[i]$pops, ";"))[-1])])]
 
       pw.dist.obs <- spDists(x=as.matrix(set.obs[,c("long", "lat"), with=F]), longlat=T)
 
     ### exp
-      set.exp <- samps[J(sample(pops, length(set.obs)))]
+      set.exp <- samps[J(sample(pops, nrow(set.obs)))]
 
       pw.dist.exp <- spDists(x=as.matrix(set.exp[,c("long", "lat"), with=F]), longlat=T)
 
-      cbind(priv.dt.small[i],
+      o <- cbind(priv.dt.small[i],
           data.table(set=c("obs", "exp"),
                       meanDist=c(mean(pw.dist.obs[lower.tri(pw.dist.obs)]),
                                 mean(pw.dist.exp[lower.tri(pw.dist.exp)])),
+
                       minDist=c(min(pw.dist.obs[lower.tri(pw.dist.obs)]),
                                 min(pw.dist.exp[lower.tri(pw.dist.exp)])),
+
                       maxDist=c(max(pw.dist.obs[lower.tri(pw.dist.obs)]),
                                   max(pw.dist.exp[lower.tri(pw.dist.exp)])),
-                      cc_equal=c(length(set.obs$Continental_clusters)==1,
-                                length(set.exp$Continental_clusters)==1)))
 
+                      cc_equal=c(length(unique(set.obs$Continental_clusters))==1,
+                                length(unique(set.exp$Continental_clusters))==1)))
+      o[,mt:=tstrsplit(pops, ";")[[1]]]
+      return(o)
   }
 
 
