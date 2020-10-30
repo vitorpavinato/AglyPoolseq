@@ -6,12 +6,12 @@
 #SBATCH -t 8:00:00 ### 0.5 hours
 ##SBATCH --mem 1G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/move.%A_%a.out # Standard output
-#SBATCH -e /scratch/aob2x/dest/slurmOutput/move.16425773.err # Standard error
+#SBATCH -e /scratch/aob2x/dest/slurmOutput/move.%A_%a.err # Standard error
 #SBATCH -p standard
 #SBATCH --account biol8083
 
-### sbatch ${wd}/DEST/misc_obsolete/move.Oct27_2020.sh SNAPE 001 50
-# sacct -j 17957316
+### sbatch ${wd}/DEST/misc_obsolete/move.Oct27_2020.sh PoolSeq SNAPE 001 50
+# sacct -j 17962317
 
 
 module load htslib bcftools intel/18.0 intelmpi/18.0 parallel R/3.6.3
