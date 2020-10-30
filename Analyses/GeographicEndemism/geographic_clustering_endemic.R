@@ -30,7 +30,7 @@ set <- as.numeric(args[1])
   priv.dt <- priv.dt[V3>1]
   priv.dt[,list(.N), list(V3)]
 
-  priv.dt.small <- priv.dt[,list(pops=sample(V7, 20, replace=T), n=.N), list(chr=V1, V3)]
+  priv.dt.small <- priv.dt[,list(pops=sample(V7, 100, replace=T), n=.N), list(chr=V1, V3)]
   setkey(priv.dt.small, chr)
 
   priv.dt.small <- priv.dt.small[J(c("2L", "2R", "3L", "3R", "X"))]
@@ -39,7 +39,7 @@ set <- as.numeric(args[1])
 
   dim(priv.dt.small)[1]
 
-  o <- foreach(i=1:dim(priv.dt.small)[1])%dopar%{
+  o <- foreach(i=1:dim(priv.dt.small)[1])%do%{
     #i<-1
     if(i%%2==0) message(paste(i, dim(priv.dt.small)[1], sep=" / "))
 
