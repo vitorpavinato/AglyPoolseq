@@ -5,7 +5,7 @@
 #SBATCH -N 1 # on one node
 #SBATCH --cpus-per-task=10 ### standard has 28 or 40 $SLURM_CPUS_PER_TASK
 #SBATCH -t 7:00:00 # Running time of 1 hours
-#SBATCH --mem 12G # Memory request of 8 GB
+#SBATCH --mem 1G # Memory request of 8 GB
 #SBATCH -o /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.%A_%a.err # Standard error
 #SBATCH -p standard
