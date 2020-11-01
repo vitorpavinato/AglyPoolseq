@@ -12,20 +12,22 @@
 #SBATCH --account berglandlab
 
 # sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.sh
-# sacct -j 18137949
+# sacct -j 18138562
 
 
 zcat /scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz | grep -v "#" | awk '{
 npoly=0
 nmissing=0
+af=0
 pops=""
 if(length($5)==1) {
   for(i=10; i<=NF; i++) {
     split($i, sp, ":")
     if(sp[1]=="0/1") npoly++
     if(sp[1]=="0/1") pops=pops";"i-9
+    if(sp[1]=="0/1") af=af"+"sp[5]
     if(sp[1]=="./.") nmissing++
     }
-     print $1"\t"$2"\t"npoly"\t"nmissing"\t"$4"\t"$5"\t"pops
+    if(npoly>1) print $1"\t"$2"\t"npoly"\t"nmissing"\t"$4"\t"$5"\t"pops"\t"af
   }
 }' > /scratch/aob2x/dest/geo_endemic/geo_endemic.delim
