@@ -28,27 +28,37 @@ set <- as.numeric(args[1])
 ### private
   priv.dt <- fread("/scratch/aob2x/dest/geo_endemic/geo_endemic.delim")
   priv.dt <- priv.dt[V3>1]
+
   priv.dt[,list(.N), list(V3)]
 
 
-  priv.dt[,V7:=paste(V5, V6, V7, sep="")]
+  priv.dt[,V7:=paste(V8, paste(V5, V6, V7, sep=""), sep=";")]
 
 
-  priv.dt.small <- priv.dt[,list(pops=sample(V7, 100, replace=T), n=.N), list(chr=V1, V3)]
+  priv.dt.small <- priv.dt[,list(pops=sample(V7, 1, replace=T), n=.N), list(chr=V1, nPop=V3)]
   setkey(priv.dt.small, chr)
 
   priv.dt.small <- priv.dt.small[J(c("2L", "2R", "3L", "3R", "X"))]
-
   rm(priv.dt)
-
+  priv.dt.small <- na.omit(priv.dt.small)
   dim(priv.dt.small)[1]
 
-  o <- foreach(i=1:dim(priv.dt.small)[1])%do%{
-    #i<-1
+  getmean <- function(x) {
+    # x <- priv.dt.small.tmp$pops
+    af_string <- tstrsplit(x, ";")[[1]]
+    mean(as.numeric(unlist(tstrsplit(af_string, "\\+")[-1])))
+  }
+
+  o <- foreach(i=1:dim(priv.dt.small)[1])%dopar%{
+    #i<-24501
     if(i%%2==0) message(paste(i, dim(priv.dt.small)[1], sep=" / "))
 
+    ### get average allele frequency
+      priv.dt.small.tmp <- priv.dt.small[i]
+      priv.dt.small.tmp[,af:=getmean(pops)]
+
     ### obs
-      set.obs <- samps[J(pops[as.numeric(unlist(tstrsplit(priv.dt.small[i]$pops, ";"))[-1])])]
+      set.obs <- samps[J(pops[as.numeric(unlist(tstrsplit(priv.dt.small.tmp$pops, ";")[-c(1,2)]))])]
 
       pw.dist.obs <- spDists(x=as.matrix(set.obs[,c("long", "lat"), with=F]), longlat=T)
 
@@ -57,7 +67,7 @@ set <- as.numeric(args[1])
 
       pw.dist.exp <- spDists(x=as.matrix(set.exp[,c("long", "lat"), with=F]), longlat=T)
 
-      o <- cbind(priv.dt.small[i],
+      o <- cbind(priv.dt.small.tmp,
           data.table(set=c("obs", "exp"),
                       meanDist=c(mean(pw.dist.obs[lower.tri(pw.dist.obs)]),
                                 mean(pw.dist.exp[lower.tri(pw.dist.exp)])),
@@ -70,7 +80,7 @@ set <- as.numeric(args[1])
 
                       cc_equal=c(length(unique(set.obs$Continental_clusters))==1,
                                 length(unique(set.exp$Continental_clusters))==1)))
-      o[,mt:=tstrsplit(pops, ";")[[1]]]
+      o[,mt:=tstrsplit(pops, ";")[[2]]]
       return(o)
   }
 
