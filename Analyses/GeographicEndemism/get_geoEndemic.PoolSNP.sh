@@ -11,7 +11,7 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.sh
+# sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.PoolSNP.sh
 # sacct -j 18328356
 
 

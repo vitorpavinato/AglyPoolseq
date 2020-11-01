@@ -3,7 +3,9 @@
 
 args = commandArgs(trailingOnly=TRUE)
 set <- as.numeric(args[1])
-#set <- 1
+caller <- args[2]
+
+#set <- 1; caller <- "PoolSNP"
 
 ### libraries
 
@@ -26,7 +28,7 @@ set <- as.numeric(args[1])
   pw.dist[lower.tri(pw.dist)] <- NA
 
 ### private
-  priv.dt <- fread("/scratch/aob2x/dest/geo_endemic/geo_endemic.delim")
+  priv.dt <- fread(paste("/scratch/aob2x/dest/geo_endemic/geo_endemic.", caller, ".delim", sep=""))
   priv.dt <- priv.dt[V3>1]
 
   priv.dt[,list(.N), list(V3)]
@@ -35,7 +37,7 @@ set <- as.numeric(args[1])
   priv.dt[,V7:=paste(V8, paste(V5, V6, V7, sep=""), sep=";")]
 
 
-  priv.dt.small <- priv.dt[,list(pops=sample(V7, 1, replace=T), n=.N), list(chr=V1, nPop=V3)]
+  priv.dt.small <- priv.dt[,list(pops=sample(V7, 100, replace=T), n=.N), list(chr=V1, nPop=V3)]
   setkey(priv.dt.small, chr)
 
   priv.dt.small <- priv.dt.small[J(c("2L", "2R", "3L", "3R", "X"))]
@@ -81,10 +83,11 @@ set <- as.numeric(args[1])
                       cc_equal=c(length(unique(set.obs$Continental_clusters))==1,
                                 length(unique(set.exp$Continental_clusters))==1)))
       o[,mt:=tstrsplit(pops, ";")[[2]]]
+      o[,caller:=caller]
       return(o)
   }
 
 
   o <- rbindlist(o)
 
-  save(o, file=paste("/scratch/aob2x/dest/geo_endemic/summarySet", set, ".Rdata", sep=""))
+  save(o, file=paste("/scratch/aob2x/dest/geo_endemic/summarySet", set, ".", caller, ".Rdata", sep=""))

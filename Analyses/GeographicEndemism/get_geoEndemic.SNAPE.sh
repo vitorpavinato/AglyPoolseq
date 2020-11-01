@@ -30,4 +30,4 @@ if(length($5)==1) {
     }
     if(npoly>1) print $1"\t"$2"\t"npoly"\t"nmissing"\t"$4"\t"$5"\t"pops"\t"af
   }
-}' > /scratch/aob2x/dest/geo_endemic/geo_endemic.delim
+}' > /scratch/aob2x/dest/geo_endemic/geo_endemic.SNAPE.delim
