@@ -27,7 +27,23 @@
     scale_linetype_manual(values = c("Assaf" = 1, "DGRP" = 2))
 
 
-    dist.plot <- ggplot(data=o.ag, aes(x=nPop, y=mean.dist, group=set, color=set)) +
+    dist.full.plot <- ggplot(data=o.ag, aes(x=nPop, y=mean.dist, group=set, color=set)) +
+    geom_ribbon(aes(x=nPop, ymin=mean.dist-sd.dist, ymax=mean.dist+sd.dist, group=set, fill=set), alpha=.5) +
+    geom_line(size=1) +
+    facet_grid(~caller) +
+    xlab(NULL) +
+    ylab(NULL) +
+    cowplot::theme_cowplot()+
+    theme(legend.position="none",
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.text.x = element_text(size=rel(0.7)), ## tiny axis text
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.background = element_blank())
+
+
+    dist.partial.plot <- ggplot(data=o.ag[nPop<25], aes(x=nPop, y=mean.dist, group=set, color=set)) +
     geom_ribbon(aes(x=nPop, ymin=mean.dist-sd.dist, ymax=mean.dist+sd.dist, group=set, fill=set), alpha=.5) +
     geom_line(size=1) +
     facet_grid(~caller) +
@@ -36,8 +52,11 @@
     cowplot::theme_cowplot()
 
 
+    dist.partial.plot + annotation_custom(grob=ggplotGrob(dist.full.plot),
+                          ymin = 5000, ymax=8000, xmin=5, xmax=25)
 
-    phyloConcord.plot <- ggplot(data=o.ag, aes(x=nPop, y=log10(mean.cc_equal), group=set, color=set)) +
+
+    phyloConcord.plot <- ggplot(data=o.ag[nPop<25], aes(x=nPop, y=(mean.cc_equal), group=set, color=set)) +
     geom_line() +
     facet_grid(~caller) +
     xlab("Number of polymorphic populations") +

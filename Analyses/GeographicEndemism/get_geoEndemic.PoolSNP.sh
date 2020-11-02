@@ -12,7 +12,7 @@
 #SBATCH --account berglandlab
 
 # sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.PoolSNP.sh
-# sacct -j 18328356
+# sacct -j 18330982
 
 
 zcat /scratch/aob2x/dest/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz | grep -v "#" | awk '{

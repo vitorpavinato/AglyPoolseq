@@ -19,24 +19,28 @@ o <- rbindlist(o, fill=T)
   o.ag <- o[,list(mean.dist=mean(meanDist), sd.dist=sd(meanDist),
                   med.dist=median(meanDist), lci.dist=quantile(meanDist, .025), uci.dist=quantile(meanDist, .975),
                   mean.cc_equal=mean(cc_equal)),
-             list(set, nPop, caller)]
+             list(set, nPop, caller, chr)]
 
 ### mutation classes
-  o2.ag <- o[,list(.N), list(mt, nPop, caller)]
-  o2.ag <- na.omit(o2.ag)[,list(freq=N/sum(N), mt), list(nPop, caller)]
+  o2.ag <- o[,list(.N), list(mt, nPop, caller, chr)]
+  o2.ag <- na.omit(o2.ag)[,list(freq=N/sum(N), mt), list(nPop, caller, chr)]
 
 ### allele freq. binning
   maf <- function(x) min(x, 1-x)
 
   o[,af.bin:=round(af, 2)]
   o[,maf:=sapply(o$af, maf)]
-  o[,maf.bin:=round(log10(maf), 1)]
+  o[,maf.bin:=round((maf), 2)]
 
-  o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T)),
-             list(nPop, maf.bin=maf.bin, caller)]
+  o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T),
+                   meanDist.obs=mean(meanDist[set=="obs"], na.rm=T),
+                   meanDist.exp=mean(meanDist[set=="exp"], na.rm=T)),
+
+             list(nPop, maf.bin=maf.bin, caller, chr)]
 
 ### how many
-  o4.ag <- o[set=="obs",list(nSites=mean(n)), list(nPop, caller)]
+  setkey(o, set)
+  o4.ag <- o[J("obs")][,list(nSites=mean(n)), list(nPop, caller,chr)]
 
   ### get DGRP mt
     dgrp <- fread("/scratch/aob2x/dest/dgrp2.bim")
@@ -68,5 +72,9 @@ o <- rbindlist(o, fill=T)
   #}
   #o5.ag <- o[,list(H=evenFun(pops)), list(nPop, caller)]
 
-save(o, file="~/geographic_endemism.Rdata")
+#save(o, file="~/geographic_endemism.Rdata")
 save(o.ag, o2.ag, o3.ag, o4.ag, dgrp.ag, file="~/allSummarySet_endemism.Rdata")
+#save(o4.ag, f)
+
+
+#load(file="~/geographic_endemism.Rdata")
