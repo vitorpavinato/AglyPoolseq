@@ -1,59 +1,3 @@
-#module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3; R
-
-### gather
-library(data.table)
-library(foreach)
-
-fn <- list.files("/scratch/aob2x/dest/geo_endemic", "summarySet", full.names=T)
-
-o <- foreach(fn.i=fn)%do%{
-  message(fn.i)
-  #fn.i <- fn[1]
-  load(fn.i)
-  return(o)
-}
-o <- rbindlist(o, fill=T)
-
-
-### geogrpahic distances
-  o.ag <- o[,list(mean.dist=mean(meanDist), sd.dist=sd(meanDist),
-                  med.dist=median(meanDist), lci.dist=quantile(meanDist, .025), uci.dist=quantile(meanDist, .975),
-                  mean.cc_equal=mean(cc_equal)),
-             list(set, nPop=V3)]
-
-### mutation classes
-  o2.ag <- o[,list(.N), list(mt, nPop=V3)]
-  o2.ag <- na.omit(o2.ag)[,list(freq=N/sum(N), mt), list(nPop)]
-
-### allele freq. binning
-  maf <- function(x) min(x, 1-x)
-
-  o[,af.bin:=round(af, 2)]
-  o[,maf:=sapply(o$af, maf)]
-  o[,maf.bin:=round(log10(maf), 1)]
-
-  o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T)),
-             list(nPop=V3, maf.bin=maf.bin)]
-
-### how many
-  o4.ag <- o[set=="obs",list(nSites=mean(n)), list(nPops=V3)]
-
-  ### get DGRP mt
-    dgrp <- fread("/scratch/aob2x/dest/dgrp2.bim")
-    dgrp[,mt:=paste(V5, V6)]
-
-    dgrp <- dgrp[V1<=5][nchar(V5)==1 & nchar(V6)==1]
-    dgrp[,mt:=paste(V5, V6, sep="")]
-    dgrp <- dgrp[!grepl("0", mt)]
-    dgrp.ag <- dgrp[,list(.N), mt]
-    dgrp.ag <- dgrp.ag[,list(freq=N/sum(N), mt)]
-
-
-
-
-save(o.ag, o2.ag, o3.ag, o4.ag, dgrp.ag, file="~/allSummarySet_endemism.Rdata")
-
-
 
 #### plot
   scp aob2x@rivanna.hpc.virginia.edu:~/allSummarySet_endemism.Rdata ~/.
@@ -68,7 +12,7 @@ save(o.ag, o2.ag, o3.ag, o4.ag, dgrp.ag, file="~/allSummarySet_endemism.Rdata")
   load("~/allSummarySet_endemism.Rdata")
   #load("~/summarySet1.Rdata")
 
-### make expectation MA table
+### make expectation MA table and do a bit of rearragment of MT data
   exp.mt <- data.table(mt=c("AT", "AC", "AG", "TA", "TC", "TG", "CA", "CT", "CG", "GA", "GT", "GC"),
               rate=c(6, 3, 5.5, 6, 5.5, 3., 9, 20, 6.5, 20, 9, 6.5)/100)
 
@@ -79,32 +23,60 @@ save(o.ag, o2.ag, o3.ag, o4.ag, dgrp.ag, file="~/allSummarySet_endemism.Rdata")
     xlab("Number of polymorphic populations") + ylab("Frequency") +
     geom_hline(data=exp.mt, aes(yintercept=rate, color=mt), linetype="dashed") +
     geom_hline(data=dgrp.ag, aes(yintercept=freq, color=mt), linetype="solid") +
-    facet_wrap(~mt)
+    facet_grid(caller~mt) +
+    scale_linetype_manual(values = c("Assaf" = 1, "DGRP" = 2))
 
 
     dist.plot <- ggplot(data=o.ag, aes(x=nPop, y=mean.dist, group=set, color=set)) +
     geom_ribbon(aes(x=nPop, ymin=mean.dist-sd.dist, ymax=mean.dist+sd.dist, group=set, fill=set), alpha=.5) +
     geom_line(size=1) +
+    facet_grid(~caller) +
     xlab("Number of polymorphic populations") +
-    ylab("Average geographic distance between populations (km") +
+    ylab("Average geographic distance \nbetween populations (km") +
     cowplot::theme_cowplot()
 
-    phyloConcord.plot <- ggplot(data=o.ag, aes(x=nPop, y=mean.cc_equal, group=set, color=set)) +
+
+
+    phyloConcord.plot <- ggplot(data=o.ag, aes(x=nPop, y=log10(mean.cc_equal), group=set, color=set)) +
     geom_line() +
+    facet_grid(~caller) +
     xlab("Number of polymorphic populations") +
     ylab("Probability that all populations \nare in same phylogeographic cluster") +
     cowplot::theme_cowplot()
 
-    n.plot <- ggplot(o4.ag, aes(x=nPops, y=log10(nSites))) +
-    geom_line() +
+    n.plot <- ggplot(o4.ag, aes(x=(nPop), y=log10(nSites), fill=caller)) +
+    geom_col(position = "dodge", size=2) +
     cowplot::theme_cowplot()
 
     ggplot(na.omit(o3.ag), aes(x=(nPop), y=maf.bin, fill=delta.dist)) + geom_tile(interpolate=T) +
     scale_fill_viridis()
 
+design <- "
+AAABBBCCC
+AAABBBCCC
+AAABBBCCC
+"
 
-(dist.plot | phyloConcord.plot | n.plot) / mutation.plot
+design <- "
+AAAA
+AAAA
+BBCC
+BBCC
+"
 
+design <- "
+AAAAAA
+AAAAAA
+BBBCCC
+BBBCCC
+"
+
+
+
+o.plot <- (n.plot + dist.plot + phyloConcord.plot)  + plot_layout(design = design)
+o.plot
+
+ggsave(o.plot, file="~/geo_endemic.pdf")
 
 
 
