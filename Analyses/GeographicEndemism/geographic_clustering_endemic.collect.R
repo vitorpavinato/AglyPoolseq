@@ -6,7 +6,7 @@ library(foreach)
 
 fn <- list.files("/scratch/aob2x/dest/geo_endemic", "summarySet", full.names=T)
 
-o <- foreach(fn.i=fn[1:20])%do%{
+o <- foreach(fn.i=fn)%do%{
   message(fn.i)
   #fn.i <- fn[1]
   load(fn.i)
@@ -48,7 +48,25 @@ o <- rbindlist(o, fill=T)
     dgrp.ag <- dgrp[,list(.N), mt]
     dgrp.ag <- dgrp.ag[,list(freq=N/sum(N), mt)]
 
+### evenness
+  #evenFun <- function(x) {
+  #  #x <- o$pop[1:5]
+  #  pops <- as.numeric(unlist(tstrsplit(x, ";")[-c(1,2)]))
+  #  pops <- factor(pops, levels=c(1:246))
+  #  diversity(pops)
+  #
+  #}
+  #setkey(o, nPop, caller)
+#
+  #o5.ag <- foreach(nPop.i=2:50, .combine="rbind")%do%{
+  #  message(nPop.i)
+  #  foreach(caller.i=c("SNAPE", "PoolSNP"), .combine="rbind")%do%{
+  #    #nPop.i<-5; caller.i<-"SNAPE"
+  #    tmp <- o[J(data.table(nPop=nPop.i, caller=caller.i, key="nPop,caller"))]
+  #    data.table(H=evenFun(x=tmp$pops), nPop=nPop.i, caller=caller.i)
+  #  }
+  #}
+  #o5.ag <- o[,list(H=evenFun(pops)), list(nPop, caller)]
 
-
-
+save(o, file="~/geographic_endemism.Rdata")
 save(o.ag, o2.ag, o3.ag, o4.ag, dgrp.ag, file="~/allSummarySet_endemism.Rdata")
