@@ -12,7 +12,7 @@
 #SBATCH --account berglandlab
 
 # sbatch --array=1-12 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.SNAPE.sh
-# sacct -j 18328356
+# sacct -j 18548987
 
 # SLURM_ARRAY_TASK_ID=5
 
@@ -26,11 +26,11 @@ pops=""
 if(length($5)==1) {
   for(i=10; i<=NF; i++) {
     split($i, sp, ":")
-    if(sp[1]=="0/1" && sp[5]>maf) npoly++
-    if(sp[1]=="0/1" && sp[5]>maf) pops=pops";"i-9
-    if(sp[1]=="0/1" && sp[5]>maf) af=af"+"sp[5]
+    if(sp[1]=="0/1" && sp[5]>maf && sp[5]<(1-maf)) npoly++
+    if(sp[1]=="0/1" && sp[5]>maf && sp[5]<(1-maf)) pops=pops";"i-9
+    if(sp[1]=="0/1" && sp[5]>maf && sp[5]<(1-maf)) af=af"+"sp[5]
     if(sp[1]=="./.") nmissing++
     }
     if(npoly>1) print maf"\t"$1"\t"$2"\t"npoly"\t"nmissing"\t"$4"\t"$5"\t"pops"\t"af
   }
-}' > /scratch/aob2x/dest/geo_endemic/geo_endemic.SNAPE.${SLURM_ARRAY_TASK_ID}.delim
+}' | head > /scratch/aob2x/dest/geo_endemic/geo_endemic.SNAPE.${SLURM_ARRAY_TASK_ID}.delim
