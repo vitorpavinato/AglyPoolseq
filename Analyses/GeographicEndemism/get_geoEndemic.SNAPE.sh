@@ -4,15 +4,15 @@
 #SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
 #SBATCH --cpus-per-task=1 ### standard has 28 or 40 $SLURM_CPUS_PER_TASK
-#SBATCH -t 1:00:00 # Running time of 1 hours
+#SBATCH -t 2:00:00 # Running time of 1 hours
 #SBATCH --mem 1G # Memory request of 8 GB
 #SBATCH -o /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.%A_%a.err # Standard error
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# sbatch --array=1-12 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.SNAPE.sh
-# sacct -j 18548987
+# sbatch --array=1-50 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.SNAPE.sh
+# sacct -j 18549212
 
 # SLURM_ARRAY_TASK_ID=5
 module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3 htslib bcftools
