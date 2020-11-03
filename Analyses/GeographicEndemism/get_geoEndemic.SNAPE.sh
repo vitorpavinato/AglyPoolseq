@@ -13,6 +13,8 @@
 
 # sbatch --array=1-50 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.SNAPE.sh
 # sacct -j 18549212
+# sbatch --array=38 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.SNAPE.sh
+# sacct -j 18550136
 
 # SLURM_ARRAY_TASK_ID=5
 module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3 htslib bcftools

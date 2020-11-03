@@ -5,7 +5,7 @@ args = commandArgs(trailingOnly=TRUE)
 set <- as.numeric(args[1])
 caller <- args[2]
 
-#set <- 1; caller <- "PoolSNP"
+#set <- 132; caller <- "SNAPE"
 
 ### libraries
 
@@ -14,6 +14,9 @@ caller <- args[2]
   library(data.table)
   library(sp)
   library(foreach)
+
+### load maf filters
+  maf <- unique(fread("/scratch/aob2x/dest/geo_endemic/jobs.txt", header=F)$V1)[set%%10+1]
 
 ### load sample names
   pops <- names(fread("zcat /scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz | head -n40", nrows=1, skip="#CHR"))[-(1:9)]
@@ -28,16 +31,23 @@ caller <- args[2]
   pw.dist[lower.tri(pw.dist)] <- NA
 
 ### private
-  priv.dt <- fread(paste("/scratch/aob2x/dest/geo_endemic/geo_endemic.", caller, ".delim", sep=""))
+  fn <- list.files("/scratch/aob2x/dest/geo_endemic", paste("geo_endemic.", caller, ".", maf, sep=""), full.name=T)
+
+  priv.dt <- foreach(fn.i=fn)%do%{
+    message(fn.i)
+    fread(fn.i)
+  }
+  priv.dt <- rbindlist(priv.dt)
+
   priv.dt <- priv.dt[V3>1]
 
-  priv.dt[,list(.N), list(V3)]
+  priv.dt[,list(.N), list(V4)]
 
 
-  priv.dt[,V7:=paste(V8, paste(V5, V6, V7, sep=""), sep=";")]
+  priv.dt[,V8:=paste(V9, paste(V6, V7, V8, sep=""), sep=";")]
 
 
-  priv.dt.small <- priv.dt[,list(pops=sample(V7, 100, replace=T), n=.N), list(chr=V1, nPop=V3)]
+  priv.dt.small <- priv.dt[,list(pops=sample(V8, 100, replace=T), n=.N), list(chr=V2, nPop=V4)]
   setkey(priv.dt.small, chr)
 
   priv.dt.small <- priv.dt.small[J(c("2L", "2R", "3L", "3R", "X"))]
@@ -84,10 +94,11 @@ caller <- args[2]
                                 length(unique(set.exp$Continental_clusters))==1)))
       o[,mt:=tstrsplit(pops, ";")[[2]]]
       o[,caller:=caller]
+      o[,maf:=maf]
       return(o)
   }
 
 
   o <- rbindlist(o)
 
-  save(o, file=paste("/scratch/aob2x/dest/geo_endemic/summarySet", set, ".", caller, ".Rdata", sep=""))
+  save(o, file=paste("/scratch/aob2x/dest/geo_endemic/maf/summarySet", set, ".", caller, ".", maf, ".Rdata", sep=""))
