@@ -10,6 +10,14 @@
   library(viridis)
 
   load("~/allSummarySet_endemism.Rdata")
+  o.ag.ag <- o.ag[,list(mean.dist=mean(mean.dist), mean.cc_equal=mean(mean.cc_equal), sd.dist=mean(sd.dist)), list(set, caller, nPop)]
+  o2.ag.ag <- o2.ag[,list(freq=mean(freq)), list(nPop, caller, mt)]
+  o4.ag.ag <- o4.ag[,list(nSites=sum(nSites)), list(nPop, caller)]
+
+
+  setkey(o2.ag.ag, nPop, caller)
+  setkey(o4.ag.ag, nPop, caller)
+  o2.ag.ag <- merge(o2.ag.ag, o4.ag.ag)
   #load("~/summarySet1.Rdata")
 
 ### make expectation MA table and do a bit of rearragment of MT data
@@ -17,86 +25,55 @@
               rate=c(6, 3, 5.5, 6, 5.5, 3., 9, 20, 6.5, 20, 9, 6.5)/100)
 
 
-### plots
-
-    mutation.plot <- ggplot(data=o2.ag, aes(x=nPop, y=freq, group=mt, color=mt)) + geom_line() + cowplot::theme_cowplot() +
+### mutation plot
+    mutation.plot <- ggplot(data=o2.ag.ag[nSites>500], aes(x=nPop, y=freq, group=mt, color=mt)) + geom_line() + cowplot::theme_cowplot() +
     xlab("Number of polymorphic populations") + ylab("Frequency") +
     geom_hline(data=exp.mt, aes(yintercept=rate, color=mt), linetype="dashed") +
     geom_hline(data=dgrp.ag, aes(yintercept=freq, color=mt), linetype="solid") +
     facet_grid(caller~mt) +
-    scale_linetype_manual(values = c("Assaf" = 1, "DGRP" = 2))
+    theme(legend.position = "none")
 
-
-    dist.full.plot <- ggplot(data=o.ag, aes(x=nPop, y=mean.dist, group=set, color=set)) +
-    geom_ribbon(aes(x=nPop, ymin=mean.dist-sd.dist, ymax=mean.dist+sd.dist, group=set, fill=set), alpha=.5) +
-    geom_line(size=1) +
-    facet_grid(~caller) +
-    xlab(NULL) +
-    ylab(NULL) +
-    cowplot::theme_cowplot()+
-    theme(legend.position="none",
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.text.x = element_text(size=rel(0.7)), ## tiny axis text
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          plot.background = element_blank())
-
-
-    dist.partial.plot <- ggplot(data=o.ag[nPop<25], aes(x=nPop, y=mean.dist, group=set, color=set)) +
-    geom_ribbon(aes(x=nPop, ymin=mean.dist-sd.dist, ymax=mean.dist+sd.dist, group=set, fill=set), alpha=.5) +
-    geom_line(size=1) +
-    facet_grid(~caller) +
-    xlab("Number of polymorphic populations") +
-    ylab("Average geographic distance \nbetween populations (km") +
-    cowplot::theme_cowplot()
-
-
-    dist.partial.plot + annotation_custom(grob=ggplotGrob(dist.full.plot),
-                          ymin = 5000, ymax=8000, xmin=5, xmax=25)
-
-
-    phyloConcord.plot <- ggplot(data=o.ag[nPop<25], aes(x=nPop, y=(mean.cc_equal), group=set, color=set)) +
-    geom_line() +
-    facet_grid(~caller) +
-    xlab("Number of polymorphic populations") +
-    ylab("Probability that all populations \nare in same phylogeographic cluster") +
-    cowplot::theme_cowplot()
-
+### total number plot
     n.plot <- ggplot(o4.ag, aes(x=(nPop), y=log10(nSites), fill=caller)) +
     geom_col(position = "dodge", size=2) +
     cowplot::theme_cowplot()
 
-    ggplot(na.omit(o3.ag), aes(x=(nPop), y=maf.bin, fill=delta.dist)) + geom_tile(interpolate=T) +
-    scale_fill_viridis()
+### distance plot
+    dist.plot <- ggplot(data=o.ag.ag[nPop<50], aes(x=nPop, y=mean.dist, group=interaction(set), color=set)) +
+    geom_ribbon(aes(x=nPop, ymin=mean.dist-sd.dist, ymax=mean.dist+sd.dist, group=set, fill=set), alpha=.5) +
+    geom_line(size=1) +
+    facet_grid(.~caller) +
+    xlab("Number of polymorphic populations") +
+    ylab("Ave. dist. (km)") +
+    cowplot::theme_cowplot()
 
-design <- "
-AAABBBCCC
-AAABBBCCC
-AAABBBCCC
-"
+### phylo concord plot
+    phyloConcord.plot <- ggplot(data=o.ag.ag[nPop<50],
+      aes(x=nPop, y=(mean.cc_equal), group=interaction(set, caller), color=set, linetype=caller)) +
+    geom_line() +
+    #facet_grid(~caller) +
+    xlab("Number of polymorphic populations") +
+    ylab("Prob same phylo. clust.") +
+    cowplot::theme_cowplot()
 
-design <- "
-AAAA
-AAAA
-BBCC
-BBCC
-"
+
 
 design <- "
 AAAAAA
 AAAAAA
-BBBCCC
-BBBCCC
+BBBBBB
+BBBBBB
+CCC###
+CCC###
 "
 
 
 
-o.plot <- (n.plot + dist.plot + phyloConcord.plot)  + plot_layout(design = design)
-o.plot
+o.plot <- (n.plot + dist.plot + phyloConcord.plot + phyloConcord.plot)  + plot_layout(design = design)
+#o.plot
 
-ggsave(o.plot, file="~/geo_endemic.pdf")
-
+ggsave(o.plot, file="~/geo_endemic.pdf", h=8, w=11)
+ggsave(mutation.plot, file="~/mutation_plot.pdf", h=8, w=11)
 
 
 

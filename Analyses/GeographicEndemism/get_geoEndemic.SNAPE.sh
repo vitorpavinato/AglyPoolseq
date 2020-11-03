@@ -11,11 +11,14 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.sh
+# sbatch --array=1-12 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.sh
 # sacct -j 18328356
 
+#SLURM_ARRAY_TASK_ID=5
 
-zcat /scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz | grep -v "#" | awk '{
+maf=$( echo "0, 0.001, 0.003, 0.005, 0.007, 0.01, 0.03, 0.05, 0.07, 0.1, 0.2, 0.3" | sed 's/ //g' | cut -d',' -f ${SLURM_ARRAY_TASK_ID} )
+
+zcat /scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz | grep -v "#" | awk -v maf=${maf} '{
 npoly=0
 nmissing=0
 af=0
@@ -23,11 +26,11 @@ pops=""
 if(length($5)==1) {
   for(i=10; i<=NF; i++) {
     split($i, sp, ":")
-    if(sp[1]=="0/1") npoly++
-    if(sp[1]=="0/1") pops=pops";"i-9
-    if(sp[1]=="0/1") af=af"+"sp[5]
+    if(sp[1]=="0/1" && sp[5]>maf) npoly++
+    if(sp[1]=="0/1" && sp[5]>maf) pops=pops";"i-9
+    if(sp[1]=="0/1" && sp[5]>maf) af=af"+"sp[5]
     if(sp[1]=="./.") nmissing++
     }
-    if(npoly>1) print $1"\t"$2"\t"npoly"\t"nmissing"\t"$4"\t"$5"\t"pops"\t"af
+    if(npoly>1) print maf"\t"$1"\t"$2"\t"npoly"\t"nmissing"\t"$4"\t"$5"\t"pops"\t"af
   }
-}' > /scratch/aob2x/dest/geo_endemic/geo_endemic.SNAPE.delim
+}' > /scratch/aob2x/dest/geo_endemic/geo_endemic.SNAPE.${SLURM_ARRAY_TASK_ID}.delim
