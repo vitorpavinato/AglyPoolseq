@@ -15,10 +15,18 @@
 # sacct -j 18548987
 
 # SLURM_ARRAY_TASK_ID=5
+module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3 htslib bcftools
 
-maf=$( echo "0, 0.001, 0.003, 0.005, 0.007, 0.01, 0.03, 0.05, 0.07, 0.1, 0.2, 0.3" | sed 's/ //g' | cut -d',' -f ${SLURM_ARRAY_TASK_ID} )
+wd=/scratch/aob2x/dest
 
-zcat /scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz | grep -v "#" | awk -v maf=${maf} '{
+Rscript ${wd}/DEST/Analyses/GeographicEndemism/makeJobs.R
+
+maf=$( cat ${wd}/geo_endemic/jobs.txt | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1)
+chr=$( cat ${wd}/geo_endemic/jobs.txt | sed "${SLURM_ARRAY_TASK_ID}q;d" | sed 's/"//g' | cut -f2)
+
+echo ${maf} ${chr}
+
+tabix ${wd}/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz ${chr} | grep -v "#" | awk -v maf=${maf} '{
 npoly=0
 nmissing=0
 af=0
@@ -33,4 +41,4 @@ if(length($5)==1) {
     }
     if(npoly>1) print maf"\t"$1"\t"$2"\t"npoly"\t"nmissing"\t"$4"\t"$5"\t"pops"\t"af
   }
-}' | head > /scratch/aob2x/dest/geo_endemic/geo_endemic.SNAPE.${SLURM_ARRAY_TASK_ID}.delim
+}' > /scratch/aob2x/dest/geo_endemic/geo_endemic.SNAPE.${maf}.${chr}.delim
