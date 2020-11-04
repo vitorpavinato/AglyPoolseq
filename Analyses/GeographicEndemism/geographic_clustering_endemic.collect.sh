@@ -12,8 +12,13 @@
 #SBATCH --account berglandlab
 
 # sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.collect.sh
-# sacct -j 18436693
+# sacct -j 18437381
 # cat /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.18336694_1.err
 module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3
 
-Rscript /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.collect.R
+
+# SLURM_ARRAY_TASK_ID=9
+maf=$( cat /scratch/aob2x/dest/geo_endemic/jobs.txt | cut -f1 | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+
+
+Rscript /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.collect.R ${maf}

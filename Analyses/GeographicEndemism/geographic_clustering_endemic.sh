@@ -11,8 +11,12 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# sbatch --array=1-100 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.sh
-# sacct -j 18336694
+#
+
+
+
+sbatch --array=1-200 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.sh
+# sacct -j 18557160
 # cat /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.18336694_1.err
 module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3
 
