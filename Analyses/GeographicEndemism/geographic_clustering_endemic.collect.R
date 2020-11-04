@@ -46,7 +46,7 @@
 
 ### how many
   setkey(o, set)
-  o4.ag <- o[J("obs")][,list(nSites=mean(n)), list(nPop, caller,chr)]
+  o4.ag <- o[J("obs")][,list(nSites=mean(n)), list(nPop, caller, chr)]
 
   ### get DGRP mt
     dgrp <- fread("/scratch/aob2x/dest/dgrp2.bim")
@@ -79,7 +79,7 @@
   #o5.ag <- o[,list(H=evenFun(pops)), list(nPop, caller)]
 
 #save(o, file="~/geographic_endemism.Rdata")
-save(o.ag, o2.ag, o3.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/maf/SNAPE.SummarySet.", maf, ".endemism.Rdata", sep=""))
+save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/maf/SNAPE.SummarySet.", maf, ".endemism.Rdata", sep=""))
 #save(o4.ag, f)
 
 
