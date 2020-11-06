@@ -26,8 +26,8 @@ grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 ```bash
 cd ${wd}
 module load singularity
-#singularity pull docker://jho5ze/dmelsync:hpc
-singularity pull docker://alanbergland/dest_mapping:latest
+singularity pull docker://jho5ze/dmelsync:hpc
+#singularity pull docker://alanbergland/dest_mapping:latest
 ```
 
 ### 4. Run the singularity container across list of populations

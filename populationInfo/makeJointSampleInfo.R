@@ -9,12 +9,12 @@
 	#library(cowplot)
 	library(foreach)
 	library(ggplot2)
-	library(ggmap)
-	library(maps)
-	library(mapdata)
-	library(rnoaa)
+	#library(ggmap)
+	#library(maps)
+	#library(mapdata)
+#	library(rnoaa)
 	library(sp)
-	library(rworldmap)
+	#library(rworldmap)
 
 ### set working directory
 	setwd("/scratch/aob2x/dest")
@@ -79,7 +79,7 @@
 			### set1: https://www.ncbi.nlm.nih.gov/bioproject/PRJNA256231
 			### set2: https://www.ncbi.nlm.nih.gov/bioproject/PRJNA308584
 			drosRTEC.sra.1 <- fread("./DEST/populationInfo/drosRTEC_set1_SraRunInfo.txt")
-			drosRTEC.sra.2 <- fread("./DEST/populationInfo/drosRTEC_set2_SraRunInfo.txt")
+			drosRTEC.sra.2 <- fread("./DEST/populationInfo/drosRTEC_set2_SraRunInfo.10_2020.txt")
 
 			setnames(drosRTEC.sra.1, c("Sample Name", "Run", "Experiment"), c("sra_sampleName", "SRA_accession", "SRA_experiment"))
 			setnames(drosRTEC.sra.2, c("Sample Name", "Run", "Experiment"), c("sra_sampleName", "SRA_accession", "SRA_experiment"))
@@ -184,7 +184,8 @@
 			dat.dpgp.dt[,lat:=as.numeric(as.character(lat))]
 			dat.dpgp.dt[,long:=as.numeric(as.character(long))]
 
-			dat.dpgp.dt[!is.na(lat), continent:=gsub(" ", "_", as.character(coords2continent(na.omit(as.matrix(dat.dpgp.dt[,c("long", "lat"),with=F])))))]
+			#dat.dpgp.dt[!is.na(lat), continent:=gsub(" ", "_", as.character(coords2continent(na.omit(as.matrix(dat.dpgp.dt[,c("long", "lat"),with=F])))))]
+			dat.dpgp.dt[,continent:=NA]
 			dat.dpgp.dt[,SRA_accession:=NA]
 			dat.dpgp.dt[,SRA_experiment:=NA]
 			setnames(dat.dpgp.dt, "n", "nFlies")
@@ -272,8 +273,8 @@
 
 		samps <- merge(samps, pca.k[,c("sampleId", "Continental_clusters"), with=F])
 
-		samps[grepl("AT_gr_12", sampleId), Continental_clusters:="3.Europe_E"]
-		samps[grepl("ES_ba_12", sampleId), Continental_clusters:="1.Europe_W"]
+		#samps[grepl("AT_gr_12", sampleId), Continental_clusters:="3.Europe_E"]
+		#samps[grepl("ES_ba_12", sampleId), Continental_clusters:="1.Europe_W"]
 
 	### save
 		write.csv(samps, "./DEST/populationInfo/samps.csv", quote=F, row.names=F)
