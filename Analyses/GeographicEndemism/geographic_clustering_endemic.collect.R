@@ -10,7 +10,9 @@
   #maf <- "0.1"
 
 ### load data
-  fn <- list.files("/scratch/aob2x/dest/geo_endemic/maf", paste("SNAPE.", maf, sep=""), full.names=T)
+  #fn <- list.files("/scratch/aob2x/dest/geo_endemic/maf", paste("SNAPE.", maf, sep=""), full.names=T)
+  fn <- list.files("/scratch/aob2x/dest/geo_endemic/", "summarySet", full.names=T)
+  fn <- fn[grepl("PoolSNP", fn)][1:10]
 
   o <- foreach(fn.i=fn)%do%{
     message(fn.i)
@@ -20,6 +22,7 @@
   }
   o <- rbindlist(o, fill=T)
 
+  if(is.null(o$maf)) o[,maf:=0]
 
 ### geogrpahic distances
   o.ag <- o[,list(mean.dist=mean(meanDist), sd.dist=sd(meanDist),
@@ -80,6 +83,8 @@
 
 #save(o, file="~/geographic_endemism.Rdata")
 save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/maf/SNAPE.SummarySet.", maf, ".endemism.Rdata", sep=""))
+save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/maf/SNAPE.SummarySet.", "PoolSNP", ".endemism.Rdata", sep=""))
+
 #save(o4.ag, f)
 
 

@@ -11,14 +11,16 @@
 #SBATCH --account berglandlab
 
 wd=/scratch/aob2x/dest
-### run as: sbatch --array=1-$( tail -n1 /scratch/aob2x/fastq/todl.csv | cut -f3 -d',' ) ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
+### grep -E "ES_ba_12|AT_gr_12" /scratch/aob2x/dest/DEST/populationInfo/samps.csv | cut -f1,13 -d',' > /scratch/aob2x/fastq/todl.csv
+### run as: sbatch --array=1-$( wc -l < /scratch/aob2x/fastq/todl.csv ) ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
 ##sbatch --array=3 ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
+
 module load sratoolkit/2.10.5
 
 #SLURM_ARRAY_TASK_ID=1
 
-sranum=$( grep ",${SLURM_ARRAY_TASK_ID}$" /scratch/aob2x/fastq/todl.csv | cut -f2 -d',' )
-sampName=$( grep ",${SLURM_ARRAY_TASK_ID}$" /scratch/aob2x/fastq/todl.csv | cut -f1 -d',' )
+sranum=$( sed "${SLURM_ARRAY_TASK_ID}q;d" /scratch/aob2x/fastq/todl.csv | cut -f2 -d',' )
+sampName=$( sed "${SLURM_ARRAY_TASK_ID}q;d" /scratch/aob2x/fastq/todl.csv | cut -f1 -d',' )
 
 echo $sampName " / " $sranum
 
