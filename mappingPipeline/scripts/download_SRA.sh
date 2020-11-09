@@ -12,8 +12,8 @@
 
 wd=/scratch/aob2x/dest
 ### grep -E "ES_ba_12|AT_gr_12" /scratch/aob2x/dest/DEST/populationInfo/samps.csv | cut -f1,13 -d',' > /scratch/aob2x/fastq/todl.csv
-### run as: sbatch --array=1-$( wc -l < /scratch/aob2x/fastq/todl.csv ) ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
-##sbatch --array=3 ${wd}/DEST/mappingPipeline/scripts/download_SRA.sh
+### run as: sbatch --array=1-$( wc -l < /scratch/aob2x/fastq/todl.csv ) /scratch/aob2x/dest/DEST/mappingPipeline/scripts/download_SRA.sh
+### sacct -j 18750292
 
 module load sratoolkit/2.10.5
 
@@ -38,4 +38,4 @@ fasterq-dump \
 gzip /scratch/aob2x/fastq/${sranum}_1.fastq
 gzip /scratch/aob2x/fastq/${sranum}_2.fastq
 
-rm /scratch/aob2x/fastq/${sranum}.sra
+#rm /scratch/aob2x/fastq/${sranum}.sra
