@@ -13,7 +13,7 @@
 
 
 ### test run as: sbatch --array=1-4 ${wd}/DEST/misc_obsolete/runDocker.sh
-# sacct -j 18752428 --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
+# sacct -j 18756514 --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
 
 
 ### modules
