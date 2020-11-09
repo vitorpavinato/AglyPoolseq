@@ -16,6 +16,7 @@
 # sacct -j 14446076
 # cat /scratch/aob2x/dest/slurmOutput/dockerMap.16904399_2.out | grep -v "Reference is N; most frequent allele is calculated in position" | less -S
 # cat /scratch/aob2x/dest/slurmOutput/dockerMap.16904399_2.out
+
 ### modules
   module load singularity
 
