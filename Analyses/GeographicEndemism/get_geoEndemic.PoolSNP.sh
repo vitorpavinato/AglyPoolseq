@@ -12,7 +12,7 @@
 #SBATCH --account berglandlab
 
 # sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/get_geoEndemic.PoolSNP.sh
-# sacct -j 18330982
+# sacct -j 18750850
 
 module load bcftools
 
