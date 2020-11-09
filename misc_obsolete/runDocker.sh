@@ -5,7 +5,7 @@
 #SBATCH -c 10
 #SBATCH -N 1 # on one node
 #SBATCH -t 12:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
-#SBATCH --mem 20G
+#SBATCH --mem 60G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/dockerMap.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/dockerMap.%A_%a.err # Standard error
 #SBATCH -p standard
