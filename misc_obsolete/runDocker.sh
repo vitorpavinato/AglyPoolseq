@@ -5,22 +5,23 @@
 #SBATCH -c 10
 #SBATCH -N 1 # on one node
 #SBATCH -t 12:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
-#SBATCH --mem 5G
+#SBATCH --mem 20G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/dockerMap.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/dockerMap.%A_%a.err # Standard error
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
 
-### test run as: sbatch --array=10 ${wd}DEST/misc_obsolete/runDocker.sh
-# sacct -j 14446076
-# cat /scratch/aob2x/dest/slurmOutput/dockerMap.16904399_2.out | grep -v "Reference is N; most frequent allele is calculated in position" | less -S
-# cat /scratch/aob2x/dest/slurmOutput/dockerMap.16904399_2.out
+### test run as: sbatch --array=1-4 ${wd}/DEST/misc_obsolete/runDocker.sh
+# sacct -j 18752428 --format=User,JobID,Jobname,partition,state,time,start,end,elapsed,MaxRss,MaxVMSize,nnodes,ncpus,nodelist
+
+
 ### modules
   module load singularity
 
 ### define a few things
-  outputDir=/project/berglandlab/DEST/dest_mapped/pipeline_output
+  #outputDir=/project/berglandlab/DEST/dest_mapped/pipeline_output
+  outputDir=/scratch/aob2x/tempOut
   wd=/scratch/aob2x/dest
 
 ### check
