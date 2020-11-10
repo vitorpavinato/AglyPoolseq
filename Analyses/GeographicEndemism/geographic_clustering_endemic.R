@@ -29,6 +29,13 @@ caller <- args[2]
   pops <- names(fread("bcftools view -S /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/goodSamps.delim /scratch/aob2x/dest/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz | head -n 40",
         nrows=1, skip="#CHR"))[-(1:9)]
 
+
+  #### if using pre Oct 2020 data, do this. Otherwise, don't
+    pops <- gsub("AT_gr_12", "newSpain", pops)
+    pops <- gsub("ES_ba_12", "newAust", pops)
+    pops <- gsub("newSpain", "ES_ba_12", pops)
+    pops <- gsub("newAust", "AT_gr_12", pops)
+  
 ### samps
   samps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
   setkey(samps, sampleId)

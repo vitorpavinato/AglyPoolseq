@@ -7,4 +7,4 @@
   `DEST/Analyses/GeographicEndemism/get_geoEndemic.PoolSNP.sh`
 
 3. Parse output
-  `ijob -A berglandlab -c 2 --mem=120G  --partition=largemem`
+  `DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.sh`
