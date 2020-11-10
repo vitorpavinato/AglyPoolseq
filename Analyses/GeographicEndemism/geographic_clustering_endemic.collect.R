@@ -82,8 +82,8 @@
   #o5.ag <- o[,list(H=evenFun(pops)), list(nPop, caller)]
 
 #save(o, file="~/geographic_endemism.Rdata")
-save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/maf/SNAPE.SummarySet.", maf, ".endemism.Rdata", sep=""))
-save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/maf/SNAPE.SummarySet.", "PoolSNP", ".endemism.Rdata", sep=""))
+#save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/goodSamps/SNAPE.SummarySet.", maf, ".endemism.Rdata", sep=""))
+save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/goodSamps/SummarySet.goodSamps.endemism.Rdata", sep=""))
 
 #save(o4.ag, f)
 
