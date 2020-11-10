@@ -19,23 +19,23 @@ First paramter is the population set ('all' samples or just the 'PoolSeq' sample
 ```bash
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh all PoolSNP 001 50
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE 001 50
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE NA NA
 ```
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP 001 50
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 50
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE 001 50
+sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA
 ```
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
 sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP 001 50
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP 001 50
-sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE 001 50
+sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE NA NA
 ```
-sacct -j 17863630
+
 
 ## 3. Parameter evaluation. Some modifications to introduce internal parallel function. Runs through 3c, I think.
 ### 3a. Random sample of ~10% of data:
