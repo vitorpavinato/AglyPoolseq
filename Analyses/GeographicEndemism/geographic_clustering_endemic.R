@@ -5,7 +5,7 @@ args = commandArgs(trailingOnly=TRUE)
 set <- as.numeric(args[1])
 caller <- args[2]
 
-#set <- 132; caller <- "SNAPE"
+#set <- 132; caller <- "PoolSNP"
 
 ### libraries
 
@@ -35,7 +35,7 @@ caller <- args[2]
     pops <- gsub("ES_ba_12", "newAust", pops)
     pops <- gsub("newSpain", "ES_ba_12", pops)
     pops <- gsub("newAust", "AT_gr_12", pops)
-  
+
 ### samps
   samps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
   setkey(samps, sampleId)
@@ -59,7 +59,9 @@ caller <- args[2]
 
   #priv.dt[,list(.N), list(V4)]
 
-
+  if(caller=="PoolSNP") {
+    setnames(priv.dt, names(priv.dt), paste("V", 2:9, sep=""))
+  }
   priv.dt[,V8:=paste(V9, paste(V6, V7, V8, sep=""), sep=";")]
 
 
@@ -79,7 +81,7 @@ caller <- args[2]
 
   priv.dt.small[,id:=c(1:dim(priv.dt.small)[1])]
 
-  o <- foreach(i=priv.dt.small$id[1:10000])%dopar%{
+  o <- foreach(i=priv.dt.small$id)%dopar%{
     #i<-201
     if(i%%2==0) message(paste(i, dim(priv.dt.small)[1], sep=" / "))
 

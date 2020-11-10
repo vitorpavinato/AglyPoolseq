@@ -16,8 +16,8 @@
 
 
 # sbatch --array=1-200 /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.sh
-# sacct -j 18773691
-# cat /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.18773691_1.err
+# sacct -j 18774818
+# cat /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.18774818_1.err
 module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3
 
 
