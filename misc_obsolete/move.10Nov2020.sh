@@ -10,7 +10,7 @@
 #SBATCH -p standard
 #SBATCH --account biol8083
 
-### sbatch ${wd}/DEST/misc_obsolete/move.Oct27_2020.sh PoolSeq SNAPE 001 50
+### sbatch ${wd}/DEST/misc_obsolete/move.Oct27_2020.sh PoolSeq PoolSNP 001 50 10Nov2020
 # sacct -j 17962317
 
 
@@ -22,7 +22,7 @@ method=${2}
 maf=${3}
 mac=${4}
 version=${5}
-#maf=001; mac=50; popSet="PoolSeq"; method="SNAPE"
+#maf=001; mac=50; popSet="all"; method="PoolSNP"; version="10Nov2020"
 
 wd="/scratch/aob2x/dest"
 

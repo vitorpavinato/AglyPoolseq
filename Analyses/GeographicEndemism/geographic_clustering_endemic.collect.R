@@ -12,7 +12,7 @@
 ### load data
   #fn <- list.files("/scratch/aob2x/dest/geo_endemic/maf", paste("SNAPE.", maf, sep=""), full.names=T)
   fn <- list.files("/scratch/aob2x/dest/geo_endemic/goodSamps/", "summarySet", full.names=T)
-  fn <- fn[grepl("PoolSNP", fn)][1:10]
+  #fn <- fn[grepl("PoolSNP", fn)][1:10]
 
   o <- foreach(fn.i=fn)%do%{
     message(fn.i)
