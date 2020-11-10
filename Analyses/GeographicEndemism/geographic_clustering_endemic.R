@@ -1,4 +1,4 @@
-#module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3; R
+#module load bcftools gcc/7.1.0  openmpi/3.1.4 R/3.6.3; R
 
 
 args = commandArgs(trailingOnly=TRUE)
@@ -16,10 +16,18 @@ caller <- args[2]
   library(foreach)
 
 ### load maf filters
-  maf <- unique(fread("/scratch/aob2x/dest/geo_endemic/jobs.txt", header=F)$V1)[set%%10+1]
+  #maf <- unique(fread("/scratch/aob2x/dest/geo_endemic/jobs.txt", header=F)$V1)[set%%10+1]
+  if(caller=="SNAPE") {
+    maf <- 0.05
+  } else if(caller=="PoolSNP") {
+    maf <- 0.001
+  }
 
 ### load sample names
-  pops <- names(fread("zcat /scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz | head -n40", nrows=1, skip="#CHR"))[-(1:9)]
+  #pops <- names(fread("zcat /scratch/aob2x/dest/dest.PoolSeq.SNAPE.001.50.ann.vcf.gz | head -n40", nrows=1, skip="#CHR"))[-(1:9)]
+
+  pops <- names(fread("bcftools view -S /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/goodSamps.delim /scratch/aob2x/dest/dest.PoolSeq.PoolSNP.001.50.ann.vcf.gz | head -n 40",
+        nrows=1, skip="#CHR"))[-(1:9)]
 
 ### samps
   samps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
@@ -31,7 +39,8 @@ caller <- args[2]
   pw.dist[lower.tri(pw.dist)] <- NA
 
 ### private
-  fn <- list.files("/scratch/aob2x/dest/geo_endemic", paste("geo_endemic.", caller, ".", maf, sep=""), full.name=T)
+  #fn <- list.files("/scratch/aob2x/dest/geo_endemic", paste("geo_endemic.", caller, ".", maf, sep=""), full.name=T)
+  fn <- list.files("/scratch/aob2x/dest/geo_endemic", paste("geo_endemic.", caller, ".goodSamps", sep=""), full.name=T)
 
   priv.dt <- foreach(fn.i=fn)%do%{
     message(fn.i)
@@ -39,9 +48,9 @@ caller <- args[2]
   }
   priv.dt <- rbindlist(priv.dt)
 
-  priv.dt <- priv.dt[V3>1]
+  #priv.dt <- priv.dt[V3>1]
 
-  priv.dt[,list(.N), list(V4)]
+  #priv.dt[,list(.N), list(V4)]
 
 
   priv.dt[,V8:=paste(V9, paste(V6, V7, V8, sep=""), sep=";")]
@@ -61,12 +70,14 @@ caller <- args[2]
     mean(as.numeric(unlist(tstrsplit(af_string, "\\+")[-1])))
   }
 
-  o <- foreach(i=1:dim(priv.dt.small)[1])%dopar%{
-    #i<-24501
+  priv.dt.small[,id:=c(1:dim(priv.dt.small)[1])]
+
+  o <- foreach(i=priv.dt.small$id[1:10000])%dopar%{
+    #i<-201
     if(i%%2==0) message(paste(i, dim(priv.dt.small)[1], sep=" / "))
 
     ### get average allele frequency
-      priv.dt.small.tmp <- priv.dt.small[i]
+      priv.dt.small.tmp <- priv.dt.small[id==i]
       priv.dt.small.tmp[,af:=getmean(pops)]
 
     ### obs
@@ -79,7 +90,8 @@ caller <- args[2]
 
       pw.dist.exp <- spDists(x=as.matrix(set.exp[,c("long", "lat"), with=F]), longlat=T)
 
-      o <- cbind(priv.dt.small.tmp,
+
+      o <- cbind(rbind(priv.dt.small.tmp, data.table(chr=priv.dt.small.tmp$chr, nPop=priv.dt.small.tmp$nPop, pops=NA, n=NA, id=NA)),
           data.table(set=c("obs", "exp"),
                       meanDist=c(mean(pw.dist.obs[lower.tri(pw.dist.obs)]),
                                 mean(pw.dist.exp[lower.tri(pw.dist.exp)])),
@@ -101,4 +113,4 @@ caller <- args[2]
 
   o <- rbindlist(o)
 
-  save(o, file=paste("/scratch/aob2x/dest/geo_endemic/maf/summarySet", set, ".", caller, ".", maf, ".Rdata", sep=""))
+  save(o, file=paste("/scratch/aob2x/dest/geo_endemic/goodSamps/summarySet.", set, ".", caller, ".", maf, ".Rdata", sep=""))

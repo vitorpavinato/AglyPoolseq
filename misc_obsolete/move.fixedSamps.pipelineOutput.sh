@@ -12,7 +12,7 @@
 
 
 # sbatch /scratch/aob2x/dest/DEST/misc_obsolete/move.fixedSamps.pipelineOutput.sh
-# sacct -j 18771063
+# sacct -j 18771065
 
 
 #ls -lh /project/berglandlab/DEST/dest_mapped/pipeline_output/AT_gr_12_fall

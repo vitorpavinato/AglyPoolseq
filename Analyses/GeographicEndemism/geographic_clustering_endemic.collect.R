@@ -11,7 +11,7 @@
 
 ### load data
   #fn <- list.files("/scratch/aob2x/dest/geo_endemic/maf", paste("SNAPE.", maf, sep=""), full.names=T)
-  fn <- list.files("/scratch/aob2x/dest/geo_endemic/", "summarySet", full.names=T)
+  fn <- list.files("/scratch/aob2x/dest/geo_endemic/goodSamps/", "summarySet", full.names=T)
   fn <- fn[grepl("PoolSNP", fn)][1:10]
 
   o <- foreach(fn.i=fn)%do%{
@@ -25,9 +25,9 @@
   if(is.null(o$maf)) o[,maf:=0]
 
 ### geogrpahic distances
-  o.ag <- o[,list(mean.dist=mean(meanDist), sd.dist=sd(meanDist),
-                  med.dist=median(meanDist), lci.dist=quantile(meanDist, .025), uci.dist=quantile(meanDist, .975),
-                  mean.cc_equal=mean(cc_equal)),
+  o.ag <- o[,list(mean.dist=mean(meanDist, na.rm=T), sd.dist=sd(meanDist, na.rm=T),
+                  med.dist=median(meanDist, na.rm=T), lci.dist=quantile(meanDist, .025, na.rm=T), uci.dist=quantile(meanDist, .975, na.rm=T),
+                  mean.cc_equal=mean(cc_equal, na.rm=T)),
              list(set, nPop, caller, chr, maf)]
 
 ### mutation classes

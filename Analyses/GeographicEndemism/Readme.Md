@@ -1,2 +1,10 @@
+##
 1. Subset VCF down to non-problematic populations. First, pull data from google sheet an reformat for bcftools input
-2. ``
+  `DEST/Analyses/GeographicEndemism/pullProblematicPops.R`
+
+2. Run awk script to extract out SNP-level metrics for polymorphic populations
+  `DEST/Analyses/GeographicEndemism/get_geoEndemic.SNAPE.sh`
+  `DEST/Analyses/GeographicEndemism/get_geoEndemic.PoolSNP.sh`
+
+3. Parse output
+  `ijob -A berglandlab -c 2 --mem=120G  --partition=largemem`
