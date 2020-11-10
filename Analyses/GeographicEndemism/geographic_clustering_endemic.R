@@ -91,7 +91,7 @@ caller <- args[2]
       pw.dist.exp <- spDists(x=as.matrix(set.exp[,c("long", "lat"), with=F]), longlat=T)
 
 
-      o <- cbind(rbind(priv.dt.small.tmp, data.table(chr=priv.dt.small.tmp$chr, nPop=priv.dt.small.tmp$nPop, pops=NA, n=NA, id=NA)),
+      o <- cbind(rbind(priv.dt.small.tmp, data.table(chr=priv.dt.small.tmp$chr, nPop=priv.dt.small.tmp$nPop, pops=NA, n=NA, id=NA), fill=T),
           data.table(set=c("obs", "exp"),
                       meanDist=c(mean(pw.dist.obs[lower.tri(pw.dist.obs)]),
                                 mean(pw.dist.exp[lower.tri(pw.dist.exp)])),
