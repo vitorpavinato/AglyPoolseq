@@ -3,7 +3,9 @@
 ### libraries
   library(data.table)
   library(foreach)
-
+  library(doMC)
+  registerDoMC(10)
+  
 ### cli
   args = commandArgs(trailingOnly=TRUE)
   maf <- as.character(args[1])
