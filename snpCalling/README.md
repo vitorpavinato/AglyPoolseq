@@ -28,9 +28,7 @@ sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP 001 50
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 50
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA
 ```
-sacct -j 18777845 #all PoolSNP
-sacct -j 18777853 #PoolSeq PoolSNP
-sacct -j 18777854 #PoolSeq SNAPE
+sacct -j 18794448 #PoolSeq SNAPE
 
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
