@@ -65,6 +65,6 @@ wd=/scratch/aob2x/dest
 echo "make GDS"
   Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
 
-echo "bgzip & tabix"
-  bgzip -c ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf > ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
-  tabix -p vcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
+#echo "bgzip & tabix"
+#  bgzip -c ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf > ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
+#  tabix -p vcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
