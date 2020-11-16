@@ -28,7 +28,6 @@ sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP 001 50
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 50
 sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA
 ```
-sacct -j 18794448 #PoolSeq SNAPE
 
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
@@ -37,9 +36,6 @@ sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP 001 50 10Nov2020
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP 001 50 10Nov2020
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE NA NA 10Nov2020
 ```
-sacct -j 18781320
-sacct -j 18781321
-sacct -j 18781322
 
 
 ## 3. Parameter evaluation. Some modifications to introduce internal parallel function. Runs through 3c, I think.
