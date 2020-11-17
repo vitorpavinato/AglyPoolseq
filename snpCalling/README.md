@@ -36,6 +36,7 @@ sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP 001 50 10Nov2020
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP 001 50 10Nov2020
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE NA NA 10Nov2020
 ```
+sacct -j 18869692
 
 
 ## 3. Parameter evaluation. Some modifications to introduce internal parallel function. Runs through 3c, I think.
