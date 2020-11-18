@@ -12,7 +12,7 @@
 #SBATCH --account berglandlab
 
 # sbatch /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.collect.sh
-# sacct -j 18907574
+# sacct -j 18910149
 # cat /scratch/aob2x/daphnia_hwe_sims/slurmOut/lme4qtl.18907574
 module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3
 
