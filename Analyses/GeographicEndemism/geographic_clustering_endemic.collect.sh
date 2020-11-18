@@ -21,4 +21,5 @@ module load gcc/7.1.0  openmpi/3.1.4 R/3.6.3
 #maf=$( cat /scratch/aob2x/dest/geo_endemic/jobs.txt | cut -f1 | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 
-Rscript /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.collect.R
+#Rscript /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.collect.goodSamps.SNAPE.R
+Rscript /scratch/aob2x/dest/DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.collect.PoolSeq.PoolSNP.R
