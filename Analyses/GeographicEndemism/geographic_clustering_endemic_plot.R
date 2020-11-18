@@ -2,16 +2,42 @@
   library(data.table)
   library(foreach)
 
-### load summary data
+### load summary data for good samps SNAPE
   #fn <- list.files("SummarySet.goodSamps.endemism.Rdata", full.names=T)
   fn <- "/scratch/aob2x/dest/geo_endemic/goodSamps/SummarySet.goodSamps.endemism.Rdata"
 
-  o.ag.all <- foreach(fn.i=fn, .combine="rbind")%do%{
+  o.ag.snape <- foreach(fn.i=fn, .combine="rbind")%do%{
+    load(fn.i)
+    return(o.ag[caller=="SNAPE"])
+  }
+
+  o2.ag.snape <- foreach(fn.i=fn, .combine="rbind")%do%{
+    load(fn.i)
+    #maf <- gsub(".endemism.Rdata", "", gsub("/scratch/aob2x/dest/geo_endemic/maf//SNAPE.SummarySet.", "", fn.i))
+    #o2.ag[,maf:=maf]
+    return(o2.ag[caller=="SNAPE"])
+  }
+
+
+  o4.ag.snape <- foreach(fn.i=fn, .combine="rbind")%do%{
+    load(fn.i)
+    #maf <- gsub(".endemism.Rdata", "", gsub("/scratch/aob2x/dest/geo_endemic/maf//SNAPE.SummarySet.", "", fn.i))
+    #o4.ag[,maf:=maf]
+    return(o4.ag[caller=="SNAPE"])
+  }
+
+
+
+### load summary data for PoolSeq PoolSNP
+  #fn <- list.files("SummarySet.goodSamps.endemism.Rdata", full.names=T)
+  fn <- "/scratch/aob2x/dest/geo_endemic/goodSamps/SummarySet.PoolSeq.PoolSNP.endemism.Rdata"
+
+  o.ag.PoolSeq <- foreach(fn.i=fn, .combine="rbind")%do%{
     load(fn.i)
     return(o.ag)
   }
 
-  o2.ag.all <- foreach(fn.i=fn, .combine="rbind")%do%{
+  o2.ag.PoolSeq <- foreach(fn.i=fn, .combine="rbind")%do%{
     load(fn.i)
     #maf <- gsub(".endemism.Rdata", "", gsub("/scratch/aob2x/dest/geo_endemic/maf//SNAPE.SummarySet.", "", fn.i))
     #o2.ag[,maf:=maf]
@@ -19,18 +45,28 @@
   }
 
 
-  o4.ag.all <- foreach(fn.i=fn, .combine="rbind")%do%{
+  o4.ag.PoolSeq <- foreach(fn.i=fn, .combine="rbind")%do%{
     load(fn.i)
     #maf <- gsub(".endemism.Rdata", "", gsub("/scratch/aob2x/dest/geo_endemic/maf//SNAPE.SummarySet.", "", fn.i))
     #o4.ag[,maf:=maf]
     return(o4.ag)
   }
 
-  save(o.ag.all, o2.ag.all, o4.ag.all, dgrp.ag, file="~/allSummarySet_endemism.SNAPE.goodSamps.Rdata")
+
+
+### combine
+  o.ag.all <- rbind(o.ag.snape, o.ag.PoolSeq)
+  o2.ag.all <- rbind(o2.ag.snape, o2.ag.PoolSeq)
+  o4.ag.all <- rbind(o4.ag.snape, o4.ag.PoolSeq)
+
+
+
+
+  save(o.ag.all, o2.ag.all, o4.ag.all, dgrp.ag, file="~/allSummarySet_endemism.bothCallers.Rdata")
 
 
 #### plot
-  scp aob2x@rivanna.hpc.virginia.edu:~/allSummarySet_endemism.SNAPE.goodSamps.Rdata ~/.
+  scp aob2x@rivanna.hpc.virginia.edu:~/allSummarySet_endemism.bothCallers.Rdata ~/.
   #scp aob2x@rivanna.hpc.virginia.edu:/scratch/aob2x/dest/geo_endemic/summarySet1.Rdata ~/.
 
 
@@ -42,7 +78,7 @@
   library(viridis)
   library(ggridges)
 
-  load("~/allSummarySet_endemism.SNAPE.goodSamps.Rdata")
+  load("~/allSummarySet_endemism.bothCallers.Rdata")
   o.ag.ag <- o.ag.all[,list(mean.dist=mean(mean.dist), mean.cc_equal=mean(mean.cc_equal), sd.dist=mean(sd.dist)), list(set, caller, nPop)]
   o2.ag.ag <- o2.ag.all[,list(freq=mean(freq)), list(nPop, caller, mt)]
   o4.ag.ag <- o4.ag.all[,list(nSites=sum(nSites)), list(nPop, caller)]
@@ -74,12 +110,12 @@
   ylab("Ave. dist. (km)") +
   cowplot::theme_cowplot()
 
-  mutation.plot <- ggplot(data=o2.ag.ag[nSites>500], aes(x=nPop, y=freq, group=mt, color=mt, linetype=caller)) + geom_line() + cowplot::theme_cowplot() +
+  mutation.plot <- ggplot(data=o2.ag.ag[nSites>1000], aes(x=nPop, y=freq, group=mt, color=mt, linetype=caller)) + geom_line() + cowplot::theme_cowplot() +
   xlab("Number of polymorphic populations") + ylab("Frequency") +
   geom_hline(data=exp.mt, aes(yintercept=rate, color=mt), linetype="dashed") +
   geom_hline(data=dgrp.ag, aes(yintercept=freq, color=mt), linetype="solid") +
   facet_grid(caller~mt) +
-  theme(legend.position = "none")
+  theme(legend.position = "none", axis.text.x = element_text(angle = 90))
 
   phyloConcord.plot <- ggplot(data=o.ag.ag[nPop<50],
     aes(x=nPop, y=(mean.cc_equal), group=interaction(set, caller), color=set, linetype=caller)) +
@@ -100,13 +136,13 @@ CCCC###
 
 
 
-o.plot <- (n.plot + dist.plot + phyloConcord.plot + phyloConcord.plot)  + plot_layout(design = design)
+o.plot <- (n.plot + dist.plot + phyloConcord.plot )  + plot_layout(design = design)
 #o.plot
 
-ggsave(o.plot, file="~/geo_endemic.goodSamps.pdf", h=8, w=11)
+ggsave(o.plot, file="~/geo_endemic.bothCallers.pdf", h=8, w=11)
 
 
-  ggsave(mutation.plot, file="~/mutation_plot.goodSamps.pdf", h=8, w=11)
+ggsave(mutation.plot, file="~/mutation_plot.bothCallers.pdf", h=8, w=11)
 
 
 

@@ -13,10 +13,10 @@
 
 ### load data
   #fn <- list.files("/scratch/aob2x/dest/geo_endemic/maf", paste("SNAPE.", maf, sep=""), full.names=T)
-  fn <- list.files("/scratch/aob2x/dest/geo_endemic/PoolSeq_PoolSNP/", "summarySet", full.names=T)
+  fn <- list.files("/scratch/aob2x/dest/geo_endemic/PoolSeq_PoolSNP", "summarySet", full.names=T)
   #fn <- fn[grepl("PoolSNP", fn)][1:10]
 
-  o <- foreach(fn.i=fn)%do%{
+  o <- foreach(fn.i=fn)%dopar%{
     message(fn.i)
     #fn.i <- fn[1]
     load(fn.i)
@@ -37,17 +37,17 @@
   o2.ag <- na.omit(o2.ag)[,list(freq=N/sum(N), mt), list(nPop, caller, chr)]
 
 ### allele freq. binning
-  #maf <- function(x) min(x, 1-x)
-#
-  #o[,af.bin:=round(af, 2)]
-  #o[,maf:=sapply(o$af, maf)]
-  #o[,maf.bin:=round((maf), 2)]
-#
-  #o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T),
-  #                 meanDist.obs=mean(meanDist[set=="obs"], na.rm=T),
-  #                 meanDist.exp=mean(meanDist[set=="exp"], na.rm=T)),
-#
-  #           list(nPop, maf.bin=maf.bin, caller, chr)]
+  maf <- function(x) min(x, 1-x)
+
+  o[,af.bin:=round(af, 2)]
+  o[,maf.site:=sapply(o$af, maf)]
+  o[,maf.bin:=round((maf.site), 2)]
+
+  o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T),
+                   meanDist.obs=mean(meanDist[set=="obs"], na.rm=T),
+                   medDist.obs=median(meanDist[set=="obs"], na.rm=T),
+                   meanDist.exp=mean(meanDist[set=="exp"], na.rm=T)),
+             list(nPop, maf.bin=maf.bin, caller)]
 
 ### how many
   setkey(o, set)
@@ -85,7 +85,7 @@
 
 #save(o, file="~/geographic_endemism.Rdata")
 #save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/goodSamps/SNAPE.SummarySet.", maf, ".endemism.Rdata", sep=""))
-save(o.ag, o2.ag, o4.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/goodSamps/SummarySet.PoolSeq.PoolSNP.endemism.Rdata", sep=""))
+save(o.ag, o2.ag, o4.ag, o3.ag, dgrp.ag, file=paste("/scratch/aob2x/dest/geo_endemic/goodSamps/SummarySet.PoolSeq.PoolSNP.endemism.Rdata", sep=""))
 
 #save(o4.ag, f)
 

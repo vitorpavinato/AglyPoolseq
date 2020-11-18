@@ -18,7 +18,7 @@
 
   o <- foreach(fn.i=fn)%do%{
     message(fn.i)
-    #fn.i <- fn[1]
+    #fn.i <- fn[2]
     load(fn.i)
     return(o)
   }
@@ -37,17 +37,22 @@
   o2.ag <- na.omit(o2.ag)[,list(freq=N/sum(N), mt), list(nPop, caller, chr)]
 
 ### allele freq. binning
-  #maf <- function(x) min(x, 1-x)
-#
-  #o[,af.bin:=round(af, 2)]
-  #o[,maf:=sapply(o$af, maf)]
-  #o[,maf.bin:=round((maf), 2)]
-#
-  #o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T),
-  #                 meanDist.obs=mean(meanDist[set=="obs"], na.rm=T),
-  #                 meanDist.exp=mean(meanDist[set=="exp"], na.rm=T)),
-#
-  #           list(nPop, maf.bin=maf.bin, caller, chr)]
+  maf <- function(x) min(x, 1-x)
+
+  o[,af.bin:=round(af, 2)]
+  o[,maf.site:=sapply(o$af, maf)]
+  o[,maf.bin:=round((maf.site), 2)]
+
+  o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T),
+                   meanDist.obs=mean(meanDist[set=="obs"], na.rm=T),
+                   medDist.obs=median(meanDist[set=="obs"], na.rm=T),
+                   meanDist.exp=mean(meanDist[set=="exp"], na.rm=T)),
+             list(nPop, maf.bin=maf.bin, caller)]
+
+
+#ggplot(data=o[!is.na(meanDist)][cc_equal==T][set=="obs"][nPop==2], aes(x=as.factor(maf.bin), y=meanDist, color=(nPop))) + geom_violin()
+#ggplot(data=o3.ag[!is.na(meanDist.obs)][nPop==2], aes(x=as.factor(maf.bin), y=meanDist.obs, color=(nPop))) + geom_point()
+
 
 ### how many
   setkey(o, set)
