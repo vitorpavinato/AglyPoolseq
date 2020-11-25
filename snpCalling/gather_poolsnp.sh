@@ -19,7 +19,7 @@ module load htslib bcftools intel/18.0 intelmpi/18.0 parallel
 wd="/scratch/aob2x/dest"
 outdir="/scratch/aob2x/dest/sub_vcfs"
 
-#SLURM_ARRAY_TASK_ID=1
+#SLURM_ARRAY_TASK_ID=2
 chr=$( cat ${wd}/poolSNP_jobs.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 popSet=${1}

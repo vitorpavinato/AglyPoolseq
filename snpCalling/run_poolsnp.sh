@@ -32,7 +32,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   maf=${3}
   mac=${4}
   version=${5}
-  #maf=01; mac=50; popSet="all"; method="PoolSNP"; verion="paramTest"
+  jobs=${6}
+  #maf=01; mac=50; popSet="all"; method="PoolSNP"; version="paramTest"; jobs=poolSNP_jobs.sample.csv
 
 ## get list of SNYC files based on popSet & method
 ### full list
@@ -49,8 +50,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   fi
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=1
-  job=$( cat ${wd}/poolSNP_jobs.csv | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+  #SLURM_ARRAY_TASK_ID=2
+  job=$( cat ${wd}/${jobs} | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
 
