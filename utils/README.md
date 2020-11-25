@@ -17,7 +17,7 @@ wd=/scratch/aob2x/dest
   tar czvf /project/berglandlab/DEST/privateSNPs/privateSNPs.PoolSNP.tar.gz ${wd}/privateSNPs/*PoolSNP.csv
 
   tar czvf /project/berglandlab/DEST/privateSNPs/privateSNPs.summary.tar.gz ${wd}/privateSNPs/*summary.delim
-  
+
   ```
   sacct -j 16914500
 
@@ -28,6 +28,7 @@ wd=/scratch/aob2x/dest
   -O ${wd}/referenceGenome/dm6ToDm3.over.chain.gz \
   http://hgdownload.soe.ucsc.edu/goldenPath/dm6/liftOver/dm6ToDm3.over.chain.gz
   ```
+  
 ### 3b. make bed file
   ```bash
   zcat ${wd}/dest.all.PoolSNP.001.50.ann.vcf.gz | grep -v "#" | cut -f1,2 |  awk '{print "chr"$1"\t"$2"\t"$2+1"\tdm6_"$1"_"$2}' > ${wd}/dest.all.PoolSNP.001.50.dm6.bed

@@ -20,21 +20,21 @@ wd="/scratch/aob2x/dest"
 outdir="/scratch/aob2x/dest/sub_vcfs"
 
 #SLURM_ARRAY_TASK_ID=1
-chr=$( cat ${wd}/poolSNP_jobs.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 popSet=${1}
 method=${2}
 maf=${3}
 mac=${4}
 version=${5}
-#maf=001; mac=50; popSet="PoolSeq"; method="SNAPE"
+#maf=01; mac=50; popSet="all"; method="PoolSNP"; version="paramTest"
 
 ls -d ${outdir}/*.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | \
 grep /${chr}_ > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort
 
 bcftools concat \
 --threads 20 \
--f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}..sort \
+-f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort \
 -O v \
 -n \
 -o /scratch/aob2x/dest/sub_bcf/dest.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.bcf

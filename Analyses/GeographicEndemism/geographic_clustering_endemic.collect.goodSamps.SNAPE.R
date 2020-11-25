@@ -46,7 +46,8 @@
   o3.ag <- o[,list(delta.dist=mean(meanDist[set=="obs"] - meanDist[set=="exp"], na.rm=T),
                    meanDist.obs=mean(meanDist[set=="obs"], na.rm=T),
                    medDist.obs=median(meanDist[set=="obs"], na.rm=T),
-                   meanDist.exp=mean(meanDist[set=="exp"], na.rm=T)),
+                   meanDist.exp=mean(meanDist[set=="exp"], na.rm=T),
+                   n=.N),
              list(nPop, maf.bin=maf.bin, caller)]
 
 
