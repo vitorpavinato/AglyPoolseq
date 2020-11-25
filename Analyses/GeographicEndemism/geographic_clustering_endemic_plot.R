@@ -118,7 +118,12 @@
  geom_line() +
  cowplot::theme_cowplot()
 
-maf.plot <- ggplot(data=o3.ag.all, aes(x=maf.bin, y=meanDist.obs, color=nPop)) + geom_tile() + facet_wrap(~caller)
+ maf.plot <- ggplot(data=o3.ag.all, aes(x=maf.bin, y=meanDist.obs, color=nPop)) + geom_tile() + facet_wrap(~caller)
+
+ ggplot(data=o3.ag.all[!is.na(meanDist.obs)][nPop<250][order(maf.bin)], aes(x=nPop, color=maf.bin, y=meanDist.obs)) + geom_point() + facet_wrap(~caller)
+ ggplot(data=o3.ag.all[!is.na(meanDist.obs)][nPop<250][order(maf.bin)], aes(x=nPop, y=maf.bin, color=meanDist.obs)) + geom_point() + facet_wrap(~caller)
+
+
 
   dist.plot <- ggplot(data=o.ag.ag[nPop<250], aes(x=nPop, y=mean.dist, group=interaction(set, caller), color=set, linetype=caller)) +
   geom_ribbon(aes(x=nPop, ymin=mean.dist-sd.dist, ymax=mean.dist+sd.dist, group=set, fill=set), alpha=.5) +

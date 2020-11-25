@@ -26,14 +26,15 @@ popSet=${1}
 method=${2}
 maf=${3}
 mac=${4}
+version=${5}
 #maf=001; mac=50; popSet="PoolSeq"; method="SNAPE"
 
-ls -d ${outdir}/*.${popSet}.${method}.${maf}.${mac}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | \
-grep /${chr}_ > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.sort
+ls -d ${outdir}/*.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | \
+grep /${chr}_ > /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort
 
 bcftools concat \
 --threads 20 \
--f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.sort \
+-f /scratch/aob2x/dest/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}..sort \
 -O v \
 -n \
--o /scratch/aob2x/dest/sub_bcf/dest.${chr}.${popSet}.${method}.${maf}.${mac}.bcf
+-o /scratch/aob2x/dest/sub_bcf/dest.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.bcf

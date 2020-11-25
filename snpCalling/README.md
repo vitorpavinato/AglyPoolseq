@@ -17,16 +17,16 @@ Rscript ${wd}/DEST/snpCalling/makeJobs.R
 First paramter is the population set ('all' samples or just the 'PoolSeq' samples). Second parameter is the SNP calling method (PoolSNP or SNAPE). If method == PoolSNP, third parameter is MAF filter, fourth is MAC filter. These are retained for the SNAPE version just to keep things consistent.
 
 ```bash
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh all PoolSNP 001 50
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE NA NA
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh all PoolSNP 001 50 10Nov2020
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 50 10Nov2020
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE NA NA 10Nov2020
 ```
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP 001 50
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 50
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA
+sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP 001 50 10Nov2020
+sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 50 10Nov2020
+sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 10Nov2020
 ```
 
 
@@ -36,18 +36,21 @@ sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP 001 50 10Nov2020
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP 001 50 10Nov2020
 sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE NA NA 10Nov2020
 ```
-sacct -j 18869692
 
 
-## 3. Parameter evaluation. Some modifications to introduce internal parallel function. Runs through 3c, I think.
+
+## 3. Parameter evaluation for PoolSNP (global MAC & MAF thresholds)
 ### 3a. Random sample of ~10% of data:
 ```bash
-shuf -n 100 ${wd}/poolSNP_jobs.csv > ${wd}/poolSNP_jobs.sample.csv
+shuf -n 1 ${wd}/poolSNP_jobs.csv > ${wd}/poolSNP_jobs.sample.csv
 ```
-### 3b. Run modified pool_snp
+
+### 3b. Run pool_snp
 ```bash
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp_paramtest.sh
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh all PoolSNP 001 50 paramTest
 ```
+
+
 ### 3c. Run modified gather
 ```bash
 sbatch --array=1-$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | awk '{print NR}' | tail -n1 ) ${wd}/DEST/snpCalling/ gather_poolsnp_paramtest.sh

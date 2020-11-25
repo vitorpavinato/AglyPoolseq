@@ -31,7 +31,8 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   method=${2}
   maf=${3}
   mac=${4}
-  #maf=01; mac=50; popSet="all"; method="PoolSNP"
+  version=${5}
+  #maf=01; mac=50; popSet="all"; method="PoolSNP"; verion="paramTest"
 
 ## get list of SNYC files based on popSet & method
 ### full list
@@ -121,7 +122,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
     --min-freq 0 \
     --posterior-prob 0.9 \
     --SNAPE \
-    --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
+    --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf
 
   elif [[ "${method}"=="PoolSNP" ]]; then
     echo $method
@@ -133,14 +134,14 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
     --min-count ${mac} \
     --min-freq 0.${maf} \
     --miss-frac 0.5 \
-    --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf
+    --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf
   fi
 
 ### compress and clean up
   echo "compress and clean"
 
-  cat ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf | vcf-sort | bgzip -c > ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf.gz
-  tabix -p vcf ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.vcf.gz
+  cat ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf | vcf-sort | bgzip -c > ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
+  tabix -p vcf ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
 
   #cp ${tmpdir}/allpops* ${outdir}/.
 
