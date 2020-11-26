@@ -11,7 +11,7 @@
 #SBATCH --account biol8083
 
 ### sbatch ${wd}/DEST/misc_obsolete/move.10Nov2020.sh PoolSeq SNAPE NA NA 10Nov2020
-# sacct -j 18882576
+# sacct -j 19025074
 
 
 #module load htslib bcftools intel/18.0 intelmpi/18.0 parallel R/3.6.3

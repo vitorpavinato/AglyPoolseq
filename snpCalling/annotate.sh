@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 
-# cat /scratch/aob2x/dest/slurmOutput/split_and_run.19037090_2.err
+# cat /scratch/aob2x/dest/slurmOutput/split_and_run.19037102_1.err
 module load htslib bcftools intel/18.0 intelmpi/18.0 parallel R/3.6.3
 
 
@@ -61,8 +61,8 @@ echo "fix header" #this is now fixed in PoolSNP.py
   bcftools reheader --threads 10 -h ${wd}/tmp.header -o ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 echo "make GDS"
-  Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  #Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
 
 echo "bgzip & tabix"
-  bgzip -c ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf > ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
+  bgzip -c ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
   tabix -p vcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
