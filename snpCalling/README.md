@@ -87,5 +87,5 @@ sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE NA NA 10Nov2020
   parallel -j 1 runJob ::: 001 01 05 ::: 5 10 15 20 50 100
 ```
 
-
-## 4. Generate liftover table for polymorphic sites (dm6 -> dm3/r5)
+sbatch --array=1-8 ${wd}/DEST/snpCalling/annotate.sh all PoolSNP 001 100 paramTest
+sacct -j 19037090

@@ -10,6 +10,8 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
+
+# cat /scratch/aob2x/dest/slurmOutput/split_and_run.19037090_2.err
 module load htslib bcftools intel/18.0 intelmpi/18.0 parallel R/3.6.3
 
 
@@ -18,30 +20,25 @@ method=${2}
 maf=${3}
 mac=${4}
 version=${5}
-#maf=001; mac=50; popSet="PoolSeq"; method="SNAPE"; version="10Nov2020"
+#maf=001; mac=100; popSet="all"; method="PoolSNP"; version="paramTest"
 
 wd=/scratch/aob2x/dest
 
 echo "index"
-  bcftools index ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-  bcftools index ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-  bcftools index ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-  bcftools index ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-  bcftools index ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-  bcftools index ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-  bcftools index ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index -f ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index -f ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index -f ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index -f ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index -f ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index -f ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index -f ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 
 echo "concat"
   bcftools concat \
-  ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
-  ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
-  ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
-  ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
-  ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
-  ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
-  ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/dest.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
   -o ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+
 
 echo "convert to vcf & annotate"
   bcftools view \
@@ -51,6 +48,7 @@ echo "convert to vcf & annotate"
   eff \
   BDGP6.86 - > \
   ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+
 
 echo "fix header" #this is now fixed in PoolSNP.py
   sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
