@@ -22,49 +22,49 @@ version=${5}
 
 wd=/scratch/aob2x/dest
 
-#echo "index"
-#  bcftools index ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.bcf
-#  bcftools index ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.bcf
-#  bcftools index ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.bcf
-#  bcftools index ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.bcf
-#  bcftools index ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.bcf
-#  bcftools index ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.bcf
-#  bcftools index ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.bcf
+echo "index"
+  bcftools index ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  bcftools index ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 
-#echo "concat"
-#  bcftools concat \
-#  ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.bcf \
-#  ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.bcf \
-#  ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.bcf \
-#  ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.bcf \
-#  ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.bcf \
-#  ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.bcf \
-#  ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.bcf \
-#  -o ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-#
-#echo "convert to vcf & annotate"
-#  bcftools view \
-#  --threads 10 \
-#  ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf | \
-#  java -jar ~/snpEff/snpEff.jar \
-#  eff \
-#  BDGP6.86 - > \
-#  ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#
-#echo "fix header" #this is now fixed in PoolSNP.py
-#  sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#  sed -i '0,/CHROM/{s/AC,Number=1/AC,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#  sed -i '0,/CHROM/{s/AD,Number=1/AD,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#  sed -i '0,/CHROM/{s/FREQ,Number=1/FREQ,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#
-#  bcftools view -h ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/tmp.header
-#
-#  bcftools reheader --threads 10 -h ${wd}/tmp.header -o ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+echo "concat"
+  bcftools concat \
+  ${wd}/sub_bcf/dest.2L.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/dest.2R.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/dest.3L.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/dest.3R.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/dest.X.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/dest.Y.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/dest.4.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  -o ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+
+echo "convert to vcf & annotate"
+  bcftools view \
+  --threads 10 \
+  ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf | \
+  java -jar ~/snpEff/snpEff.jar \
+  eff \
+  BDGP6.86 - > \
+  ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+
+echo "fix header" #this is now fixed in PoolSNP.py
+  sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  sed -i '0,/CHROM/{s/AC,Number=1/AC,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  sed -i '0,/CHROM/{s/AD,Number=1/AD,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  sed -i '0,/CHROM/{s/FREQ,Number=1/FREQ,Number=A/}' ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+
+  bcftools view -h ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/tmp.header
+
+  bcftools reheader --threads 10 -h ${wd}/tmp.header -o ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 echo "make GDS"
   Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
 
-#echo "bgzip & tabix"
-#  bgzip -c ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf > ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
-#  tabix -p vcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
+echo "bgzip & tabix"
+  bgzip -c ${wd}/dest.${popSet}.${method}.${maf}.${mac}.ann.vcf > ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
+  tabix -p vcf ${wd}/dest.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
