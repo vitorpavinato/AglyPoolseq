@@ -32,7 +32,14 @@
     cowplot::theme_cowplot()
 
 
-  maf.plot <-ggplot(data=o3.ag.all[!is.na(meanDist.obs)][nPop<250][order(maf.bin)], aes(x=nPop, y=maf.bin, fill=log10(n))) + geom_tile() + facet_wrap(~caller)
+  maf.plot <- ggplot(data=o3.ag.all[!is.na(meanDist.obs)][nPop<250][order(maf.bin)], aes(x=nPop, y=maf.bin, fill=log10(n))) + geom_tile() + facet_wrap(~caller)
+
+  maf.plot <- ggplot(data=o3.ag.all[!is.na(meanDist.obs)][nPop<250][order(meanDist.obs)], aes(x=nPop, y=maf.bin, fill=(meanDist.obs))) + geom_tile() + facet_wrap(~caller) + scale_fill_viridis()
+
+  n.plot / maf.plot
+
+
+  ggplot(data=o3.ag.all[!is.na(meanDist.obs)][nPop==2][order(meanDist.obs)], aes(x=maf.bin, y=meanDist.obs, group=caller, color=caller)) + geom_line()
 
 
   dist.plot <- ggplot(data=o.ag.ag[nPop<250], aes(x=nPop, y=mean.dist, group=interaction(set, caller), color=set, linetype=caller)) +

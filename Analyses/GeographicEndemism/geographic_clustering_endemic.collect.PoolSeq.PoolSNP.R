@@ -52,7 +52,7 @@
 
 ### how many
   setkey(o, set)
-  o4.ag <- o[J("obs")][,list(nSites=mean(n)), list(nPop, caller, chr)]
+  o4.ag <- o[J("obs")][,list(nSites=sum(n, na.rm=T)), list(nPop, caller, chr)]
 
   ### get DGRP mt
     dgrp <- fread("/scratch/aob2x/dest/dgrp2.bim")
