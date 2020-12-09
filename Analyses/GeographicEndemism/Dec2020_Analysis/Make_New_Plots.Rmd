@@ -24,26 +24,27 @@ library(viridis)
 ```{r}
 #############################
 #############################
-wd=
+wd="/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Dec2020_Analysis/"
 
 #load AF data
-load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/PoolSNP.MAFRASTER.Rdata")
+load(paste(wd,"/PoolSNP.MAFRASTER.Rdata", sep = "") )
 o_PoolSNP = o
 o_PoolSNP %<>% mutate(caller="PoolSNP")
 
-load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/SNAPE.MAFRASTER.Rdata")
+
+load(paste(wd,"/SNAPE.MAFRASTER.Rdata", sep = "") )
 o_SNAPE = o
 
 # Load Prob CC
-load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/PoolSNP.Probability_CC.Rdata")
+load(paste(wd,"/PoolSNP.Probability_CC.Rdata", sep = "") )
 cc_PoolSNP_expected = expected_o
 cc_dcast_PoolSNP = o_dcast
 
-load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/SNAPE.Probability_CC.Rdata")
+load(paste(wd,"/SNAPE.Probability_CC.Rdata", sep = "") )
 cc_SNAPE_expected = expected_o
 cc_dcast_SNAPE = o_dcast
 
-load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/New.allSummarySet_endemism.bothCallers.Rdata")
+load(paste(wd,"/New.allSummarySet_endemism.bothCallers.Rdata", sep = "") )
 
 ```
 
