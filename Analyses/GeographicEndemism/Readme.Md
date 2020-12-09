@@ -4,6 +4,8 @@
 
 This analysis examines the abundance and geographic distribution of polymorphisms relative to their frequency.
 
+### Oct 2020 analysis
+
 ### Analysis steps
 1. Subset VCF down to non-problematic populations. First, pull data from google sheet an reformat for bcftools input.
   `DEST/Analyses/GeographicEndemism/pullProblematicPops.R`
@@ -23,3 +25,6 @@ This analysis examines the abundance and geographic distribution of polymorphism
 
 6. Make plot
   `DEST/Analyses/GeographicEndemism/geographic_clustering_endemic.plot.R`
+
+### Nov 2020 analysis
+This is an updated analysis focusing only in the Allele frequency and cluster probability plots.

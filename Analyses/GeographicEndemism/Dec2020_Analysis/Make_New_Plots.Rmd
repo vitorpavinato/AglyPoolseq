@@ -24,27 +24,26 @@ library(viridis)
 ```{r}
 #############################
 #############################
+wd=
 
 #load AF data
-load("/Users/jcbnunez/Documents/GitHub/DEST_workspace/Endemism_Revisit_2021/PoolSNP.MAFRASTER.Rdata")
+load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/PoolSNP.MAFRASTER.Rdata")
 o_PoolSNP = o
 o_PoolSNP %<>% mutate(caller="PoolSNP")
 
-load("/Users/jcbnunez/Documents/GitHub/DEST_workspace/Endemism_Revisit_2021/SNAPE.MAFRASTER.Rdata")
+load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/SNAPE.MAFRASTER.Rdata")
 o_SNAPE = o
 
-
-
 # Load Prob CC
-load("/Users/jcbnunez/Documents/GitHub/DEST_workspace/Endemism_Revisit_2021/PoolSNP.Probability_CC.Rdata")
+load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/PoolSNP.Probability_CC.Rdata")
 cc_PoolSNP_expected = expected_o
 cc_dcast_PoolSNP = o_dcast
 
-load("/Users/jcbnunez/Documents/GitHub/DEST_workspace/Endemism_Revisit_2021/SNAPE.Probability_CC.Rdata")
+load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/SNAPE.Probability_CC.Rdata")
 cc_SNAPE_expected = expected_o
 cc_dcast_SNAPE = o_dcast
 
-load("/Users/jcbnunez/Documents/GitHub/DEST_workspace/Endemism_Revisit_2021/New.allSummarySet_endemism.bothCallers.Rdata")
+load("/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Endemism_Dec2020_NewFigures/New.allSummarySet_endemism.bothCallers.Rdata")
 
 ```
 
