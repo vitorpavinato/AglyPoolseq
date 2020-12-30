@@ -167,6 +167,93 @@ ggplot(data = world) +
 
 ggsave("PCA_figure.pdf",( (DEST_Woldwide_PCA12+DEST_Woldwide_PCA13)/(Wolrd_PC1+Wolrd_PC3) ),  width = 8, height = 6)
 
+##################################
+# Clusters Only
+##################################
+
+ggplot() + geom_vline(xintercept = 0, linetype = "dashed") + geom_hline(yintercept = 0, linetype = "dashed") + geom_point(data =PCA_coords_metadata ,  aes(x=Dim.1, y=Dim.2, color = as.factor(Continental_clusters), shape = as.factor(Continental_clusters)),size = 3,  alpha = 0.8) + xlab("PC 1 (24% VE)") + ylab("PC 2 (9% VE)") +
+  theme(legend.position = "bottom") -> cluster_pc12
+
+
+ggplot() + geom_vline(xintercept = 0, linetype = "dashed") + geom_hline(yintercept = 0, linetype = "dashed") + geom_point(data =PCA_coords_metadata ,  aes(x=Dim.1, y=Dim.3, color = as.factor(Continental_clusters), shape = as.factor(Continental_clusters)),size = 3,  alpha = 0.8) + xlab("PC 1 (24% VE)") + ylab("PC 3 (3.9% VE)") +
+  theme(legend.position = "bottom") -> cluster_pc13
+
+#plot
+ggsave("cluster_pca_supp.pdf",
+       cluster_pc12+cluster_pc13,
+       width = 6, 
+       height = 4)
+
+##################################
+# Correlation on PCA and lat/long
+##################################
+
+PCA_coords_metadata %>% 
+  .[,c(1:50, which(names(.) %in% c("sampleId", "lat","long","Continental_clusters")) )] %>%
+  ggplot(aes(x=Dim.1,
+             y=lat,
+             color = Continental_clusters)) + 
+  geom_point() +
+  geom_smooth(method = "lm", color = "black") + 
+  theme_classic() +
+  theme(legend.position = "bottom") -> cor.pc1
+
+PCA_coords_metadata %>% 
+  .[,c(1:50, which(names(.) %in% c("sampleId", "lat","long", "Continental_clusters")) )] %>%
+  ggplot(aes(x=Dim.2,
+             y=long,
+             color = Continental_clusters)) + 
+  geom_point() +
+  geom_smooth(method = "lm", color = "black")+ 
+  theme_classic() +
+  theme(legend.position = "bottom") -> cor.pc2
+
+#plot
+ggsave("PCA_figure_supp.pdf",
+       cor.pc1+cor.pc2,
+       width = 6, 
+       height = 4)
+
+#test
+cor.test(PCA_coords_metadata$Dim.1,PCA_coords_metadata$lat)
+cor.test(PCA_coords_metadata$Dim.2,PCA_coords_metadata$long)
+
+##################################
+# Correlation on PCA and pool-seq/inbred lines
+##################################
+
+dat_filt_maf_LD500_naimp %>% 
+  .[which(row.names(.) %in% 
+              DEST_DGN_metadata$sampleId[which(DEST_DGN_metadata$set %in% 
+                                                 c("dgn","DrosRTEC") & DEST_DGN_metadata$Continental_clusters == "North_America")]),] %>%
+  PCA(scale.unit = F, graph = F, ncp = 50) -> PCA_DGN_DROSRTEC
+
+DEST_DGN_metadata$country = gsub("USA", "United States", DEST_DGN_metadata$country)
+
+PCA_DGN_DROSRTEC$ind$coord %>% 
+  as.data.frame() %>%
+  mutate(sampleId = row.names(.)) %>%
+  left_join(., DEST_DGN_metadata) %>%
+  separate(locality, into = c("state","city"), sep = "_") -> pool_inbreed_data
+
+pool_inbreed_data %>%
+  ggplot(aes(x=Dim.1,
+             y=Dim.2,
+             color = type,
+             label = state)) +
+  geom_text() +
+  theme_bw() -> pool_inbreed_pca
+
+#PLOT
+ggsave("pool_inbreed_pca.pdf",
+       pool_inbreed_pca,
+       width = 5, 
+       height = 4)
+
+#Test
+summary(aov(lm(pool_inbreed_data$Dim.1 ~ pool_inbreed_data$type)))
+summary(aov(lm(pool_inbreed_data$Dim.2 ~ pool_inbreed_data$type)))
+summary(aov(lm(pool_inbreed_data$Dim.3 ~ pool_inbreed_data$type)))
 
 ##################################
 # Anova on PCA
