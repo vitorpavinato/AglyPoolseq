@@ -22,7 +22,7 @@ library(viridis)
 ```{r}
 #############################
 #############################
-wd="/Users/jcbnunez/Documents/GitHub/DEST_workspace/Extended_endemism"
+wd="/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Extended_endemism"
 #load AF data
 
 
@@ -108,15 +108,16 @@ o_AF_both  %>%
 # Plot maf vs Npop
 ```{r}
 
-o_AF_both %>% 
+o_AF_both %>%
+  .[sample(dim(.)[1],70000),] %>%
 mutate(AF_fold = ifelse(.$AF > 0.5, (1-.$AF), .$AF)) %>% 
 ggplot(aes(x=nPop, y=AF_fold, color = log10(Freq))) + 
-geom_point(alpha = 0.8, size = 1.0, shape = 15) + 
+geom_point(alpha = 0.8, size = 0.9, shape = 15) + 
 theme_bw() + 
-scale_colour_gradient2(low = "grey2", mid = "steelblue1", high = "steelblue2", midpoint = 2.3) +
+scale_colour_gradient2(low = "grey2", mid = "blue", high = "green", midpoint = 3) +
 xlab("Number of populations") +
 ylab("Allele frequency bin") +
-facet_grid((MAF+ind.filter~caller)) -> 
+facet_grid((MAF+ind.filter~caller))-> 
 rasterMAF
 
 ```
