@@ -383,6 +383,11 @@ for l in load_data(options.vcf):
 
         PopGendata[a[0]][int(a[1])]["T"] = 1 / Tcorrhash[ID]
 
+for W in range(len(window)):
+    OPl[W].write("Chrom\tWindow\tPi\tAdjWindowSize\n")
+    OTl[W].write("Chrom\tWindow\tTheta\tAdjWindowSize\n")
+    ODl[W].write("Chrom\tWindow\tTajimasD\tAdjWindowSize\n")
+
 for Chrom, Values in sorted(PopGendata.items()):
 
     for W in range(len(window)):
