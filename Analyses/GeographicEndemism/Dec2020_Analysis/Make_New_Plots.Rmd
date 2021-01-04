@@ -1,0 +1,160 @@
+---
+title: "Endemism New Figures"
+author: "Jcb Nunez"
+date: "12/5/2020"
+output: html_document
+---
+
+# Load Packages
+```{r}
+#############################
+#############################
+
+library(tidyverse)
+library(magrittr)
+library(reshape2)
+library(vroom)
+library(rcompanion)
+library(patchwork)
+library(viridis)
+
+```
+
+# Load Data
+```{r}
+#############################
+#############################
+wd="/Users/jcbnunez/Documents/GitHub/DEST/Analyses/GeographicEndemism/Dec2020_Analysis/"
+
+#load AF data
+load(paste(wd,"/PoolSNP.MAFRASTER.Rdata", sep = "") )
+o_PoolSNP = o
+o_PoolSNP %<>% mutate(caller="PoolSNP")
+
+
+load(paste(wd,"/SNAPE.MAFRASTER.Rdata", sep = "") )
+o_SNAPE = o
+
+# Load Prob CC
+load(paste(wd,"/PoolSNP.Probability_CC.Rdata", sep = "") )
+cc_PoolSNP_expected = expected_o
+cc_dcast_PoolSNP = o_dcast
+
+load(paste(wd,"/SNAPE.Probability_CC.Rdata", sep = "") )
+cc_SNAPE_expected = expected_o
+cc_dcast_SNAPE = o_dcast
+
+load(paste(wd,"/New.allSummarySet_endemism.bothCallers.Rdata", sep = "") )
+
+```
+
+# Merge datasets
+```{r}
+#Dataset1
+o_AF_both = rbind(o_PoolSNP,o_SNAPE)
+
+
+#Dataset2
+cc_both =  
+  rbind(
+  mutate(
+  rbind(
+melt(id = c("nPop"), cc_dcast_PoolSNP[,c("nPop","Probality_obs")]),
+melt(id = c("nPop"), cc_PoolSNP_expected[,c("nPop","Probality_exp")])
+	), caller = "PoolSNP" ), 
+
+  mutate(
+  rbind(
+melt(id = c("nPop"), cc_dcast_SNAPE[,c("nPop","Probality_obs")]),
+melt(id = c("nPop"), cc_SNAPE_expected[,c("nPop","Probality_exp")])
+	), caller = "SNAPE" )
+
+  ) %>% separate(variable, into = c("stat","type"), sep = "_" )
+
+
+
+```
+
+
+# Plot site spectrum
+```{r}
+o_AF_both  %>% 
+  group_by(caller, nPop,chr) %>% 
+  summarize(Nloc = sum(Freq)) %>%
+  ggplot(aes(x=nPop, y=log10(Nloc), color = chr)) + 
+  geom_line(size=0.7) + 
+  xlab("Number of populations") +
+  ylab("log10(Number of sites)") +
+  theme_bw() +
+  theme(legend.pos = "top") +
+  scale_color_brewer(palette = "Dark2") +
+  facet_wrap(~caller) -> 
+  spectrum
+
+```
+
+
+# Plot maf vs Npop
+```{r}
+
+o_AF_both %>% 
+mutate(AF_fold = ifelse(.$AF > 0.5, (1-.$AF), .$AF)) %>% 
+ggplot(aes(x=nPop, y=AF_fold, color = log10(Freq))) + 
+geom_point(alpha = 0.8, size = 1.0, shape = 15) + 
+theme_bw() + 
+scale_colour_gradient2(low = "grey2", mid = "steelblue1", high = "steelblue2", midpoint = 2.3) +
+xlab("Number of populations") +
+ylab("Allele frequency bin") +
+facet_wrap(~caller) -> 
+rasterMAF
+
+```
+
+# Plot Endemism
+```{r}
+o.ag.all %>% .[which(.$chr == "3R"),] %>% 
+  ggplot(aes(x=nPop, y=mean.dist, linetype =set, fill =set, ymin=mean.dist-(sd.dist), ymax=mean.dist+(sd.dist))) + 
+  geom_ribbon(alpha = 0.4)  +
+  geom_line(size = 0.7) + 
+  facet_wrap(~caller, scales = "free_x") +
+  theme_bw() + 
+  xlab("Number of populations") +
+  ylab("Distance (Km)") + 
+  #scale_fill_manual(values = c("darkblue","grey3")) +
+  ylim(0,6000) + 
+  scale_linetype_manual( values = c("dotted","solid")) +
+  scale_fill_brewer(palette = "Set1")  -> 
+  Endemism
+
+```
+
+# Plot probability of endemism
+```{r}
+cc_both %>%
+  ggplot(aes(x=nPop, y=value, linetype =type, color = type)) + 
+  geom_smooth(span = 1/10) +
+  xlim(0,60) + 
+  facet_wrap(~caller) + 
+  theme_bw() +
+  scale_linetype_manual( values = c("dotted","solid")) +
+  theme(legend.pos = "none") +
+  xlab("Number of populations") +
+  ylab("P(Phylogenetic Cluster)") +
+  scale_fill_brewer(palette = "Set1")  -> 
+  probability
+
+```
+
+
+
+# Joint figure
+```{r}
+(spectrum+rasterMAF)/(probability+Endemism) -> joint_figure
+
+ggsave(filename = "/Users/jcbnunez/Documents/GitHub/DEST_workspace/Endemism_Revisit_2021/joint_figure.pdf" ,
+       joint_figure,
+       width = 7,
+       height = 5)
+
+```
+

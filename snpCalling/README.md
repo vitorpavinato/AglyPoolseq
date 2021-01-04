@@ -80,12 +80,10 @@ sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE NA NA 10Nov2020
 
   runJob () {
     wd="/scratch/aob2x/dest"
-    sbatch --array=1-8 ${wd}/DEST/snpCalling/annotate.sh all PoolSNP ${1} ${2} paramTest
+    sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP ${1} ${2} paramTest
   }
   export -f runJob
 
   parallel -j 1 runJob ::: 001 01 05 ::: 5 10 15 20 50 100
 ```
-
-sbatch --array=1-8 ${wd}/DEST/snpCalling/annotate.sh all PoolSNP 001 100 paramTest
-sacct -j 19037090
+cp /scratch/aob2x/dest/dest*paramTest*.ann.vcf.gz /project/berglandlab/DEST/paramTest/.

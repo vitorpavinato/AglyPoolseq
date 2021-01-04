@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 
-# cat /scratch/aob2x/dest/slurmOutput/split_and_run.19037102_1.err
+# cat /scratch/aob2x/dest/slurmOutput/split_and_run.19037185_4.err
 module load htslib bcftools intel/18.0 intelmpi/18.0 parallel R/3.6.3
 
 
