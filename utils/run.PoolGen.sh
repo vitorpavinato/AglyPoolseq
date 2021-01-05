@@ -12,8 +12,8 @@
 
 
 ### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19358314
-### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.err
+### sacct -j 19358567
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358567_1.out
 
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.out
 
@@ -59,7 +59,7 @@ echo "run"
       /project/berglandlab/DEST/vcf/dest.PoolSeq.PoolSNP.001.50.10Nov2020.ann.vcf.gz ${chr} > ${tmpdir}/${chr}.vcf
 
     if [[ $chr == "X" ]]; then
-      numChr = ${numFlies}
+      numChr=${numFlies}
       echo ${numChr}
     else
       #numChr =
