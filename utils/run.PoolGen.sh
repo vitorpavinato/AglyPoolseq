@@ -12,8 +12,11 @@
 
 
 ### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19358304
-### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358304_1.err
+### sacct -j 19358307
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358307_1.err
+
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358307_1.out
+
 
 module load gcc/9.2.0 openmpi/3.1.6 python/3.7.7 parallel bcftools
 
@@ -26,6 +29,7 @@ export wd="/scratch/aob2x/dest"
 
 
 ## set up RAM disk
+echo "make ram disk"
   ## rm /scratch/aob2x/test/*
   #tmpdir="/scratch/aob2x/test"
   #SLURM_JOB_ID=1
@@ -35,17 +39,15 @@ export wd="/scratch/aob2x/dest"
 
   export tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
-### uncompress bed file
-  zcat -c /project/berglandlab/DEST/dest_mapped/pipeline_output/${popName}/${popName}.bed.gz > \
-  ${tmpdir}/${popName}.bed
-
 ### run each chromosome separately
+echo "run"
+
   runPoolGen () {
     chr=${1}
     ###chr=2L
     #tabix -p vcf /project/berglandlab/DEST/vcf/dest.PoolSeq.PoolSNP.001.50.10Nov2020.ann.vcf.gz ${chr} | head -n 100000 > ${tmpdir}/${chr}.vcf
     echo ${chr} ${popName} ${numFlies}
-    
+
     echo "extracting bed"
       zcat -c /project/berglandlab/DEST/dest_mapped/pipeline_output/${popName}/${popName}.bed.gz | grep "${chr}" > \
       ${tmpdir}/${popName}.${chr}.bed
@@ -66,6 +68,7 @@ export wd="/scratch/aob2x/dest"
     else
       return 1
     fi
+    echo "numChr:" ${numChr}
 
     echo "running PoolGen"
       python3 ${wd}/DEST/utils/PoolGen.py \
