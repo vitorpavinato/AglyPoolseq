@@ -3,7 +3,7 @@
 #SBATCH -J poolgen # A single job name for the array
 #SBATCH --ntasks-per-node=5 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 0:01:00 ### 1 hours
+#SBATCH -t 1:00:00 ### 1 hours
 #SBATCH --mem 40G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/poolgen.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/poolgen.%A_%a.err # Standard error
@@ -12,7 +12,7 @@
 
 
 ### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19358208
+### sacct -j 19358209
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358208_1.out
 
 module load gcc/9.2.0 openmpi/3.1.6 python/3.7.7 parallel bcftools
