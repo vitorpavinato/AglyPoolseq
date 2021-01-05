@@ -12,8 +12,8 @@
 
 
 ### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19358213
-### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358213_1.err
+### sacct -j 19358304
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358304_1.err
 
 module load gcc/9.2.0 openmpi/3.1.6 python/3.7.7 parallel bcftools
 
@@ -44,7 +44,8 @@ export wd="/scratch/aob2x/dest"
     chr=${1}
     ###chr=2L
     #tabix -p vcf /project/berglandlab/DEST/vcf/dest.PoolSeq.PoolSNP.001.50.10Nov2020.ann.vcf.gz ${chr} | head -n 100000 > ${tmpdir}/${chr}.vcf
-
+    echo ${chr} ${popName} ${numFlies}
+    
     echo "extracting bed"
       zcat -c /project/berglandlab/DEST/dest_mapped/pipeline_output/${popName}/${popName}.bed.gz | grep "${chr}" > \
       ${tmpdir}/${popName}.${chr}.bed
