@@ -3,8 +3,8 @@
 #SBATCH -J poolgen # A single job name for the array
 #SBATCH --ntasks-per-node=5 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 1:00:00 ### 1 hours
-#SBATCH --mem 40G
+#SBATCH -t 2:00:00 ### 1 hours
+#SBATCH --mem 60G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/poolgen.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/poolgen.%A_%a.err # Standard error
 #SBATCH -p standard
@@ -12,7 +12,7 @@
 
 
 ### run as: sbatch --array=1-246 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19358567
+### sacct -j 19358791
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358567_1.out
 
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.out
@@ -56,7 +56,7 @@ echo "run"
 
       bcftools view \
       -O v \
-      /project/berglandlab/DEST/vcf/dest.PoolSeq.PoolSNP.001.50.10Nov2020.ann.vcf.gz ${chr} > ${tmpdir}/${chr}.vcf
+      /project/berglandlab/DEST/vcf/dest.PoolSeq.SNAPE.NA.NA.10Nov2020.ann.vcf.gz ${chr} > ${tmpdir}/${chr}.vcf
 
     if [[ $chr == "X" ]]; then
       numChr=${numFlies}
@@ -77,7 +77,7 @@ echo "run"
       --min-sites-frac 0.75 \
       --BED ${tmpdir}/${popName}.${chr}.bed \
       --sample ${popName} \
-      --output /scratch/aob2x/dest/PoolGenOut/${popName}.${chr}
+      --output /scratch/aob2x/dest/PoolGenOut_SNAPE/${popName}.${chr}
 
     rm ${tmpdir}/${chr}.vcf
 
