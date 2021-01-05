@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 
-### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
+### run as: sbatch --array=1-246 ${wd}/DEST/utils/run.PoolGen.sh
 ### sacct -j 19358567
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358567_1.out
 
@@ -24,8 +24,8 @@ export wd="/scratch/aob2x/dest"
 
 ### get sample information
   #SLURM_ARRAY_TASK_ID=1
-  export popName=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | sed '1d;q' | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  export numFlies=$( cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,12 -d',' | grep -v "NA" | sed '1d;q' | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  export popName=$( cat ${wd}/DEST/populationInfo/samps.csv | grep "pooled" | cut -f1,14 -d',' | grep -v "NA"  | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  export numFlies=$( cat ${wd}/DEST/populationInfo/samps.csv | grep "pooled" | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
 
 ## set up RAM disk
@@ -85,8 +85,6 @@ echo "run"
   export -f runPoolGen
 
   parallel -j 5 runPoolGen ::: 2L 2R 3L 3R X
-
-
 
 
 ### clean up
