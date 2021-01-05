@@ -12,8 +12,8 @@
 
 
 ### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19358209
-### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358208_1.out
+### sacct -j 19358213
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358213_1.err
 
 module load gcc/9.2.0 openmpi/3.1.6 python/3.7.7 parallel bcftools
 
@@ -41,12 +41,13 @@ export wd="/scratch/aob2x/dest"
 
 ### run each chromosome separately
   runPoolGen () {
-
+    chr=${1}
     ###chr=2L
     #tabix -p vcf /project/berglandlab/DEST/vcf/dest.PoolSeq.PoolSNP.001.50.10Nov2020.ann.vcf.gz ${chr} | head -n 100000 > ${tmpdir}/${chr}.vcf
 
-    zcat -c /project/berglandlab/DEST/dest_mapped/pipeline_output/${popName}/${popName}.bed.gz | grep "${chr}" > \
-    ${tmpdir}/${popName}.${chr}.bed
+    echo "extracting bed"
+      zcat -c /project/berglandlab/DEST/dest_mapped/pipeline_output/${popName}/${popName}.bed.gz | grep "${chr}" > \
+      ${tmpdir}/${popName}.${chr}.bed
 
     echo "extracting chromosome"
 
@@ -57,7 +58,7 @@ export wd="/scratch/aob2x/dest"
     if [[ $chr == "X" ]]; then
       numChr = ${numFlies}
       echo ${numChr}
-    elif [[ $chr == "2L" || $chr == "2R" || $chr == "3L" || $chr == "|3R" ]]; then
+    elif [[ $chr == "2L" || $chr == "2R" || $chr == "3L" || $chr == "3R" ]]; then
       #numChr =
       numChr=$(( $numFlies*2 ))
       echo ${numChr}
