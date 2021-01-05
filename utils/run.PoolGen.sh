@@ -12,9 +12,10 @@
 
 
 ### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 13029741
+### sacct -j 19358208
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358208_1.out
 
-module load gcc/9.2.0 openmpi/3.1.6 python/3.7.7 parallel
+module load gcc/9.2.0 openmpi/3.1.6 python/3.7.7 parallel bcftools
 
 export wd="/scratch/aob2x/dest"
 
