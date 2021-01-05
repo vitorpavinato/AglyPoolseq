@@ -12,10 +12,10 @@
 
 
 ### run as: sbatch --array=1 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19358307
-### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358307_1.err
+### sacct -j 19358314
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.err
 
-### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358307_1.out
+### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.out
 
 
 module load gcc/9.2.0 openmpi/3.1.6 python/3.7.7 parallel bcftools
@@ -61,12 +61,10 @@ echo "run"
     if [[ $chr == "X" ]]; then
       numChr = ${numFlies}
       echo ${numChr}
-    elif [[ $chr == "2L" || $chr == "2R" || $chr == "3L" || $chr == "3R" ]]; then
+    else
       #numChr =
       numChr=$(( $numFlies*2 ))
       echo ${numChr}
-    else
-      return 1
     fi
     echo "numChr:" ${numChr}
 
