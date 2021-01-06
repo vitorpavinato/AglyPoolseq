@@ -4,15 +4,15 @@
 #SBATCH --ntasks-per-node=5 # one core
 #SBATCH -N 1 # on one node
 #SBATCH -t 2:00:00 ### 1 hours
-#SBATCH --mem 150G
+#SBATCH --mem 40G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/poolgen.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/poolgen.%A_%a.err # Standard error
-#SBATCH -p largemem
+#SBATCH -p standard
 #SBATCH --account berglandlab
 
 
-### run as: sbatch --array=1-246 ${wd}/DEST/utils/run.PoolGen.sh
-### sacct -j 19359503
+### run as: sbatch --array=1-246 ${wd}/DEST/utils/run.PoolGen.PoolSNP.sh
+### sacct -j 19362308
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358567_1.out
 
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.out
@@ -77,7 +77,7 @@ echo "run"
       --min-sites-frac 0.75 \
       --BED ${tmpdir}/${popName}.${chr}.bed \
       --sample ${popName} \
-      --output /scratch/aob2x/dest/PoolGenOut_SNAPE/${popName}.${chr}
+      --output /scratch/aob2x/dest/PoolGenOut_PoolSNP/${popName}.${chr}
 
     rm ${tmpdir}/${chr}.vcf
 
