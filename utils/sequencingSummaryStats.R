@@ -46,16 +46,12 @@
   }
 
 ### open GDS file
-  dat.q25 <- getRD(gds.fn="/project/berglandlab/DEST/dest.Aug22_2020.001.50.ann.gds", q=25)
-  dat.q15 <- getRD(gds.fn="/project/berglandlab/DEST/dest.Aug9_2020.001.50.ann.gds", q=15)
-
-  dat <- merge(dat.q25, dat.q15)
-  summary(dat$mu.25/dat$mu.15)
+  dat <- getRD(gds.fn="/project/berglandlab/DEST/gds/dest.all.PoolSNP.001.50.10Nov2020.ann.gds", q=25)
 
 ### incorporate metadata
   samps <- fread("/scratch/aob2x/dest/DEST/populationInfo/samps.csv")
 
-  m <- merge(dat, samps, by="sampleId")
+  m <- merge(dat, samps, by="sampleId", all.y=T)
 
 
 ### pull in PCR dup rate
@@ -79,6 +75,14 @@
 
     melBam <- gsub("mark_duplicates_report.txt", "mel.bam", fns[grepl(samp.i, fns)])
     melIdx <- paste(melBam, "bai", sep=".")
+
+    if(!file.exists(melIdx)) {
+      indexBam(melBam)
+    }
+
+    if(!file.exists(simIdx)) {
+      indexBam(simBam)
+    }
 
     simidx.out <- as.data.table(idxstatsBam(file=simBam, index=simIdx))[grepl("2L|2R|3L|3R|X|^4$|Y", seqnames)][!grepl("Het|het|Sac|Sca", seqnames)]
     melidx.out <- as.data.table(idxstatsBam(file=melBam, index=melIdx))[grepl("2L|2R|3L|3R|X|^4$|Y", seqnames)][!grepl("Het|het|Sac|Sca", seqnames)]
@@ -108,6 +112,14 @@
 
   setkey(mp, sampleId)
   setkey(simContam.ag, sampleId)
+
+### diversity statistics (PoolSNP)
+  fn <- list.files("/scratch/aob2x/dest/PoolGenOut_PoolSNP/", full.names=T)
+  foreach(fn.i=fn)%do%{
+    fread(fn.i)
+  }
+
+
 
 
 
