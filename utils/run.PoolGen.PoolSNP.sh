@@ -11,8 +11,7 @@
 #SBATCH --account berglandlab
 
 
-### run as:
-sbatch --array=1-246 ${wd}/DEST/utils/run.PoolGen.PoolSNP.sh
+### run as: sbatch --array=1-246 ${wd}/DEST/utils/run.PoolGen.PoolSNP.sh
 
 ### sacct -j 19362454
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358567_1.out
