@@ -2,6 +2,7 @@ import sys
 from collections import defaultdict as d
 from optparse import OptionParser, OptionGroup
 import math
+from decimal import Decimal
 
 # Author: Martin Kapun
 
@@ -66,8 +67,6 @@ def average(x):
 
 def binom(x, y):
     ''' calculate the binomial coefficient for x over y'''
-    import math
-    from decimal import Decimal
     if y == x:
         return 1
     elif y == 1:
@@ -86,9 +85,14 @@ def binom(x, y):
 
 ################ Theta a la Kofler 2011 #######################
 
+# see https://versaweb.dl.sourceforge.net/project/popoolation/correction_equations.pdf
+
 
 def ThetaCorr(M, n, b):
-    ''' as in Kofler et al. 2011; Page 7'''
+    ''' as in Kofler et al. 2011; Page 7
+    b is the minor allele threshold
+    n is poolsize
+    M is read depth '''
     T = 0.0
     for m in range(int(b), int(M - b + 1)):
         K = 0.0
@@ -102,11 +106,51 @@ def ThetaCorr(M, n, b):
         return "NA"
     return T
 
+################ Theta a la Ferretti 2013 #######################
+
+# see https://versaweb.dl.sourceforge.net/project/popoolation/correction_equations.pdf
+
+
+def har(j):
+    ''' harmonic number '''
+    Xhar = 0.0
+    for k in range(1, j + 1):
+        Xhar += 1.0 / k
+    return Xhar
+
+
+def S(nr, j):
+    ''' stirling numbers of the second kind
+    see https://en.wikipedia.org/wiki/Stirling_numbers_of_the_second_kind
+    '''
+    XS = 0.0
+    for i in range(0, j+1):
+        XS += (-1)**(j-i) * binom(j, i) * (i)**nr
+    return (1 / math.factorial(j)) * XS
+
+def Pc(j, nr, nc):
+    return (math.factorial(nc) * S(nr, j)) / (math.factorial(nc - j) * nc**nr)
+
+
+def ThetaDenom(nc, nr, b):
+    ''' as in Kofler et al. 2011; Page 7
+    nc is poolsize
+    nr is read depth '''
+
+    TD = 0.0
+    for j in range(2, min(nr, nc) + 1):
+        TD += har(j) * Pc(j, nc, nr)
+    if TD == 0:
+        return "NA"
+    return TD
+
 ################# Pi a la Kofler et al. 2011 #####################
+
+# see https://versaweb.dl.sourceforge.net/project/popoolation/correction_equations.pdf
 
 
 def pi(x, M):
-    ''' calculate pi on a SNP-wise basis. where x is a vector of all allelefreqs and n is the samplesize)
+    ''' calculate pi on a SNP-wise basis. where x is a vector of all allelefreqs and n is the samplesize
     x is a list of allele frequencies
     n is the total coverage'''
     if M == 0:
@@ -288,6 +332,7 @@ for i in range(len(window)):
 
 PopGendata = d(lambda: d(lambda: d(float)))
 avndict = {}
+thetaden = {}
 Pcorrhash = {}
 Tcorrhash = {}
 MissDat = d(list)
@@ -385,8 +430,8 @@ for l in load_data(options.vcf):
 
 for W in range(len(window)):
     OPl[W].write("Chrom\tWindow\tPi\tAdjWindowSize\n")
-    OTl[W].write("Chrom\tWindow\tTheta\tAdjWindowSize\n")
-    ODl[W].write("Chrom\tWindow\tTajimasD\tAdjWindowSize\n")
+    OTl[W].write("Chrom\tWindow\tTheta\tThetaFerretti\tAdjWindowSize\n")
+    ODl[W].write("Chrom\tWindow\tTajimasD\tTajimasDFerretti\tAdjWindowSize\n")
 
 for Chrom, Values in sorted(PopGendata.items()):
 
@@ -420,30 +465,37 @@ for Chrom, Values in sorted(PopGendata.items()):
                 TD = "NA"
                 Pi = "NA"
                 Theta = "NA"
+                ThetaF = "NA"
 
             # test if site count at least min-sites-fraction*windowsize:
             elif covh[Chrom][W][Bin] < window[W] * mins:
                 TD = "NA"
                 Pi = "NA"
                 Theta = "NA"
+                ThetaF = "NA"
 
             else:
                 AvCov = int(average(mh))
                 ID = str(AvCov) + ":" + str(pools)
                 if ID not in avndict:
                     avndict[ID] = nbase(pools, AvCov)
+                if ID not in thetaden:
+                    thetaden[ID] = ThetaDenom(pools, AvCov, mincount)
 
                 # calculate average pi and Theta
                 Pi = ph / covh[Chrom][W][Bin]
                 Theta = th / covh[Chrom][W][Bin]
 
+                # calculate Theta a la Ferretti
+                ThetaF = len(Items) / (covh[Chrom][W][Bin] * thetaden[ID])
+
                 # calculate Tajima's D
                 TD = D(Pi, Theta, covh[Chrom][W][Bin], avndict[ID])
-
+                TDF = D(Pi, ThetaF, covh[Chrom][W][Bin], avndict[ID])
             # write output
             OPl[W].write(Chrom + "\t" + str(Bin) + "\t"
                          + str(Pi) + "\t" + str(covh[Chrom][W][Bin]) + "\n")
             OTl[W].write(Chrom + "\t" + str(Bin) + "\t"
-                         + str(Theta) + "\t" + str(covh[Chrom][W][Bin]) + "\n")
-            ODl[W].write(Chrom + "\t" + str(Bin) + "\t"
-                         + str(TD) + "\t" + str(covh[Chrom][W][Bin]) + "\n")
+                         + str(Theta) + "\t" + str(ThetaF) + "\t" + str(covh[Chrom][W][Bin]) + "\n")
+            ODl[W].write(Chrom + "\t" + str(Bin) + "\t" +
+                         str(TD) + "\t" + str(TDF) + "\t" + str(covh[Chrom][W][Bin]) + "\n")
