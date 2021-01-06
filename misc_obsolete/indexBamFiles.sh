@@ -10,12 +10,12 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-# sbatch --array=1-6 /scratch/aob2x/dest/DEST/misc_obsolete/indexBamFiles.sh
+# sbatch --array=1-492 /scratch/aob2x/dest/DEST/misc_obsolete/indexBamFiles.sh
 # sacct -j 13715912
 module load samtools
 
-melBamPath="/project/berglandlab/DEST/dest_mapped/0803_three_redos/*/*mel.bam"
-simBamPath="/project/berglandlab/DEST/dest_mapped/0803_three_redos/*/*sim.bam"
+melBamPath="/project/berglandlab/DEST/dest_mapped/pipeline_output/*/*mel.bam"
+simBamPath="/project/berglandlab/DEST/dest_mapped/pipeline_output/*/*sim.bam"
 
 bams=$( ls ${melBamPath} ${simBamPath} )
 
@@ -25,4 +25,10 @@ bams=$( ls ${melBamPath} ${simBamPath} )
 
 bamUse=$( echo ${bams} | tr ' ' '\n' | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
-samtools index $bamUse
+if [ -f "$bamUse".bai ]; then
+  echo "touching index" ${bamUse}.bai
+  touch ${bamUse}.bai
+else
+  echo "making index" ${bamUse}.bai
+  samtools index $bamUse
+fi

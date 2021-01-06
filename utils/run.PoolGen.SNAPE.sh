@@ -12,7 +12,7 @@
 
 
 ### run as: sbatch --array=1-246 ${wd}/DEST/utils/run.PoolGen.SNAPE.sh
-### sacct -j 19362320
+### sacct -j 19362455
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358567_1.out
 
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.out
