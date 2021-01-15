@@ -11,8 +11,8 @@
 #SBATCH --account berglandlab
 
 ### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/reheader_vcf_bcf.sh
-### sacct -j 19602112
-### cat /scratch/aob2x/dest/slurmOutput/reheader.19602112
+### sacct -j 19602615
+### cat /scratch/aob2x/dest/slurmOutput/reheader.19602615
 
 module load bcftools parallel samtools
 
@@ -25,6 +25,7 @@ wd="/project/berglandlab/DEST"
 
   renameVCF () {
     f1=${1}
+    wd="/project/berglandlab/DEST"
 
     echo ${f1}
 
@@ -60,6 +61,7 @@ wd="/project/berglandlab/DEST"
     f1=${1}
     # f1=$bcf_file_1
     echo ${f1}
+    wd="/project/berglandlab/DEST"
 
     bcftools view -h ${wd}/${f1} |
     sed 's/UA_Pir_14_26/UA_Pyr_14_26/g' |
