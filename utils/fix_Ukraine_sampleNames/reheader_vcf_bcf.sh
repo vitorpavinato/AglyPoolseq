@@ -11,8 +11,8 @@
 #SBATCH --account berglandlab
 
 ### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/reheader_vcf_bcf.sh
-### sacct -j 19602109
-
+### sacct -j 19602112
+### cat /scratch/aob2x/dest/slurmOutput/reheader.19602112
 
 module load bcftools parallel samtools
 
@@ -26,6 +26,8 @@ wd="/project/berglandlab/DEST"
   renameVCF () {
     f1=${1}
 
+    echo ${f1}
+
     bcftools view -h ${wd}/${f1} |
     sed 's/UA_Pir_14_26/UA_Pyr_14_26/g' |
     sed 's/UA_Pir_15_21/UA_Pyr_15_21/g' |
@@ -35,7 +37,7 @@ wd="/project/berglandlab/DEST"
 
     bcftools reheader \
     -h ${wd}/${f1}.header \
-    ${wd}/${f1} >
+    ${wd}/${f1} > \
     ${wd}/${f1}.reheader
 
     mv ${wd}/${f1} ${wd}/old/${f1}.oldheader
@@ -57,6 +59,7 @@ wd="/project/berglandlab/DEST"
   renameBCF () {
     f1=${1}
     # f1=$bcf_file_1
+    echo ${f1}
 
     bcftools view -h ${wd}/${f1} |
     sed 's/UA_Pir_14_26/UA_Pyr_14_26/g' |
@@ -69,7 +72,7 @@ wd="/project/berglandlab/DEST"
     -h ${wd}/${f1}.header \
     ${wd}/${f1} |
     bcftools view \
-    -O b --threads 3 >
+    -O b --threads 3 > \
     ${wd}/${f1}.reheader
 
     mv ${wd}/${f1} ${wd}/old/${f1}.oldheader
