@@ -68,7 +68,7 @@
 
 ### simulans contamination rate
   simContam <- foreach(samp.i=m[set!="dgn"][auto==T]$sampleId)%do%{
-    #samp.i=m[set!="dgn"][auto==T]$sampleId[1]
+    #samp.i=m[set!="dgn"][auto==T]$sampleId[7]
     message(samp.i)
     simBam <- gsub("mark_duplicates_report.txt", "sim.bam", fns[grepl(samp.i, fns)])
     simIdx <- paste(simBam, "bai", sep=".")
@@ -77,10 +77,13 @@
     melIdx <- paste(melBam, "bai", sep=".")
 
     if(!file.exists(melIdx)) {
+      message("indexing Mel")
       indexBam(melBam)
     }
 
     if(!file.exists(simIdx)) {
+      message("indexing Sim")
+
       indexBam(simBam)
     }
 
@@ -115,9 +118,88 @@
 
 ### diversity statistics (PoolSNP)
   fn <- list.files("/scratch/aob2x/dest/PoolGenOut_PoolSNP/", full.names=T)
-  foreach(fn.i=fn)%do%{
-    fread(fn.i)
+  div <- foreach(fn.i=fn)%dopar%{
+    message(paste(which(fn.i==fn), length(fn), sep=" / "))
+    #fn.i <- fn[1]
+    div <- fread(fn.i)
+    setnames(div, names(div), c("chr", "mid", "est", "V4"))
+    div[,sampleId:=tstrsplit(last(tstrsplit(fn.i, "/")), "\\.")[[1]]]
+    div[,stat:=last(tstrsplit(fn.i, "\\."))]
+    div
   }
+  div <- rbindlist(div)
+  div.ag <- div[,list(div_estimate=median(est, na.rm=T)), list(chr, stat, sampleId)]
+
+  mpd <- merge(mp, div.ag, all=T, by="sampleId", allow.cartesian=T)
+  save(mpd, div, file="~/mpd.Rdata")
+
+  scp aob2x@rivanna.hpc.virginia.edu:~/mpd.Rdata ~/.
+
+  library(data.table)
+  library(ggplot2)
+
+  load("~/mpd.Rdata")
+
+  ggplot(data=mpd[!is.na(stat)][!is.na(Continental_clusters)], aes(x=chr, y=div_estimate, color=Continental_clusters)) + geom_boxplot() + facet_wrap(~stat, scales="free")
+
+
+  ggplot(data=mpd[!is.na(stat)][!is.na(Continental_clusters)], aes(x=lat, y=div_estimate, color=Continental_clusters)) + geom_point() + facet_wrap(~stat, scales="free")
+
+
+  summary(lm(div_estimate~lat*Continental_clusters, mpd[!is.na(stat)][!is.na(Continental_clusters)]))
+  mpd[,dist_ch:=sqrt((lat-51.2763)^2 +  (long-30.2219)^2)]
+
+  ggplot(data=mpd[!is.na(stat)][!is.na(Continental_clusters)], aes(x=dist_ch, y=div_estimate, color=Continental_clusters)) + geom_point() + facet_wrap(~stat, scales="free")
+  
+
+#### new vs. odl
+  library(gdata)
+
+
+  div.new.old <- foreach(sheet.i=c("pi", "Theta", "TajimaD", "pi_40x", "Theta_40x", "TajimaD_40x"))%dopar%{
+    message(sheet.i)
+    div.old <- read.xls("/scratch/aob2x/dest/DEST/utils/DrosEU2014_PopGen.xlsx", sheet=sheet.i)
+    div.old.long <- as.data.table(melt(div.old, id.vars=c("Chrom", "Pos")))
+    setnames(div.old.long, c("Chrom", "Pos", "variable"), c("chr", "mid", "sampleId"))
+
+    if(grepl("pi", sheet.i)) {
+      div.old.long[,stat:="pi"]
+      div.old.long[,stat_old:=sheet.i]
+
+    } else if(grepl("Theta", sheet.i)) {
+      div.old.long[,stat:="th"]
+      div.old.long[,stat_old:=sheet.i]
+
+    } else if(grepl("Tajima", sheet.i)) {
+      div.old.long[,stat:="D"]
+      div.old.long[,stat_old:=sheet.i]
+
+    }
+
+    setkey(div.old.long, chr, mid, stat, sampleId)
+    setkey(div, chr, mid, stat, sampleId)
+    tmp <- merge(div, div.old.long)
+    tmp
+  }
+  div.new.old <- rbindlist(div.new.old)
+  save(div.new.old, file="~/div_new_old.Rdata")
+
+
+scp aob2x@rivanna.hpc.virginia.edu:~/div_new_old.Rdata ~/.
+
+  library(data.table)
+  library(ggplot2)
+
+  load("~/div_new_old.Rdata")
+  div.ag <- div.new.old[,list(new=median(est, na.rm=T), old=mean(value, na.rm=T)), list(chr, stat, sampleId, downsample=paste("40x:", grepl("40x", stat_old), sep=" "))]
+  div.ag2 <- div.new.old[,list(new=mean(est, na.rm=T), old=mean(value, na.rm=T)), list(chr, mid, stat, sampleId, downsample=paste("40x:", grepl("40x", stat_old), sep=" "))]
+  save(div.ag2, file="div_new_old.Rdata")
+
+  ggplot(div.ag, aes(x=old, y=new, color=chr)) + geom_point() + facet_wrap(downsample~stat, scales="free")
+  ggplot(div.ag2, aes(x=old, y=new, color=chr)) + geom_point() + facet_wrap(downsample~stat, scales="free") + geom_abline(intercept=0,slope=1)
+
+
+
 
 
 

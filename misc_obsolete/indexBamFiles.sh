@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 # sbatch --array=1-492 /scratch/aob2x/dest/DEST/misc_obsolete/indexBamFiles.sh
-# sacct -j 13715912
+# sacct -j 19363227
 module load samtools
 
 melBamPath="/project/berglandlab/DEST/dest_mapped/pipeline_output/*/*mel.bam"
