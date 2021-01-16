@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/reheader_vcf_bcf.sh
-### sacct -j 19602615
+### sacct -j 19602933
 ### cat /scratch/aob2x/dest/slurmOutput/reheader.19602615
 
 module load bcftools parallel samtools
@@ -29,28 +29,39 @@ wd="/project/berglandlab/DEST"
 
     echo ${f1}
 
-    bcftools view -h ${wd}/${f1} |
-    sed 's/UA_Pir_14_26/UA_Pyr_14_26/g' |
-    sed 's/UA_Pir_15_21/UA_Pyr_15_21/g' |
-    sed 's/UA_Pyr_16_48/UA_Pir_16_48/g' |
-    sed 's/FLoat/Float/g'> \
-    ${wd}/${f1}.header
+    # bcftools view -h ${wd}/${f1} |
+    # sed 's/UA_Pir_14_26/UA_Pyr_14_26/g' |
+    # sed 's/UA_Pir_15_21/UA_Pyr_15_21/g' |
+    # sed 's/UA_Pyr_16_48/UA_Pir_16_48/g' |
+    # sed 's/FLoat/Float/g'> \
+    # ${wd}/${f1}.header
 
-    bcftools reheader \
-    -h ${wd}/${f1}.header \
-    ${wd}/${f1} > \
-    ${wd}/${f1}.reheader
+    #bcftools reheader \
+    #-h ${wd}/${f1}.header \
+    #${wd}/${f1} > \
+    #${wd}/${f1}.reheader
+#
+    #mv ${wd}/${f1} ${wd}/old/${f1}.oldheader
+#
+    #mv ${wd}/${f1}.reheader ${wd}/${f1}
+    #tabix -p vcf -f ${wd}/${f1}
 
-    mv ${wd}/${f1} ${wd}/old/${f1}.oldheader
+    bcftools view \
+    -O z \
+    ${wd}/${f1} >
+    ${wd}/${f1}.tmp
 
-    mv ${wd}/${f1}.reheader ${wd}/${f1}
+    rm ${wd}/${f1}
+
+    mv ${wd}/${f1}.tmp ${wd}/${f1}
+
     tabix -p vcf -f ${wd}/${f1}
 
-    rm ${wd}/${f1}.header
+
   }
   export -f renameVCF
 
-  parallel --jobs 3 renameVCF ::: $vcf_file_1 $vcf_file_2 $vcf_file_3
+  #parallel --jobs 3 renameVCF ::: $vcf_file_1 $vcf_file_2 $vcf_file_3
 
 ### BCFs
   bcf_file_1="bcf/dest.all.PoolSNP.001.50.10Nov2020.header.bcf"
@@ -85,4 +96,4 @@ wd="/project/berglandlab/DEST"
   }
   export -f renameBCF
 
-  parallel --jobs 3 renameBCF ::: $vcf_file_1 $vcf_file_2 $vcf_file_3
+  parallel --jobs 3 renameBCF ::: $bcf_file_1 $bcf_file_2 $bcf_file_3
