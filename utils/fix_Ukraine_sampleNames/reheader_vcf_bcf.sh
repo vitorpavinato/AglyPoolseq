@@ -61,7 +61,7 @@ wd="/project/berglandlab/DEST"
   }
   export -f renameVCF
 
-  #parallel --jobs 3 renameVCF ::: $vcf_file_1 $vcf_file_2 $vcf_file_3
+  parallel --jobs 3 renameVCF ::: $vcf_file_1 $vcf_file_2 $vcf_file_3
 
 ### BCFs
   bcf_file_1="bcf/dest.all.PoolSNP.001.50.10Nov2020.header.bcf"
