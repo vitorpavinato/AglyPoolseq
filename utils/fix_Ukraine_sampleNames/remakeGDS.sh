@@ -11,8 +11,8 @@
 #SBATCH --account berglandlab
 
 ### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/remakeGDS.sh
-### sacct -j 19747900
-### cat /scratch/aob2x/dest/slurmOutput/reheader.19747900
+### sacct -j 19748361
+### cat /scratch/aob2x/dest/slurmOutput/reheader.19748361
 
 module load intel/18.0 intelmpi/18.0 R/3.6.3 bcftools parallel
 
@@ -35,7 +35,7 @@ wd="/project/berglandlab/DEST"
    #${wd}/${f1} > \
    #${wd}/${f2}
 
-    Rscript /scratch/aob2x/dest/DEST/snpCalling/vcf2gds.R ${f2}
+    Rscript /scratch/aob2x/dest/DEST/snpCalling/vcf2gds.R ${wd}/${f2}
 
   }
   export -f makeGDS
