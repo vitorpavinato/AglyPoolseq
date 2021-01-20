@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/reheader_vcf_bcf.sh
-### sacct -j 19661833
+### sacct -j 19664183
 ### cat /scratch/aob2x/dest/slurmOutput/reheader.19661833
 
 module load bcftools parallel samtools
