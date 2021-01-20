@@ -10,11 +10,11 @@
 #SBATCH -p standard
 #SBATCH --account berglandlab
 
-### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/reheader_vcf_bcf.sh
-### sacct -j 19664183
-### cat /scratch/aob2x/dest/slurmOutput/reheader.19661833
+### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/remakeGDS.sh
+### sacct -j 19747891
+### cat /scratch/aob2x/dest/slurmOutput/reheader.19747891
 
-module load intel/18.0 intelmpi/18.0 R/3.6.3 bcftools
+module load intel/18.0 intelmpi/18.0 R/3.6.3 bcftools parallel
 
 wd="/project/berglandlab/DEST"
 
