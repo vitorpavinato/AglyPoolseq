@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 #SBATCH -J reheader # A single job name for the array
-#SBATCH --ntasks-per-node=9 # one core
+#SBATCH --ntasks-per-node=1 # one core
 #SBATCH -N 1 # on one node
-#SBATCH -t 6:00:00 ### 6 hours
+#SBATCH -t 24:00:00 ### 6 hours
 #SBATCH --mem 10G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/reheader.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/reheader.%A_%a.err # Standard error
@@ -11,7 +11,7 @@
 #SBATCH --account berglandlab
 
 ### sbatch /scratch/aob2x/dest/DEST/utils/fix_Ukraine_sampleNames/remakeGDS.sh
-### sacct -j 19779001
+### sacct -j 19788100
 ### cat /scratch/aob2x/dest/slurmOutput/reheader.19748361
 
 module load intel/18.0 intelmpi/18.0 R/3.6.3 bcftools parallel
@@ -40,4 +40,4 @@ wd="/project/berglandlab/DEST"
   }
   export -f makeGDS
 
-  parallel --jobs 3 makeGDS :::  $vcf_file_3 #$vcf_file_1 $vcf_file_2
+  parallel --jobs 1 makeGDS :::  $vcf_file_3 #$vcf_file_1 $vcf_file_2
