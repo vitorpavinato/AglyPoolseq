@@ -4,80 +4,76 @@
 # Script to construct reference "hologenome"   #
 # for D. melanogaster and associated microbes  #
 # modified from Casey M. Bergman (Manchester)  #
-# 	Martin Kapun 17/10/2016		       #
+# 	Martin Kapun 17/10/2016		               #
 ################################################
 
+################################################
+#    Script for Aphid glycines "hologenome"    #
+#    Modified by Vitor Pavinato 09/03/2021     #
+################################################
 
-# download Drosophila melanogaster reference genome from FlyBase.org data (v.6.12)
+# download genomes for microbes known to be associated with A. glycines from NCBI A_gly_BT4_v2.1
 # unzip file (the fasta-file contains all chromosomes)
 # clean-up header a bit to improve readability
 
-mkdir -p /opt/hologenome/raw
-cd /opt/hologenome/raw
-simulans=/opt/DEST/mappingPipeline/D_simulans.fasta.gz
+OUTDIR=/opt/hologenome/raw
+mkdir -p ${OUTDIR}
+cd ${OUTDIR}
 
-## D. melanogaster (only contains ONE copy of mitochondrion)
-curl -O ftp://ftp.flybase.net/genomes/Drosophila_melanogaster/dmel_r6.12_FB2016_04/fasta/dmel-all-chromosome-r6.12.fasta.gz
-gunzip -c dmel-all-chromosome-r6.12.fasta.gz | sed 's/ type=.*//g'> D_melanogaster_r6.12.fasta
+## A. glycines B4 genome v2.1
+#curl -O https://ftp.ncbi.nih.gov/genomes/genbank/invertebrate/Aphis_glycines/latest_assembly_versions/GCA_009928515.1_A_gly_BT4_v2.1/GCA_009928515.1_A_gly_BT4_v2.1_genomic.fna.gz
+#gunzip -c GCA_009928515.1_A_gly_BT4_v2.1_genomic.fna.gz | sed 's/ A.*//g' > A_glycines_b4_r2.1.fasta
+# 941 contigs
 
-##D simulans
-cp $simulans /opt/hologenome/raw
-gunzip D_simulans.fasta.gz
+# A. glycines B4 genome v2.1 - from ZENODO 10.5281/zenodo.3453468
+curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4.v2.1.scaffolds.fa.gz
+gunzip -c Aphis_glycines_4.v2.1.scaffolds.fa.gz > A_glycines_b4_r2.1.fasta
+# 941 contigs
 
-## S. cerevisiae
-curl -O http://sgd-archive.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-2-1_20150113.tgz
-tar -xvzf S288C_reference_genome_R64-2-1_20150113.tgz
-cat S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa | sed 's/^>.*\[chromosome=/>Saccharomyces_cerevisiae_/g' | sed 's/]//g' > S_cerevisiae.fasta
-rm -r S288C_reference_genome_R64-2-1_20150113
-
-
-# download genomes for microbes known to be associated with D. melanogaster from NCBI
+# download genomes for microbes known to be associated with A. glycines from NCBI
+# also download genomes from Mathers (2019) publication, which contain assembled genomes for
+# Buchenera aphidicola, Wolbachia, and for the mitochondrial genome of A. glycines
+# All were recovered from the assembly (Mathers 2019).
 # if necessary, combine multi-contig draft assemblies into single fasta file
 # rename fasta headers to include species name
 
-# Wolbachia pipientis
-curl -O ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_0_collection/wolbachia_endosymbiont_of_drosophila_melanogaster/dna/Wolbachia_endosymbiont_of_drosophila_melanogaster.ASM802v1.dna.chromosome.Chromosome.fa.gz
-gunzip -c Wolbachia_endosymbiont_of_drosophila_melanogaster.ASM802v1.dna.chromosome.Chromosome.fa.gz | sed '/^>/s/.*/>W_pipientis/g'  > W_pipientis.fasta
+# Buchnera aphidicola - Aphis glycines - from NCBI
+curl -O https://ftp.ncbi.nih.gov/genomes/refseq/bacteria/Buchnera_aphidicola/all_assembly_versions/GCF_001280225.1_ASM128022v1/GCF_001280225.1_ASM128022v1_genomic.fna.gz
+gunzip -c GCF_001280225.1_ASM128022v1_genomic.fna.gz | sed 's/>* .*/_B_aphidicola/g' > B_aphidicola_ragly.1.fasta
+# 3 contigs
 
-# Pseudomonas entomophila
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_2_collection/pseudomonas_entomophila_l48/dna/Pseudomonas_entomophila_l48.ASM2610v1.dna.toplevel.fa.gz
-gunzip -c Pseudomonas_entomophila_l48.ASM2610v1.dna.toplevel.fa.gz | sed '/^>/s/.*/>P_entomophila/g'  > P_entomophila.fasta
+# Arsenophonus endosymbiont - Aphis craccivora - from NCBI
+curl -O https://ftp.ncbi.nih.gov/genomes/refseq/bacteria/Arsenophonus_endosymbiont_of_Aphis_craccivora/all_assembly_versions/GCF_013460135.1_ASM1346013v1/GCF_013460135.1_ASM1346013v1_genomic.fna.gz
+gunzip -c GCF_013460135.1_ASM1346013v1_genomic.fna.gz | sed 's/>* .*/_Arsenophonus_endosymbiont/g' > Arsenophonus_endosymbiont_racra.1.fasta
+# 2 contigs
 
-# Commensalibacter intestini
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_14_collection/commensalibacter_intestini_a911/dna/Commensalibacter_intestini_a911.ASM23144v1.dna.toplevel.fa.gz
-gunzip -c Commensalibacter_intestini_a911.ASM23144v1.dna.toplevel.fa.gz | sed 's/>* .*/_C_intestini/g'  > C_intestini.fasta
+# Candidatus Regiella insecticola 5.15 - from NCBI
+curl -O https://ftp.ncbi.nih.gov/genomes/refseq/bacteria/Candidatus_Regiella_insecticola/all_assembly_versions/GCF_000284655.1_ASM28465v1/GCF_000284655.1_ASM28465v1_genomic.fna.gz
+gunzip -c GCF_000284655.1_ASM28465v1_genomic.fna.gz | sed 's/>* .*/_C_R_insecticola/g' > C_R_insecticola_r5.15.fasta
+# 562 contigs
 
-# Acetobacter pomorum
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_5_collection/acetobacter_pomorum_dm001/dna/Acetobacter_pomorum_dm001.ASM19324v1.dna.toplevel.fa.gz
-gunzip -c Acetobacter_pomorum_dm001.ASM19324v1.dna.toplevel.fa.gz | sed 's/>* .*/_A_pomorum/g'  > A_pomorum.fasta
+# Wolbachia pipientis - from NCBI
+#curl -O https://ftp.ncbi.nih.gov/genomes/refseq/bacteria/Wolbachia_pipientis/all_assembly_versions/GCF_000242415.1_ASM24241v2/GO_TO_CURRENT_VERSION/GCF_000242415.2_ASM24241v3_genomic.fna.gz
+#gunzip -c GCF_000242415.2_ASM24241v3_genomic.fna.gz | sed '/^>/s//>W_pipientis_/g' | sed 's/ W.*//g' > W_pipientis_r3.fasta
+# 156 contigs
 
-# Gluconobacter morbifer
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_24_collection/gluconobacter_morbifer_g707/dna/Gluconobacter_morbifer_g707.ASM23435v1.dna.nonchromosomal.fa.gz
-gunzip -c Gluconobacter_morbifer_g707.ASM23435v1.dna.nonchromosomal.fa.gz | sed 's/>* .*/_C_morbifer/g'  > C_morbifer.fasta
+# Wolbachia - Aphis glycines - from ZENODO 10.5281/zenodo.3453468
+curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4_Wolbachia_v1.fa
+cat Aphis_glycines_4_Wolbachia_v1.fa | sed '/_pilon/s/$/_Wolbachia_agly/' > Wolbachia_endosymbiont_ragly.1.fasta
+# 9 contig
 
-# Providencia burhodogranariea
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_3_collection/providencia_burhodogranariea_dsm_19968/dna/Providencia_burhodogranariea_dsm_19968.ASM31485v2.dna.toplevel.fa.gz
-gunzip -c Providencia_burhodogranariea_dsm_19968.ASM31485v2.dna.toplevel.fa.gz | sed 's/>* .*/_P_burhodogranariea/g'  > P_burhodogranariea.fasta
-
-# Providencia alcalifaciens
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_18_collection/providencia_alcalifaciens_dmel2/dna/Providencia_alcalifaciens_dmel2.ASM31487v2.dna.toplevel.fa.gz
-gunzip -c Providencia_alcalifaciens_dmel2.ASM31487v2.dna.toplevel.fa.gz | sed 's/>* .*/_P_alcalifaciens/g'  > P_alcalifaciens.fasta
-
-# "Providencia rettgeri"
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_23_collection/providencia_rettgeri_dmel1/dna/Providencia_rettgeri_dmel1.ASM31483v2.dna.toplevel.fa.gz
-gunzip -c Providencia_rettgeri_dmel1.ASM31483v2.dna.toplevel.fa.gz | sed 's/>* .*/_P_rettgeri/g'  > P_rettgeri.fasta
-
-# "Enterococcus faecalis"
-curl -O ftp://ftp.ensemblgenomes.org/pub/release-32/bacteria/fasta/bacteria_72_collection/enterococcus_faecalis/dna/Enterococcus_faecalis.ASM69626v1.dna.toplevel.fa.gz
-gunzip -c Enterococcus_faecalis.ASM69626v1.dna.toplevel.fa.gz | sed 's/>* .*//g'  > E_faecalis.fasta
+# Aphis glycines mitochondrial DNA - from ZENODO 10.5281/zenodo.3453468
+curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4_Mitochondrial_genome.fa
+cat Aphis_glycines_4_Mitochondrial_genome.fa | sed '/_pilon/s/$/_Mitochondrial_genome_agly/' > Mitochondrial_genome_ragly.1.fasta
+# 1 contig
 
 
 ## remove raw gzipped files
 
 rm *gz
+rm *.fa
 
 # gzip *
 
-##### create D. melanogaster "hologenome" from individual species fasta files
-# cat /opt/hologenome/raw/D_melanogaster_r6.12.fasta /opt/hologenome/raw/S_cerevisiae.fasta /opt/hologenome/raw/A_pomorum.fasta /opt/hologenome/raw/C_intestini.fasta /opt/hologenome/raw/C_morbifer.fasta /opt/hologenome/raw/E_faecalis.fasta /opt/hologenome/raw/P_alcalifaciens.fasta /opt/hologenome/raw/P_burhodogranariea.fasta /opt/hologenome/raw/P_entomophila.fasta /opt/hologenome/raw/P_rettgeri.fasta /opt/hologenome/raw/W_pipientis.fasta | gzip > ../holo_dmel_6.12.fa.gz
-cat /opt/hologenome/raw/D_melanogaster_r6.12.fasta /opt/hologenome/raw/D_simulans.fasta /opt/hologenome/raw/S_cerevisiae.fasta /opt/hologenome/raw/A_pomorum.fasta /opt/hologenome/raw/C_intestini.fasta /opt/hologenome/raw/C_morbifer.fasta /opt/hologenome/raw/E_faecalis.fasta /opt/hologenome/raw/P_alcalifaciens.fasta /opt/hologenome/raw/P_burhodogranariea.fasta /opt/hologenome/raw/P_entomophila.fasta /opt/hologenome/raw/P_rettgeri.fasta /opt/hologenome/raw/W_pipientis.fasta > ../holo_dmel_6.12.fa
+# create A. glycines biotype 4 "Hologenome" from individual species fasta files
+cat ${OUTDIR}/A_glycines_b4_r2.1.fasta ${OUTDIR}/Mitochondrial_genome_ragly.1.fasta ${OUTDIR}/B_aphidicola_ragly.1.fasta ${OUTDIR}/Arsenophonus_endosymbiont_racra.1.fasta ${OUTDIR}/C_R_insecticola_r5.15.fasta ${OUTDIR}/Wolbachia_endosymbiont_ragly.1.fasta > ../holo_agly_b4_r2.1.fa

@@ -1,0 +1,59 @@
+==================================================
+file name: Aphis_glycines_4.v2.1.scaffolds.fa
+sequences:           941
+total length:  303155567 bp  (303147549 bp excl N/X-runs)
+GC level:         27.39 %
+bases masked:   36761946 bp ( 12.13 %)
+==================================================
+               number of      length   percentage
+               elements*    occupied  of sequence
+--------------------------------------------------
+Retroelements        10032      1934555 bp    0.64 %
+   SINEs:               44         2753 bp    0.00 %
+   Penelope            183         9746 bp    0.00 %
+   LINEs:             5873      1176671 bp    0.39 %
+    CRE/SLACS            0            0 bp    0.00 %
+     L2/CR1/Rex       2155       165812 bp    0.05 %
+     R1/LOA/Jockey    1614       343744 bp    0.11 %
+     R2/R4/NeSL         44        27222 bp    0.01 %
+     RTE/Bov-B         442       200025 bp    0.07 %
+     L1/CIN4            16          807 bp    0.00 %
+   LTR elements:      4115       755131 bp    0.25 %
+     BEL/Pao           541       203458 bp    0.07 %
+     Ty1/Copia         257        25806 bp    0.01 %
+     Gypsy/DIRS1      3306       525261 bp    0.17 %
+       Retroviral        0            0 bp    0.00 %
+
+DNA transposons      72750     12688684 bp    4.19 %
+   hobo-Activator    17158      2815680 bp    0.93 %
+   Tc1-IS630-Pogo     3451       536499 bp    0.18 %
+   En-Spm                0            0 bp    0.00 %
+   MuDR-IS905            0            0 bp    0.00 %
+   PiggyBac            272        92152 bp    0.03 %
+   Tourist/Harbinger   184        58405 bp    0.02 %
+   Other (Mirage,      774       120709 bp    0.04 %
+    P-element, Transib)
+
+Rolling-circles          0            0 bp    0.00 %
+
+Unclassified:        19809      6391158 bp    2.11 %
+
+Total interspersed repeats:    21014397 bp    6.93 %
+
+
+Small RNA:             192        51402 bp    0.02 %
+
+Satellites:             13         1352 bp    0.00 %
+Simple repeats:     296662     13682115 bp    4.51 %
+Low complexity:      41922      2101247 bp    0.69 %
+==================================================
+
+* most repeats fragmented by insertions or deletions
+  have been counted as one element
+                                                      
+
+The query species was assumed to be insecta       
+RepeatMasker Combined Database: Dfam_Consensus-20170127, RepBase-20170127
+        
+run with rmblastn version 2.2.27+
+

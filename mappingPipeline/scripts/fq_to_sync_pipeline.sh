@@ -20,7 +20,7 @@ D=0.01
 priortype="informative"
 fold="unfolded"
 maxsnape=0.9
-nflies=40
+nflies=5
 base_quality_threshold=25
 illumina_quality_coding=1.8
 minIndel=5
@@ -164,8 +164,8 @@ if [ $do_prep -eq "1" ]; then
   --minimum-length 75 \
   -o $output/$sample/${sample}.trimmed1.fq.gz \
   -p $output/$sample/${sample}.trimmed2.fq.gz \
-  -b ACACTCTTTCCCTACACGACGCTCTTCCGATC \
-  -B CAAGCAGAAGACGGCATACGAGAT \
+  -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \          #I added here the adapters I found in most of A. glycines libraries
+  -B AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \          #I added here the adapters I found in most of A. glycines libraries
   -O 15 \
   -n 3 \
   --cores=$threads \
@@ -178,18 +178,18 @@ if [ $do_prep -eq "1" ]; then
   check_exit_status "fastqc" $?
 
   #Automatically uses all available cores
-  bbmerge.sh in1=$output/$sample/${sample}.trimmed1.fq.gz in2=$output/$sample/${sample}.trimmed2.fq.gz out=$output/$sample/${sample}.merged.fq.gz outu1=$output/$sample/${sample}.1_un.fq.gz outu2=$output/$sample/${sample}.2_un.fq.gz
+  bbmerge.sh in1=$output/$sample/${sample}.trimmed1.fq.gz in2=$output/$sample/${sample}.trimmed2.fq.gz out=$output/$sample/${sample}.merged.fq.gz outu1=$output/$sample/${sample}.1_un.fq.gz outu2=$output/$sample/${sample}.2_un.fq.gz ihist=$output/$sample/${sample}.ihist.txt outa=$output/$sample/${sample}.adapters.fa     # I added this output to check if adapters are correct
 
   check_exit_status "bbmerge" $?
 
   rm $output/$sample/${sample}.trimmed*
 
-  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged_un.bam
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged_un.bam
 
   rm $output/$sample/${sample}.1_un.fq.gz
   rm $output/$sample/${sample}.2_un.fq.gz
 
-  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_dmel_6.12.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged.bam
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged.bam
 
   check_exit_status "bwa_mem" $?
 
@@ -214,10 +214,14 @@ if [ $do_prep -eq "1" ]; then
   rm $output/$sample/${sample}.sorted_merged.bam
 
   samtools index $output/$sample/${sample}.dedup.bam
+  
+  # I added here two samtools commands to get alignment statistics - added Vitor Pavinato 16/Mar/21
+  samtools stats --coverage 1,1000,1 $output/$sample/${sample}.dedup.bam > $output/$sample/${sample}.samtools_stats.txt
+  samtools coverage $output/$sample/${sample}.dedup.bam > $output/$sample/${sample}.samtools_coverage.txt
 
   java -jar $GATK -T RealignerTargetCreator \
   -nt $threads \
-  -R /opt/hologenome/holo_dmel_6.12.fa \
+  -R /opt/hologenome/holo_agly_b4_r2.1.fa \
   -I $output/$sample/${sample}.dedup.bam \
   -o $output/$sample/${sample}.hologenome.intervals
 
@@ -225,7 +229,7 @@ if [ $do_prep -eq "1" ]; then
 
   java -jar $GATK \
   -T IndelRealigner \
-  -R /opt/hologenome/holo_dmel_6.12.fa \
+  -R /opt/hologenome/holo_agly_b4_r2.1.fa \
   -I $output/$sample/${sample}.dedup.bam \
   -targetIntervals $output/$sample/${sample}.hologenome.intervals \
   -o $output/$sample/${sample}.contaminated_realigned.bam
@@ -241,14 +245,15 @@ if [ $do_prep -eq "1" ]; then
   # grep "sim_" $output/$sample/${sample}.${sample}.original_idxstats.txt | awk -F '\t' '{sum+=$3;} END {print sum;}' > $output/$sample/${sample}.num_sim.txt
 
   #Filter out the simulans contaminants
-  mel_chromosomes="2L 2R 3L 3R 4 X Y mitochondrion_genome"
-  sim_chromosomes="sim_2L sim_2R sim_3L sim_3R sim_4 sim_X sim_mtDNA"
+  #mel_chromosomes="2L 2R 3L 3R 4 X Y mitochondrion_genome"
+  #sim_chromosomes="sim_2L sim_2R sim_3L sim_3R sim_4 sim_X sim_mtDNA"
 
-  samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $mel_chromosomes -b > $output/$sample/${sample}.mel.bam
-  samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $sim_chromosomes -b > $output/$sample/${sample}.sim.bam
+  #samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $mel_chromosomes -b > $output/$sample/${sample}.mel.bam
+  #samtools view -@ $threads $output/$sample/${sample}.contaminated_realigned.bam $sim_chromosomes -b > $output/$sample/${sample}.sim.bam
 
-  mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
-  rm $output/$sample/${sample}.contaminated_realigned.bai
+  #mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
+  mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.agly.bam # Only A. glycines metters here since I didn't look for other Aphids species as potential contaminants
+  #rm $output/$sample/${sample}.contaminated_realigned.bai
 
   #samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
@@ -258,15 +263,15 @@ fi
 
 if [ $do_poolsnp -eq "1" ]; then
 
-  samtools mpileup $output/$sample/${sample}.mel.bam \
+  samtools mpileup $output/$sample/${sample}.agly.bam \
   -B \
   -Q ${base_quality_threshold} \
-  -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
+  -f /opt/hologenome/raw/A_glycines_b4_r2.1.fasta > $output/$sample/${sample}.agly_mpileup.txt
 
 
-  python3 /opt/DEST/mappingPipeline/scripts/Mpileup2Sync.py \
-  --mpileup $output/$sample/${sample}.mel_mpileup.txt \
-  --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
+  python3 /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/Mpileup2Sync.py \
+  --mpileup $output/$sample/${sample}.agly_mpileup.txt \
+  --ref /opt/hologenome/raw/A_glycines_b4_r2.1.fasta.pickled.ref \
   --output $output/$sample/${sample} \
   --base-quality-threshold $base_quality_threshold \
   --coding $illumina_quality_coding \
@@ -275,14 +280,14 @@ if [ $do_poolsnp -eq "1" ]; then
   check_exit_status "Mpileup2Sync" $?
 
   #For the PoolSNP output
-  python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
+  python3 /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
   --sync $output/$sample/${sample}.sync.gz \
   --output $output/$sample/${sample} \
   --indel $output/$sample/${sample}.indel \
   --coverage $output/$sample/${sample}.cov \
   --mincov $min_cov \
   --maxcov $max_cov \
-  --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+  --te /opt/fromDEST-aphidPoolseq/RepeatMasker/ref/Aphis_glycines_4.v2.1.scaffolds.fa.out.gff\
   --maxsnape $maxsnape
 
   check_exit_status "MaskSYNC" $?
@@ -313,8 +318,8 @@ fi
 #Generate the SNAPE SYNC files
 if [ $do_snape -eq "1" ]; then
 
-  /opt/DEST/mappingPipeline/scripts/Mpileup2Snape.sh \
-  ${sample}.mel_mpileup.txt \
+  /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/Mpileup2Snape.sh \
+  ${sample}.agly_mpileup.txt \
   $output \
   $sample \
   $theta \
@@ -327,21 +332,21 @@ if [ $do_snape -eq "1" ]; then
 
   gzip -f $output/$sample/${sample}.SNAPE.output.txt
 
-  python3 /opt/DEST/mappingPipeline/scripts/SNAPE2SYNC.py \
+  python3 /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/SNAPE2SYNC.py \
   --input $output/$sample/${sample}.SNAPE.output.txt.gz \
-  --ref /opt/hologenome/raw/D_melanogaster_r6.12.fasta.pickled.ref \
+  --ref /opt/hologenome/raw/A_glycines_b4_r2.1.fasta.pickled.ref \
   --output $output/$sample/${sample}.SNAPE
 
   check_exit_status "SNAPE2SYNC" $?
 
-  python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
+  python3 /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/MaskSYNC_snape_complete.py \
   --sync $output/$sample/${sample}.SNAPE.sync.gz \
   --output $output/$sample/${sample}.SNAPE.complete \
   --indel $output/$sample/${sample}.indel \
   --coverage $output/$sample/${sample}.cov \
   --mincov $min_cov \
   --maxcov $max_cov \
-  --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+  --te /opt/fromDEST-aphidPoolseq/RepeatMasker/ref/Aphis_glycines_4.v2.1.scaffolds.fa.out.gff \
   --maxsnape $maxsnape \
   --SNAPE
 
@@ -349,14 +354,14 @@ if [ $do_snape -eq "1" ]; then
 
   mv $output/$sample/${sample}.SNAPE.complete_masked.sync.gz $output/$sample/${sample}.SNAPE.complete.masked.sync.gz
 
-  python3 /opt/DEST/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
+  python3 /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/MaskSYNC_snape_monomorphic_filter.py \
   --sync $output/$sample/${sample}.SNAPE.sync.gz \
   --output $output/$sample/${sample}.SNAPE.monomorphic \
   --indel $output/$sample/${sample}.indel \
   --coverage $output/$sample/${sample}.cov \
   --mincov $min_cov \
   --maxcov $max_cov \
-  --te /opt/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.out.gff \
+  --te /opt/fromDEST-aphidPoolseq/RepeatMasker/ref/Aphis_glycines_4.v2.1.scaffolds.fa.out.gff \
   --maxsnape $maxsnape \
   --SNAPE
 
@@ -374,7 +379,7 @@ if [ $do_snape -eq "1" ]; then
 
   check_exit_status "tabix" $?
 
-  gzip $output/$sample/${sample}.mel_mpileup.txt
+  gzip $output/$sample/${sample}.agly_mpileup.txt
 
   echo "Maxsnape $maxsnape" >> $output/$sample/${sample}.parameters.txt
   echo "theta:  $theta" >> $output/$sample/${sample}.parameters.txt
