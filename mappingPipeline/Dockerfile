@@ -128,7 +128,6 @@ RUN wget https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
     rm -rf samtools-${SAMTOOLS_VERSION}
 ENV PATH="/opt/samtools/${SAMTOOLS_VERSION}/bin:${PATH}"
 
-
 # install Cutadapt
 ARG CUTADAPT_VERSION=2.3
 RUN python3 -m pip install cutadapt==${CUTADAPT_VERSION}
@@ -204,12 +203,9 @@ ENV PATH="/opt/snape-pooled:${PATH}"
 
 #Clone the repo
 
-WORKDIR /opt # added 22/Mar/21
 RUN git clone https://github.com/vitorpavinato/fromDEST-aphidPoolseq.git
 
-RUN ls
-RUN pwd
-
+#Setup the hologenome
 RUN /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/hologene_gen.sh
 RUN bwa index /opt/hologenome/holo_agly_b4_r2.1.fa && \
     samtools faidx /opt/hologenome/raw/A_glycines_b4_r2.1.fasta && \
