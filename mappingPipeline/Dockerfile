@@ -207,6 +207,9 @@ ENV PATH="/opt/snape-pooled:${PATH}"
 WORKDIR /opt # added 22/Mar/21
 RUN git clone https://github.com/vitorpavinato/fromDEST-aphidPoolseq.git
 
+RUN ls
+RUN pwd
+
 RUN /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/hologene_gen.sh
 RUN bwa index /opt/hologenome/holo_agly_b4_r2.1.fa && \
     samtools faidx /opt/hologenome/raw/A_glycines_b4_r2.1.fasta && \
