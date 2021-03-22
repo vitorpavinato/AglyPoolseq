@@ -16,19 +16,21 @@
 # unzip file (the fasta-file contains all chromosomes)
 # clean-up header a bit to improve readability
 
-OUTDIR=/opt/hologenome/raw
+#OUTDIR=/opt/hologenome/raw
+OUTDIR=/Users/correapavinato.1/hologenome/raw
 mkdir -p ${OUTDIR}
 cd ${OUTDIR}
-
-## A. glycines B4 genome v2.1
-#curl -O https://ftp.ncbi.nih.gov/genomes/genbank/invertebrate/Aphis_glycines/latest_assembly_versions/GCA_009928515.1_A_gly_BT4_v2.1/GCA_009928515.1_A_gly_BT4_v2.1_genomic.fna.gz
-#gunzip -c GCA_009928515.1_A_gly_BT4_v2.1_genomic.fna.gz | sed 's/ A.*//g' > A_glycines_b4_r2.1.fasta
-# 941 contigs
 
 # A. glycines B4 genome v2.1 - from ZENODO 10.5281/zenodo.3453468
 curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4.v2.1.scaffolds.fa.gz
 gunzip -c Aphis_glycines_4.v2.1.scaffolds.fa.gz > A_glycines_b4_r2.1.fasta
 # 941 contigs
+
+# Aphis glycines mitochondrial DNA - from ZENODO 10.5281/zenodo.3453468
+curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4_Mitochondrial_genome.fa
+cat Aphis_glycines_4_Mitochondrial_genome.fa | sed 's/tig00001121_pilon_pilon/mitochondrion_genome/' >> A_glycines_b4_r2.1.fasta
+# 1 contig
+# 942 contigs at the end
 
 # download genomes for microbes known to be associated with A. glycines from NCBI
 # also download genomes from Mathers (2019) publication, which contain assembled genomes for
@@ -60,13 +62,7 @@ gunzip -c GCF_000284655.1_ASM28465v1_genomic.fna.gz | sed 's/>* .*/_C_R_insectic
 # Wolbachia - Aphis glycines - from ZENODO 10.5281/zenodo.3453468
 curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4_Wolbachia_v1.fa
 cat Aphis_glycines_4_Wolbachia_v1.fa | sed '/_pilon/s/$/_Wolbachia_agly/' > Wolbachia_endosymbiont_ragly.1.fasta
-# 9 contig
-
-# Aphis glycines mitochondrial DNA - from ZENODO 10.5281/zenodo.3453468
-curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4_Mitochondrial_genome.fa
-cat Aphis_glycines_4_Mitochondrial_genome.fa | sed '/_pilon/s/$/_Mitochondrial_genome_agly/' > Mitochondrial_genome_ragly.1.fasta
-# 1 contig
-
+# 9 contigs
 
 ## remove raw gzipped files
 
@@ -76,4 +72,4 @@ rm *.fa
 # gzip *
 
 # create A. glycines biotype 4 "Hologenome" from individual species fasta files
-cat ${OUTDIR}/A_glycines_b4_r2.1.fasta ${OUTDIR}/Mitochondrial_genome_ragly.1.fasta ${OUTDIR}/B_aphidicola_ragly.1.fasta ${OUTDIR}/Arsenophonus_endosymbiont_racra.1.fasta ${OUTDIR}/C_R_insecticola_r5.15.fasta ${OUTDIR}/Wolbachia_endosymbiont_ragly.1.fasta > ../holo_agly_b4_r2.1.fa
+cat ${OUTDIR}/A_glycines_b4_r2.1.fasta ${OUTDIR}/B_aphidicola_ragly.1.fasta ${OUTDIR}/Arsenophonus_endosymbiont_racra.1.fasta ${OUTDIR}/C_R_insecticola_r5.15.fasta ${OUTDIR}/Wolbachia_endosymbiont_ragly.1.fasta > ../holo_agly_b4_r2.1.fa

@@ -204,6 +204,7 @@ ENV PATH="/opt/snape-pooled:${PATH}"
 
 #Clone the repo
 
+WORKDIR /opt # added 22/Mar/21
 RUN git clone https://github.com/vitorpavinato/fromDEST-aphidPoolseq.git
 
 RUN /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/hologene_gen.sh
