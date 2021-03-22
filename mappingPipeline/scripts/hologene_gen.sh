@@ -16,8 +16,7 @@
 # unzip file (the fasta-file contains all chromosomes)
 # clean-up header a bit to improve readability
 
-#OUTDIR=/opt/hologenome/raw
-OUTDIR=/Users/correapavinato.1/hologenome/raw
+OUTDIR=/opt/hologenome/raw
 mkdir -p ${OUTDIR}
 cd ${OUTDIR}
 
