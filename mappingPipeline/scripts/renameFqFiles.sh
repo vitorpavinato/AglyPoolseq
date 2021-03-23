@@ -5,8 +5,8 @@
 
 for i in $(cat $1);
 do 
-	TMPNAME=`echo $i | awk '{split($0,a,"_"); print a[1]"_"a[3]"."a[2]}'`; 
-	#echo $TMPNAME;
-    #echo $i "\t" $TMPNAME
+    TMPNAME=`echo $i | awk '{split($0,a,"_"); print a[1]"_"a[3]"."a[2]}'`; 
+    #echo $TMPNAME;
+    #echo $i " " $TMPNAME
     mv ${i}.fastq.gz ${TMPNAME}.fastq.gz
 done

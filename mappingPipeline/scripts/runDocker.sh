@@ -11,7 +11,7 @@
 #SBATCH --account PAS1715
 
 
-### test run as: sbatch --array=10 ${wd}/DEST/mappingPipeline/scripts/runDocker.sh
+### test run as: sbatch --array=10 ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runDocker.sh
 # sacct -j 14446076
 # cat /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.16904399_2.out | grep -v "Reference is N; most frequent allele is calculated in position" | less -S
 # cat /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.16904399_2.out
@@ -24,14 +24,14 @@
   wd=/fs/scratch/PAS1715/aphidpool
 
 ### check
-  #cat ${wd}/DEST/populationInfo/samps.csv | cut -f1,14 -d',' | grep -v "NA" | wc -l
-  #ls -lh /project/berglandlab/DEST/dest_mapped/pipeline_output | wc -l
+  #cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l
+  #ls -lh ${wd}/dest_mapped/pipeline_output | wc -l
 
 ### get job number
   #SLURM_ARRAY_TASK_ID=10
-  pop=$( cat ${wd}/fromDEST-aphidPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  srx=$( cat ${wd}/fromDEST-aphidPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-  numFlies=$( cat ${wd}/fromDEST-aphidPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo $pop
   echo $srx
@@ -41,13 +41,11 @@
   touch /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R2.fastq.gz
 
 ### run docker
-
-
   #singularity run \
-  #${wd}/dest_mapping_latest.sif \
+  #${wd}/aglypoolseq_latest.sif \
 
   singularity run \
-  ${wd}/dmelsync_hpc.sif \
+  ${wd}/aglypoolseq_latest.sif \
   /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R1.fastq.gz \
   /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R2.fastq.gz \
   ${pop} \

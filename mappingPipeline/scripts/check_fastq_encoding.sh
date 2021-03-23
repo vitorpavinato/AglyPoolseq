@@ -11,7 +11,7 @@
 
 wd=/fs/scratch/PAS1715/aphidpool
 
-chmod +x ${wd}/fromDEST-aphidPoolseq/mappingPipeline/scripts/guess_encoding.py
+chmod +x ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/guess_encoding.py
 
 if test -f ${wd}/fastq/qualEncodings.delim; then
     rm ${wd}/fastq/qualEncodings.delim
@@ -23,6 +23,6 @@ fi
 for f in ${wd}/fastq/*fastq.gz; do
   ### f=/scratch/aob2x/dest/fastq/SRX2885350_2.fastq.gz
   zcat $f | head -n 5000 | awk 'NR % 4 == 0' | \
-  ${wd}/fromDEST-aphidPoolseq/mappingPipeline/scripts/guess_encoding.py | grep -v "#" |
+  ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/guess_encoding.py | grep -v "#" |
   sed -E "s|^|${f}\t|g" >> ${wd}/fastq/qualEncodings.delim
 done
