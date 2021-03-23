@@ -1,13 +1,12 @@
-#!/bin/bash
-#SBATCH --job-name=dockerMap # A single job name for the array
+#!/usr/bin/env bash
+#SBATCH -J dockerMap # A single job name for the array
 ##SBATCH --ntasks-per-node=10 # one core
 #SBATCH -c 10
 #SBATCH -N 1 # on one node
-#SBATCH -t 12:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
+#SBATCH -t 00:60:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
 #SBATCH --mem 5G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.%A_%a.err # Standard error
-#SBATCH -p standard
 #SBATCH --account PAS1715
 
 

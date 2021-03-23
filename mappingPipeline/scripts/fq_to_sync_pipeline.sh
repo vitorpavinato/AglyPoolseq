@@ -14,7 +14,7 @@ sample="default_sample_name"
 output="."
 threads="1"
 max_cov=0.95
-min_cov=10
+min_cov=4
 theta=0.005
 D=0.01
 priortype="informative"
@@ -164,8 +164,8 @@ if [ $do_prep -eq "1" ]; then
   --minimum-length 75 \
   -o $output/$sample/${sample}.trimmed1.fq.gz \
   -p $output/$sample/${sample}.trimmed2.fq.gz \
-  -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \          #I added here the adapters I found in most of A. glycines libraries
-  -B AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \          #I added here the adapters I found in most of A. glycines libraries
+  -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+  -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
   -O 15 \
   -n 3 \
   --cores=$threads \
@@ -178,7 +178,7 @@ if [ $do_prep -eq "1" ]; then
   check_exit_status "fastqc" $?
 
   #Automatically uses all available cores
-  bbmerge.sh in1=$output/$sample/${sample}.trimmed1.fq.gz in2=$output/$sample/${sample}.trimmed2.fq.gz out=$output/$sample/${sample}.merged.fq.gz outu1=$output/$sample/${sample}.1_un.fq.gz outu2=$output/$sample/${sample}.2_un.fq.gz ihist=$output/$sample/${sample}.ihist.txt outa=$output/$sample/${sample}.adapters.fa     # I added this output to check if adapters are correct
+  bbmerge.sh in1=$output/$sample/${sample}.trimmed1.fq.gz in2=$output/$sample/${sample}.trimmed2.fq.gz out=$output/$sample/${sample}.merged.fq.gz outu1=$output/$sample/${sample}.1_un.fq.gz outu2=$output/$sample/${sample}.2_un.fq.gz ihist=$output/$sample/${sample}.ihist.txt outa=$output/$sample/${sample}.adapters.fa
 
   check_exit_status "bbmerge" $?
 
