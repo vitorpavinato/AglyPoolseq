@@ -1,4 +1,5 @@
 #Data processing: QC, mapping and variant discovery for D. melanogaster Poolseq Data
+#Modified for Aphis glycines Biotype 4 genome v2
 
 FROM ubuntu:18.04
 
@@ -203,10 +204,10 @@ ENV PATH="/opt/snape-pooled:${PATH}"
 
 #Clone the repo
 
-RUN git clone https://github.com/vitorpavinato/fromDEST-aphidPoolseq.git
+RUN git clone https://github.com/vitorpavinato/DEST-AglyPoolseq.git
 
 #Setup the hologenome
-RUN /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/hologene_gen.sh
+RUN /opt/DEST-AglyPoolseq/mappingPipeline/scripts/hologene_gen.sh
 RUN bwa index /opt/hologenome/holo_agly_b4_r2.1.fa && \
     samtools faidx /opt/hologenome/raw/A_glycines_b4_r2.1.fasta && \
     samtools faidx /opt/hologenome/holo_agly_b4_r2.1.fa && \
@@ -216,18 +217,18 @@ RUN bwa index /opt/hologenome/holo_agly_b4_r2.1.fa && \
 
 ARG CACHE_BUST=06:03:2020:1800
 
-RUN python3 /opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/PickleRef.py \
+RUN python3 /opt/DEST-AglyPoolseq/mappingPipeline/scripts/PickleRef.py \
     --ref /opt/hologenome/raw/A_glycines_b4_r2.1.fasta \
     --output /opt/hologenome/raw/A_glycines_b4_r2.1.fasta.pickled > pickled_ref.out
 
 WORKDIR /opt
-RUN rm -rf /opt/fromDEST-aphidPoolseq/ && \
-    git clone https://github.com/vitorpavinato/fromDEST-aphidPoolseq.git
+RUN rm -rf /opt/DEST-AglyPoolseq/ && \
+    git clone https://github.com/vitorpavinato/DEST-AglyPoolseq.git
 
-ENV PATH="/opt/fromDEST-aphidPoolseq/mappingPipeline/scripts:${PATH}"
+ENV PATH="/opt/DEST-AglyPoolseq/mappingPipeline/scripts:${PATH}"
 
 #Command to execute on "docker run" of this image
-ENTRYPOINT ["/bin/bash", "/opt/fromDEST-aphidPoolseq/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
+ENTRYPOINT ["/bin/bash", "/opt/DEST-AglyPoolseq/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
 
 #Default parameters passed to the above function call. Can be overridden by supplying parameters after image name in "docker run"
 CMD ["--help"]
