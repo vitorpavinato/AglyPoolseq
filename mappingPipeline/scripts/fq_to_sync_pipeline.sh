@@ -14,7 +14,7 @@ sample="default_sample_name"
 output="."
 threads="1"
 max_cov=0.95
-min_cov=4
+min_cov=10
 theta=0.005
 D=0.01
 priortype="informative"
@@ -23,7 +23,7 @@ maxsnape=0.9
 nflies=5
 base_quality_threshold=25
 illumina_quality_coding=1.8
-minIndel=5
+minIndel=10
 do_prep=1
 do_snape=0
 do_poolsnp=0
@@ -164,8 +164,8 @@ if [ $do_prep -eq "1" ]; then
   --minimum-length 75 \
   -o $output/$sample/${sample}.trimmed1.fq.gz \
   -p $output/$sample/${sample}.trimmed2.fq.gz \
-  -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
-  -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+  -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+  -B AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
   -O 15 \
   -n 3 \
   --cores=$threads \

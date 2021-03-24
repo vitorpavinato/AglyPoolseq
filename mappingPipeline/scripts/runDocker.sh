@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH -J dockerMap # A single job name for the array
+#SBATCH --job-name=dockerMap # A single job name for the array
 ##SBATCH --ntasks-per-node=10 # one core
 #SBATCH -c 10
 #SBATCH -N 1 # on one node
@@ -8,7 +8,6 @@
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.%A_%a.err # Standard error
 #SBATCH --account PAS1715
-
 
 ### test run as: sbatch --array=10 ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runDocker.sh
 # sacct -j 14446076
