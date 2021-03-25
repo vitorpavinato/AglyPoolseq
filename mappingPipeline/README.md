@@ -22,7 +22,7 @@ sbatch ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/check_fastq_encoding.sh
 grep -v "1.8" ${wd}/fastq/qualEncodings.delim
 ```
 
-### 3. Build singularity container from docker image in Ohio Super Computer (OSC)
+### 3. Build singularity container from docker image in SLURM cluster interactively
 ```bash
 cd ${wd}
 sinteractive -n 1 -A <<project_name>>
@@ -33,7 +33,13 @@ singularity pull docker://vpavinato/aglypoolseq:latest
 exit
 ```
 
-### 4. Run the singularity container across list of populations
+### 4. Or build it with a sbatch script
+```bash
+cd ${wd}
+sbatch ${wd}/DEST-AglyPoolseq/mappingPipeline/docker_pull_osc.sh
+```
+
+### 5. Run the singularity container across list of populations
 ```bash
 sbatch --array=2-$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \
 ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runDocker.sh
