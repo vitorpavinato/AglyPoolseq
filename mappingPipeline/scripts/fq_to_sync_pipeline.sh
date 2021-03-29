@@ -234,7 +234,7 @@ if [ $do_prep -eq "1" ]; then
 
   rm $output/$sample/${sample}.dedup.bam*
 
-  samtools index $output/$sample/${sample}.contaminated_realigned.bam
+  #samtools index $output/$sample/${sample}.contaminated_realigned.bam
 
   #Number of reads mapping to simulans and mel
   # grep -v "sim_" $output/$sample/${sample}.${sample}.original_idxstats.txt | awk -F '\t' '{sum+=$3;} END {print sum;}' > $output/$sample/${sample}.num_mel.txt
@@ -253,7 +253,7 @@ if [ $do_prep -eq "1" ]; then
 
   # Here I keep a bam with all reads in case we want to analyze the symbionts data
   mv $output/$sample/${sample}.contaminated_realigned.bam  $output/$sample/${sample}.original.bam
-  rm $output/$sample/${sample}.contaminated_realigned.bam.bai
+  rm $output/$sample/${sample}.contaminated_realigned.bai
 
   #samtools mpileup $output/$sample/${sample}.mel.bam -B -f /opt/hologenome/raw/D_melanogaster_r6.12.fasta > $output/$sample/${sample}.mel_mpileup.txt
 
