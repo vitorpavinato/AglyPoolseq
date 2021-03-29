@@ -27,9 +27,9 @@
 
 ### get job number
   #SLURM_ARRAY_TASK_ID=10
-  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | tail -n +2 | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | tail -n +2 | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | tail -n +2 | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo $pop
   echo $srx
@@ -50,7 +50,7 @@
   ${outputDir} \
   --cores $SLURM_CPUS_PER_TASK \
   --max-cov 0.95 \
-  --min-cov 4 \
+  --min-cov 10 \
   --base-quality-threshold 25 \
   --num-flies ${numFlies} #\
   #--dont-prep #\
