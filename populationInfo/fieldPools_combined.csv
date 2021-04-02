@@ -1,0 +1,22 @@
+sampleId,country,city,collectionDate,lat,long,season,locality,type,continent,set,nFlies,Prefix_filename,SRA_accession,SRA_experiment,year,yday,stationId,dist_km,Continental_clusters
+MN_BIO1_S1,US,Lamberton,2013-07-07,44.22,-95.26,Summer,MN_BIO1,Pooled,North America,AndyLab_genome,5,Pool1,SRR3190066,SRX1602077,2013,188,USLMN0001,NA,1.Nort_America
+MN_BIO4_S1,US,Lamberton,2013-07-10,44.22,-95.26,Summer,MN_BIO4,Pooled,North America,AndyLab_genome,5,Pool2,SRR3190067,SRX1602078,2013,191,USLMN0001,NA,1.Nort_America
+ND_BIO1_S1,US,Prosper,2013-08-08,46.96,-97.02,Summer,ND_BIO1,Pooled,North America,AndyLab_genome,5,Pool3,SRR3190068,SRX1602079,2013,220,USPND0001,NA,1.Nort_America
+ND_BIO4_S1,US,Prosper,2013-08-11,46.96,-97.02,Summer,ND_BIO4,Pooled,North America,AndyLab_genome,5,Pool4,SRR3190069,SRX1602080,2013,223,USPND0001,NA,1.Nort_America
+NW_BIO1_S1,US,Hoytville,2013-06-07,41.22,-83.76,Summer,NW_BIO1,Pooled,North America,AndyLab_genome,5,Pool5,SRR3190070,SRX1602081,2013,158,USHOH0001,NA,1.Nort_America
+NW_BIO1_S2,US,Hoytville,2013-06-15,41.22,-83.76,Summer,NW_BIO1,Pooled,North America,AndyLab_genome,5,Pool6,SRR3190071,SRX1602082,2013,166,USHOH0001,NA,1.Nort_America
+NW_BIO4_S1,US,Hoytville,2013-06-19,41.22,-83.76,Summer,NW_BIO4,Pooled,North America,AndyLab_genome,5,Pool7,SRR3190072,SRX1602083,2013,170,USHOH0001,NA,1.Nort_America
+NW_BIO4_S2,US,Hoytville,2013-06-20,41.22,-83.76,Summer,NW_BIO4,Pooled,North America,AndyLab_genome,5,Pool8,SRR3190073,SRX1602084,2013,171,USHOH0001,NA,1.Nort_America
+NW_BIO4_S3,US,Hoytville,2013-06-24,41.22,-83.76,Summer,NW_BIO4,Pooled,North America,AndyLab_genome,5,Pool9,SRR3190074,SRX1602085,2013,175,USHOH0001,NA,1.Nort_America
+PA_BIO1_S1,US,Rock Springs,2013-06-08,40.79,-77.86,Summer,PA_BIO1,Pooled,North America,AndyLab_genome,5,Pool10,SRR3190075,SRX1602086,2013,159,USRPA0001,NA,1.Nort_America
+PA_BIO4_S1,US,Rock Springs,2013-06-10,40.79,-77.86,Summer,PA_BIO4,Pooled,North America,AndyLab_genome,5,Pool11,SRR3190076,SRX1602087,2013,161,USRPA0001,NA,1.Nort_America
+PA_BIO4_S2,US,Rock Springs,2013-06-11,40.79,-77.86,Summer,PA_BIO4,Pooled,North America,AndyLab_genome,5,Pool12,SRR3190077,SRX1602088,2013,162,USRPA0001,NA,1.Nort_America
+WO_BIO1_S1,US,Wooster,2013-06-26,40.78,-81.93,Summer,WO_BIO1,Pooled,North America,AndyLab_genome,5,Pool13,SRR3190083,SRX1602094,2013,177,USWOH0002,NA,1.Nort_America
+WO_BIO4_S1,US,Wooster,2013-07-01,40.78,-81.93,Summer,WO_BIO4,Pooled,North America,AndyLab_genome,5,Pool14,SRR3190084,SRX1602095,2013,182,USWOH0002,NA,1.Nort_America
+WO_BIO4_S2,US,Wooster,2013-07-04,40.78,-81.93,Summer,WO_BIO4,Pooled,North America,AndyLab_genome,5,Pool15,SRR3190085,SRX1602096,2013,185,USWOH0002,NA,1.Nort_America
+WO_BIO4_S3,US,Wooster,2013-07-06,40.78,-81.93,Summer,WO_BIO4,Pooled,North America,AndyLab_genome,5,Pool16,SRR3190086,SRX1602097,2013,187,USWOH0002,NA,1.Nort_America
+WI_BIO1_S1,US,Arlington,2013-08-25,43.34,-89.41,Summer,WI_BIO1,Pooled,North America,AndyLab_genome,5,Pool17,SRR3190078,SRX1602089,2013,237,USAWI0001,NA,1.Nort_America
+WI_BIO1_S2,US,Arlington,2013-08-26,43.34,-89.41,Summer,WI_BIO1,Pooled,North America,AndyLab_genome,5,Pool18,SRR3190079,SRX1602090,2013,238,USAWI0001,NA,1.Nort_America
+WI_BIO4_S1,US,Arlington,2013-08-30,43.34,-89.41,Summer,WI_BIO4,Pooled,North America,AndyLab_genome,5,Pool19,SRR3190080,SRX1602091,2013,242,USAWI0001,NA,1.Nort_America
+WI_BIO4_S2,US,Arlington,2013-08-31,43.34,-89.41,Summer,WI_BIO4,Pooled,North America,AndyLab_genome,5,Pool20,SRR3190081,SRX1602092,2013,243,USAWI0001,NA,1.Nort_America
+WI_BIO4_S3,US,Arlington,2013-09-03,43.34,-89.41,Summer,WI_BIO4,Pooled,North America,AndyLab_genome,5,Pool21,SRR3190082,SRX1602093,2013,246,USAWI0001,NA,1.Nort_America
