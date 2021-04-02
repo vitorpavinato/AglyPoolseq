@@ -25,7 +25,7 @@
   
 ### run weGot_thisCoveraged.sh
   
-  sh weGot_thisCoveraged.sh \
-  /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.agly.bam
+  sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/weGot_thisCoveraged.sh \
+  /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.agly.bam \
   ${pop} \
   ${outputDir}
