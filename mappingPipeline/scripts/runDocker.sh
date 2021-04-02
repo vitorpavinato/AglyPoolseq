@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=dockerMap # A single job name for the array
 ##SBATCH --ntasks-per-node=10 # one core
-#SBATCH -c 4
+#SBATCH -c 3
 #SBATCH -N 1 # on one node
-#SBATCH -t 00:60:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
-#SBATCH --mem 22G
+#SBATCH -t 03:30:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
+#SBATCH --mem 12G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.%A_%a.err # Standard error
 #SBATCH --account PAS1715
@@ -31,6 +31,7 @@
   srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
   numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
+  echo ${SLURM_ARRAY_TASK_ID}
   echo $pop
   echo $srx
   echo $numFlies
@@ -49,10 +50,10 @@
   ${pop} \
   ${outputDir} \
   --cores $SLURM_CPUS_PER_TASK \
+  --min-indel 5 \
   --max-cov 0.95 \
   --min-cov 10 \
   --base-quality-threshold 25 \
-  --num-flies ${numFlies} #\
-  #--dont-prep #\
-  #--do-snape  #\
-  #--do_poolsnp #\
+  --num-flies ${numFlies} \
+  --dont-prep \
+  --do_poolsnp
