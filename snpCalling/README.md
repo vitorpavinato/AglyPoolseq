@@ -5,12 +5,12 @@
 
 ### 0. Define working directory
 ```bash
-wd=/scratch/aob2x/dest
+wd=/fs/scratch/PAS1715/aphidpool
 ```
 
 ### 1. Generate job id file
 ```bash
-Rscript ${wd}/DEST/snpCalling/makeJobs.R
+Rscript ${wd}/DEST-AglyPoolseq/snpCalling/makeJobs.R
 ```
 
 ### 2a. Make PoolSNP based VCF file (bgzip out). Uses MAF > 0.001 & MAC > 50. These are reasonable thresholds that produce consistent pn/ps, number of SNPs, et, but can be filtered at a later stage using standard VCF tools. </br>
