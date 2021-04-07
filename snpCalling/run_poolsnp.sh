@@ -48,12 +48,9 @@ module load python/3.6
 
 ## get list of SNYC files based on popSet & method
 ### full list
-  #syncPath1orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/*/*masked.sync.gz"
-  #syncPath2orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/combined_replicates/*masked.sync.gz"
+  syncPath1orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/*/*masked.sync.gz"
+  syncPath2orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/combined_replicates/*masked.sync.gz"
   
-  syncPath1orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/*/*sync.gz"
-  syncPath2orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/combined_replicates/*sync.gz"
-
 ### target pops
   if [[ "${popSet}" == "PoolSeq" ]]; then
     syncPath1=""
