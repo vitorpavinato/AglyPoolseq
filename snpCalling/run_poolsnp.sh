@@ -5,8 +5,8 @@
 #SBATCH -N 1 # on one node
 #SBATCH -t 2:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
 #SBATCH --mem 8G
-#SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
-#SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
+#SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.out # Standard output
+#SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.err # Standard error
 #SBATCH --account PAS1715
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
