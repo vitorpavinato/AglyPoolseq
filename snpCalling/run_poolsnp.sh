@@ -80,11 +80,11 @@ module load python/3.6
   ## rm /scratch/aob2x/test/*
   #tmpdir="/scratch/aob2x/test"
   #SLURM_JOB_ID=1
-  [ ! -d /tmp/$USER/ ] && mkdir /tmp/$USER/
-  [ ! -d /tmp/$USER/${SLURM_JOB_ID} ] && mkdir /tmp/$USER/${SLURM_JOB_ID}
-  [ ! -d /tmp/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /tmp/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/ ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/
+  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}
+  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
-  tmpdir=/tmp/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+  tmpdir=/fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 ## get sub section
   subsection () {
