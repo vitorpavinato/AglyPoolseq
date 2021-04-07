@@ -22,10 +22,7 @@ module load htslib
 module load bcftools/1.9.2
 module load vcftools/0.1.16
 module load parallel2/19.10
-module load gnu/9.1.0
-module load R/4.0.2
-module load mkl/2019.0.5
-module load mvapich2/2.3.3
+R/4.0.2-gnu9.1
 module load python/3.6
 
 #module spider python/3.7.7
