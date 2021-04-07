@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
-#
 #SBATCH -J split_and_run # A single job name for the array
-#SBATCH --ntasks-per-node=1 # one core
+##SBATCH --ntasks-per-node=1 # one core
+#SBATCH -c 2
 #SBATCH -N 1 # on one node
 #SBATCH -t 2:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
-#SBATCH --mem 10G
+#SBATCH --mem 8G
 #SBATCH -o /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /scratch/aob2x/dest/slurmOutput/split_and_run.%A_%a.err # Standard error
-#SBATCH -p standard
-#SBATCH --account berglandlab
+#SBATCH --account PAS1715
 
 ### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 ### sacct -j
@@ -19,14 +18,22 @@
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 #### cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,21912590,21926361" | cut -f1
 
-module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3.6.3 python/3.6.6 vcftools/0.1.16
+module load htslib
+module load bcftools/1.9.2
+module load vcftools/0.1.16
+module load parallel2/19.10
+module load gnu/9.1.0
+module load R/4.0.2
+module load mvapich2/2.3.3
+module load python/3.6
+
 #module spider python/3.7.7
 
 ##
 
 ## working & temp directory
-  wd="/scratch/aob2x/dest"
-  outdir="/scratch/aob2x/dest/sub_vcfs"
+  wd="/fs/scratch/PAS1715/aphidpool"
+  outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs"
   popSet=${1}
   method=${2}
   maf=${3}
@@ -34,11 +41,14 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   version=${5}
   jobs=${6}
   #maf=01; mac=50; popSet="all"; method="PoolSNP"; version="paramTest"; jobs=poolSNP_jobs.sample.csv
+  
+## Check if outdir exists
+  [ ! -d ${outdir} ] && mkdir ${outdir}
 
 ## get list of SNYC files based on popSet & method
 ### full list
-  syncPath1orig="/project/berglandlab/DEST/dest_mapped/*/*masked.sync.gz"
-  syncPath2orig="/project/berglandlab/DEST/dest_mapped/*/*/*masked.sync.gz"
+  syncPath1orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/*/*masked.sync.gz"
+  syncPath2orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/combined_replicates/*masked.sync.gz"
 
 ### target pops
   if [[ "${popSet}" == "PoolSeq" ]]; then
@@ -46,7 +56,7 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
     syncPath2=${syncPath2orig}
   elif [[ "${popSet}" == "all" ]]; then
     syncPath1=${syncPath1orig}
-    syncPath2=${syncPath2orig}
+    syncPath2=""
   fi
 
 ## get job
@@ -107,16 +117,16 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
 ### paste function
   echo "paste"
   #find ${tmpdir} -size  0 -print -delete
-  Rscript --no-save --no-restore ${wd}/DEST/snpCalling/paste.R ${job} ${tmpdir} ${method}
+  Rscript --no-save --no-restore ${wd}/DEST-AglyPoolseq/snpCalling/paste.R ${job} ${tmpdir} ${method}
 
 ### run through PoolSNP
   echo "poolsnp"
 
   if [[ "${method}" == "SNAPE" ]]; then
     echo $method
-    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
+    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 4 \
+    --min-cov 10 \
     --max-cov 0.95 \
     --miss-frac 0.5 \
     --min-count 0 \
@@ -128,9 +138,9 @@ module load htslib bcftools parallel intel/18.0 intelmpi/18.0 mvapich2/2.3.1 R/3
   elif [[ "${method}"=="PoolSNP" ]]; then
     echo $method
 
-    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST/snpCalling/PoolSnp.py \
+    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 4 \
+    --min-cov 10 \
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
