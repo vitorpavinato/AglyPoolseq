@@ -27,9 +27,9 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-Ag
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
-sbatch --array=1-941 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh all PoolSNP 001 88 08Apr2021
-sbatch --array=1-941 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 22 08Apr2021
-sbatch --array=1-941 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 08Apr2021
+sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh all PoolSNP 001 88 08Apr2021
+sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 22 08Apr2021
+sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 08Apr2021
 ```
 
 

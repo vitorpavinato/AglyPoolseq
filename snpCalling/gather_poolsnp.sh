@@ -4,10 +4,10 @@
 ##SBATCH --ntasks-per-node=20 # one core
 #SBATCH -N 1 # on one node
 #SBATCH -c 2
-#SBATCH -t 4:00:00 ### 6 hours
+#SBATCH -t 2:00:00 ### 6 hours
 #SBATCH --mem 8G
-#SBATCH -o /scratch/aob2x/dest/slurmOutput/gather_vcfs.%A_%a.out # Standard output
-#SBATCH -e /scratch/aob2x/dest/slurmOutput/gather_vcfs.%A_%a.err # Standard error
+#SBATCH -o /fs/scratch/PAS1715/aphidpool/gather_vcfs.%A_%a.out # Standard output
+#SBATCH -e /fs/scratch/PAS1715/aphidpool/gather_vcfs.%A_%a.err # Standard error
 #SBATCH --account PAS1715
 
 ### run as: sbatch --array=1-$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | awk '{print NR}' | tail -n1 ) ${wd}/DEST/snpCalling/gather_poolsnp_paramtest.sh
