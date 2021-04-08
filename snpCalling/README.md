@@ -20,24 +20,24 @@ These are reasonable thresholds that produce consistent pn/ps, number of SNPs, e
 First paramter is the population set ('all' replicated run samples or 'PoolSeq' samples for the combined runs of each pool). Second parameter is the SNP calling method (PoolSNP or SNAPE). If method == PoolSNP, third parameter is MAF filter, fourth is MAC filter. These are retained for the SNAPE version just to keep things consistent.
 
 ```bash
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh all PoolSNP 001 88 08Apr2021 poolSNP_jobs.csv
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 22 08Apr2021 poolSNP_jobs.csv
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh PoolSeq SNAPE NA NA 08Apr2021 poolSNP_jobs.csv
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh all PoolSNP 001 88 08Apr2021 poolSNP_jobs.csv
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 22 08Apr2021 poolSNP_jobs.csv
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq SNAPE NA NA 08Apr2021 poolSNP_jobs.csv
 ```
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP 001 88 08Apr2021
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 22 08Apr2021
-sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 08Apr2021
+sbatch --array=1-8 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh all PoolSNP 001 88 08Apr2021
+sbatch --array=1-8 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 22 08Apr2021
+sbatch --array=1-8 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 08Apr2021
 ```
 
 
 ### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
 ```bash
-sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP 001 88 08Apr2021
-sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP 001 22 08Apr2021
-sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq SNAPE NA NA 08Apr2021
+sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh all PoolSNP 001 88 08Apr2021
+sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 001 22 08Apr2021
+sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 08Apr2021
 ```
 
 
