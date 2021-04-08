@@ -34,8 +34,7 @@ version=${5}
 #maf=01; mac=50; popSet="all"; method="PoolSNP"; version="paramTest"
 
 ls -d ${outdir}/*.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | \
-#grep /${chr}_ > /fs/scratch/PAS1715/aphidpool/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort
-grep /${chr}_
+grep /${chr}_ > /fs/scratch/PAS1715/aphidpool/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort
 
 #bcftools concat \
 #--threads 20 \
