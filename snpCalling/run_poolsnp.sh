@@ -43,7 +43,7 @@ module load python/3.6
 ## Check if outdir exists
   [ ! -d ${outdir} ] && mkdir ${outdir}
 
-## get list of SNYC files based on popSet & method
+## get list of SNYC files based on popSet & method - all replicates of each pool vs pools of combined replicates
 ### full list
   syncPath1orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/*/*masked.sync.gz"
   syncPath2orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/combined_replicates/*masked.sync.gz"
