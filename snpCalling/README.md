@@ -33,7 +33,7 @@ sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq
 ```
 
 
-### 2c. Bind chromosomes, annotate and convert (bgzip out; GDS out)
+### 2c. Bind chromosomes, annotate and convert (bgzip out)
 ```bash
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh all PoolSNP 001 88 08Apr2021
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 001 22 08Apr2021
