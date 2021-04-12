@@ -36,9 +36,9 @@ version=${5}
 ls -d ${outdir}/*.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | \
 grep /${chr}_ > /fs/scratch/PAS1715/aphidpool/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort
 
-#bcftools concat \
-#--threads 20 \
-#-f /fs/scratch/PAS1715/aphidpool/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort \
-#-O v \
-#-n \
-#-o /fs/scratch/PAS1715/aphidpool/sub_bcf/aphidpool.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+bcftools concat \
+--threads 20 \
+-f /fs/scratch/PAS1715/aphidpool/sub_vcfs/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort \
+-O v \
+-n \
+-o /fs/scratch/PAS1715/aphidpool/sub_bcf/aphidpool.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.bcf
