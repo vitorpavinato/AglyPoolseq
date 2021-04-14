@@ -46,9 +46,20 @@ if "$mitochondrion";
 then
     bcftools index -f ${wd}/sub_bcf/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
 
+## Work around in case there are some empty bcfs
+## Check if subsub_bcf exists
+  [ ! -d ${wd}/sub_bcf/subsub_bcf ] && mkdir ${wd}/sub_bcf/subsub_bcf
+
+ls ${wd}/sub_bcf/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf/bcfindexed_scaffolds.txt
+
+for i in $(cat ${wd}/sub_bcf/bcfindexed_scaffolds.txt);
+do mv ${wd}/sub_bcf/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf/subsub_bcf/;
+done
+
+
 echo "concat"
   bcftools concat \
-  ${wd}/sub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf/subsub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
   -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 
