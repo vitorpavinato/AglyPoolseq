@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #SBATCH -J split_and_run # A single job name for the array
 ##SBATCH --ntasks-per-node=1 # one core
-#SBATCH -c 2
+#SBATCH -c 3
 #SBATCH -N 1 # on one node
-#SBATCH -t 2:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
-#SBATCH --mem 8G
+#SBATCH -t 3:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
+#SBATCH --mem 12G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.err # Standard error
 #SBATCH --account PAS1715
@@ -133,7 +133,7 @@ module load python/3.6
     echo $method
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 10 \
+    --min-cov 3 \
     --max-cov 0.95 \
     --miss-frac 0.5 \
     --min-count 0 \
@@ -147,7 +147,7 @@ module load python/3.6
 
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 10 \
+    --min-cov 3 \
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
