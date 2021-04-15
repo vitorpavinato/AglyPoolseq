@@ -45,6 +45,7 @@ done
 if "$mitochondrion";
 then
     bcftools index -f ${wd}/sub_bcf/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+fi
 
 ## Work around in case there are some empty bcfs
 ## Check if subsub_bcf exists
