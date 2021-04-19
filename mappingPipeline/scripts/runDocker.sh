@@ -27,17 +27,25 @@
 
 ### get job number
   #SLURM_ARRAY_TASK_ID=10
-  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  # for the replicated run files
+  #pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  #prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  
+  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,15 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,15 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo ${SLURM_ARRAY_TASK_ID}
   echo $pop
   echo $srx
   echo $numFlies
-
-  touch /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R1.fastq.gz
-  touch /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R2.fastq.gz
+  
+  # for the replicated run files
+  #touch /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R1.fastq.gz
+  #touch /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R2.fastq.gz
+  
+  touch /fs/scratch/PAS1715/aphidpool/fastq/${srx}_1.fastq.gz
+  touch /fs/scratch/PAS1715/aphidpool/fastq/${srx}_2.fastq.gz
 
 ### run docker
   #singularity run \
@@ -45,8 +53,8 @@
 
   singularity run \
   ${wd}/aglypoolseq_latest.sif \
-  /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R1.fastq.gz \
-  /fs/scratch/PAS1715/aphidpool/fastq/${srx}.R2.fastq.gz \
+  /fs/scratch/PAS1715/aphidpool/fastq/${srx}_1.fastq.gz \
+  /fs/scratch/PAS1715/aphidpool/fastq/${srx}_2.fastq.gz \
   ${pop} \
   ${outputDir} \
   --cores $SLURM_CPUS_PER_TASK \
