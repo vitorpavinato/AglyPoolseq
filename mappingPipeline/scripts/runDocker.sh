@@ -31,8 +31,8 @@
   #pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
   #prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
   
-  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,15 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,15 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  srx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
   numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo ${SLURM_ARRAY_TASK_ID}
