@@ -10,18 +10,12 @@
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/download_SRA.%A_%a.err # Standard error
 #SBATCH --account PAS1715
 
-
-### grep -E "ES_ba_12|AT_gr_12" /scratch/aob2x/dest/DEST/populationInfo/samps.csv | cut -f1,13 -d',' > /scratch/aob2x/fastq/todl.csv
-### run as: sbatch --array=1-$( wc -l < /scratch/aob2x/fastq/todl.csv ) /scratch/aob2x/dest/DEST/mappingPipeline/scripts/download_SRA.sh
-### sacct -j 18750292
 module load sratoolkit/2.10.7
 
 wd=/fs/scratch/PAS1715/aphidpool
 
-#SLURM_ARRAY_TASK_ID=1
-
-sranum=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-sampName=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+sranum=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,15 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+sampName=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,15 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
 
 echo $sampName " / " $sranum
 

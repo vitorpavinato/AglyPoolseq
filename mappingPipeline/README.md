@@ -10,8 +10,8 @@ wd=/fs/scratch/PAS1715/aphidpool
 
 ### 1. Download data from SRA (specify 72 hour time limit)
 ```bash
-sbatch --array=1-$( wc -l < ${wd}/DEST-AglyPoolseq/populationInfo/labPools2.csv ) \
-${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/downloadSRA.sh
+sbatch --array=2-$( wc -l < ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv ) \
+${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/download_SRA.sh
 ```
 
 ### 2. Check that data are in the correct FASTQ format
