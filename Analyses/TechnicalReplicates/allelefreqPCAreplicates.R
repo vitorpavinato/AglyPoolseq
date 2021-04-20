@@ -221,7 +221,7 @@ abline(v=0,h=0,col="grey",lty=3)
 dev.off()
 
 
-## Combine the read count data for each pool
+## Aggregate read counts data for each pool
 ## and repeat the allele frequency estimates
 ## and PCA.
 

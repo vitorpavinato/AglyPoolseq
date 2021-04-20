@@ -14,8 +14,8 @@ module load sratoolkit/2.10.7
 
 wd=/fs/scratch/PAS1715/aphidpool
 
-sranum=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-sampName=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+sranum=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+sampName=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,14 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
 
 echo $sampName " / " $sranum
 

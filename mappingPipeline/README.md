@@ -10,7 +10,7 @@ wd=/fs/scratch/PAS1715/aphidpool
 
 ### 1. Download data from SRA
 ```bash
-sbatch --array=2-$( wc -l < ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv ) \
+sbatch --array=2-$( wc -l < ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv ) \
 ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/download_SRA.sh
 ```
 
@@ -39,8 +39,8 @@ cd ${wd}
 sbatch ${wd}/DEST-AglyPoolseq/mappingPipeline/docker_pull_osc.sh
 ```
 
-### 5. Run the singularity container across list of populations
+### 5. Run the singularity container across list of populations (technical replicates files)
 ```bash
-sbatch --array=2-$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_combined.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \
+sbatch --array=2-$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \
 ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runDocker.sh
 ```
