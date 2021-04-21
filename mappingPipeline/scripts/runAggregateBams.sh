@@ -29,7 +29,7 @@
   singularity shell aglypoolseq_latest.sif
   ls /opt/
   
-  #sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/aggregate_bams.sh \
+  sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/aggregate_bams.sh \
   sorted_merged \
   ${inputDir} \
   ${pool} \
