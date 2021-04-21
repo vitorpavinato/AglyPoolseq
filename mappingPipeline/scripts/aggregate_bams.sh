@@ -59,8 +59,12 @@ NUM_FILES=$(wc -l < "$BAMLIST")
 
 if [ "${NUM_FILES}" == "5" ]; then
     echo "There are 5"
+    java -jar $PICARD MergeSamFiles I=$input/${sample}_140711/${sample}_140711.${suffix}.bam I=$input/${sample}_140722/${sample}_140722.${suffix}.bam I=$input/${sample}_140725/${sample}_140725.${suffix}.bam I=$input/${sample}_140730/${sample}_140730.${suffix}.bam I=$input/${sample}_AddRun/${sample}_AddRun.${suffix}.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.aggregated.bam
+
 else
     echo "There are 4"
+    java -jar $PICARD MergeSamFiles I=$input/${sample}_140711/${sample}_140711.${suffix}.bam I=$input/${sample}_140722/${sample}_140722.${suffix}.bam I=$input/${sample}_140725/${sample}_140725.${suffix}.bam I=$input/${sample}_140730/${sample}_140730.${suffix}.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.aggregated.bam
+
 fi
     
 check_exit_status "Picard_MergeSamFiles" $?
