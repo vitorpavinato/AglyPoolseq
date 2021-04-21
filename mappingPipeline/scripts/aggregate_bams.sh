@@ -1,5 +1,8 @@
 #!/bin/bash
 
+PICARD="/users/PAS1554/vitorpavinato/local/picard/2.20.2/picard.jar"
+GATK="/users/PAS1554/vitorpavinato/local/gatk/3.8-1-0/GenomeAnalysisTK.jar"
+
 check_exit_status () {
   if [ ! "$2" -eq "0" ]; then
     echo "Step $1 failed with exit status $2"
@@ -84,7 +87,7 @@ samtools index $output/$sample/${sample}.dedup.bam
   
 java -jar $GATK -T RealignerTargetCreator \
 -nt $threads \
--R /opt/hologenome/holo_agly_b4_r2.1.fa \
+-R /ref/hologenome/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
 -o $output/$sample/${sample}.hologenome.intervals
 
@@ -92,7 +95,7 @@ check_exit_status "GATK_RealignerTargetCreator" $?
 
 java -jar $GATK \
 -T IndelRealigner \
--R /opt/hologenome/holo_agly_b4_r2.1.fa \
+-R /ref/hologenome/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
 -targetIntervals $output/$sample/${sample}.hologenome.intervals \
 -o $output/$sample/${sample}.contaminated_realigned.bam

@@ -10,7 +10,8 @@
 #SBATCH --account PAS1715
 
 ### modules
-  module load singularity
+  #module load singularity
+  module load samtools/1.9
 
 ### define a few things
   wd=/fs/scratch/PAS1715/aphidpool
