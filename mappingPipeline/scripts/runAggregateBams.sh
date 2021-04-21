@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=aggregateBams # A single job name for the array
 ##SBATCH --ntasks-per-node=10 # one core
-#SBATCH -c 3
+#SBATCH -c 5
 #SBATCH -N 1 # on one node
-#SBATCH -t 00:30:00
-#SBATCH --mem 12G
+#SBATCH -t 02:00:00
+#SBATCH --mem 20G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/aggregateBams.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/aggregateBams.%A_%a.err # Standard error
 #SBATCH --account PAS1715

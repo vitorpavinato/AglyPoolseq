@@ -62,17 +62,17 @@ NUM_FILES=$(wc -l < "$BAMLIST")
 
 if [ "${NUM_FILES}" == "5" ]; then
     echo "There are 5"
-    java -jar $PICARD MergeSamFiles I=$input/${sample}_140711/${sample}_140711.${suffix}.bam I=$input/${sample}_140722/${sample}_140722.${suffix}.bam I=$input/${sample}_140725/${sample}_140725.${suffix}.bam I=$input/${sample}_140730/${sample}_140730.${suffix}.bam I=$input/${sample}_AddRun/${sample}_AddRun.${suffix}.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.aggregated_sorted.bam
+    java -Xmx12g -jar $PICARD MergeSamFiles I=$input/${sample}_140711/${sample}_140711.${suffix}.bam I=$input/${sample}_140722/${sample}_140722.${suffix}.bam I=$input/${sample}_140725/${sample}_140725.${suffix}.bam I=$input/${sample}_140730/${sample}_140730.${suffix}.bam I=$input/${sample}_AddRun/${sample}_AddRun.${suffix}.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.aggregated_sorted.bam
 
 else
     echo "There are 4"
-    java -jar $PICARD MergeSamFiles I=$input/${sample}_140711/${sample}_140711.${suffix}.bam I=$input/${sample}_140722/${sample}_140722.${suffix}.bam I=$input/${sample}_140725/${sample}_140725.${suffix}.bam I=$input/${sample}_140730/${sample}_140730.${suffix}.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.aggregated_sorted.bam
+    java -Xmx12g -jar $PICARD MergeSamFiles I=$input/${sample}_140711/${sample}_140711.${suffix}.bam I=$input/${sample}_140722/${sample}_140722.${suffix}.bam I=$input/${sample}_140725/${sample}_140725.${suffix}.bam I=$input/${sample}_140730/${sample}_140730.${suffix}.bam SO=coordinate USE_THREADING=true O=$output/$sample/${sample}.aggregated_sorted.bam
 
 fi
     
 check_exit_status "Picard_MergeSamFiles" $?
   
-java -jar $PICARD MarkDuplicates \
+java -Xmx12g -jar $PICARD MarkDuplicates \
 REMOVE_DUPLICATES=true \
 I=$output/$sample/${sample}.aggregated_sorted.bam \
 O=$output/$sample/${sample}.dedup.bam \
@@ -81,11 +81,9 @@ VALIDATION_STRINGENCY=SILENT
 
 check_exit_status "Picard_MarkDuplicates" $?
 
-# From this file combine multiple technical replicates
-
 samtools index $output/$sample/${sample}.dedup.bam
   
-java -jar $GATK -T RealignerTargetCreator \
+java -Xmx12g -jar $GATK -T RealignerTargetCreator \
 -nt $threads \
 -R /ref/hologenome/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
@@ -93,7 +91,7 @@ java -jar $GATK -T RealignerTargetCreator \
 
 check_exit_status "GATK_RealignerTargetCreator" $?
 
-java -jar $GATK \
+java -Xmx12g -jar $GATK \
 -T IndelRealigner \
 -R /ref/hologenome/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
