@@ -31,4 +31,5 @@
   sorted_merged \
   ${inputDir} \
   ${pool} \
-  ${outputDir}
+  ${outputDir} \
+  --cores $SLURM_CPUS_PER_TASK

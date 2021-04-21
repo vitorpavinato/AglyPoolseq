@@ -15,6 +15,7 @@ suffix="test_file"
 input="."
 sample="default_sample_name"
 output="."
+threads="1"
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL=()
@@ -23,6 +24,11 @@ do
 key="$1"
 
 case $key in
+    -c|--cores)
+    threads="$2"
+    shift # past argument
+    shift # past value
+    ;;
     -h|--help)
     echo "Usage:"
     echo "  aggregate_bams -h Display this help message."
