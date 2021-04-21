@@ -50,13 +50,19 @@ output=$1; shift
 if [ ! -d $output/$sample/ ]; then
   mkdir -p $output/$sample/
 fi
-  
-if [ls $input/${sample}_*/${sample}_*.${suffix}.bam | wc -l == 5]; then
+
+# create a list of files
+ls -1 $input/${sample}_*/${sample}_*.${suffix}.bam > $output/$sample/${sample}_bamlist.txt
+
+BAMLIST=$output/$sample/${sample}_bamlist.txt
+NUM_FILES=$(wc -l < "$BAMLIST")
+
+if [ "${NUM_FILES}" == "5" ]; then
     echo "There are 5"
 else
     echo "There are 4"
 fi
-
+    
 check_exit_status "Picard_MergeSamFiles" $?
   
   
