@@ -42,7 +42,7 @@ if [ $# != 4 ]
     exit 1
 fi
 
-bam=$1; shift
+suffix=$1; shift
 input=$1; shift
 sample=$1; shift
 output=$1; shift

@@ -14,8 +14,8 @@
 
 ### define a few things
   wd=/fs/scratch/PAS1715/aphidpool
-  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
   inputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/
+  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
 
 ### get job number
   pool=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
