@@ -26,8 +26,9 @@
   
 ### run aggregateBams.sh
   
-  singularity exec aglypoolseq_latest.sif \
-  sh DEST-AglyPoolseq/mappingPipeline/scripts/aggregateBams.sh \
+  singularity shell aglypoolseq_latest.sif
+  
+  sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/aggregateBams.sh \
   sorted_merged \
   ${inputDir} \
   ${pool} \

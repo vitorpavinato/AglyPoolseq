@@ -9,8 +9,8 @@ check_exit_status () {
 }
 
 suffix="test_file"
-sample="default_sample_name"
 input="."
+sample="default_sample_name"
 output="."
 
 # Credit: https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
