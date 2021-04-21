@@ -91,7 +91,7 @@ samtools index $output/$sample/${sample}.dedup.bam
   
 java -Xmx12g -jar $GATK -T RealignerTargetCreator \
 -nt $threads \
--R /ref/hologenome/holo_agly_b4_r2.1.fa \
+-R /fs/scratch/PAS1715/aphidpool/ref/hologenome/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
 -o $output/$sample/${sample}.hologenome.intervals
 
@@ -99,7 +99,7 @@ check_exit_status "GATK_RealignerTargetCreator" $?
 
 java -Xmx12g -jar $GATK \
 -T IndelRealigner \
--R /ref/hologenome/holo_agly_b4_r2.1.fa \
+-R /fs/scratch/PAS1715/aphidpool/ref/hologenome/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
 -targetIntervals $output/$sample/${sample}.hologenome.intervals \
 -o $output/$sample/${sample}.contaminated_realigned.bam
