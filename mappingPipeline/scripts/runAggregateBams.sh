@@ -15,7 +15,7 @@
 
 ### define a few things
   wd=/fs/scratch/PAS1715/aphidpool
-  inputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/
+  inputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output
   outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
 
 ### get job number
