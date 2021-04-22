@@ -1,7 +1,7 @@
 # Modified scripts for downloading, mapping, and variant calling of Aphis glycines pool-seq data
 
 ## Description
-###> This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data and defines a Dockerfile to build a docker image which can act as a standalone tool to run the pipeline (forked from https://github.com/alanbergland/DEST).
+> This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data and defines a Dockerfile to build a docker image which can act as a standalone tool to run the pipeline (forked from https://github.com/alanbergland/DEST).
 
 ### 0. Define working directory
 ```bash
