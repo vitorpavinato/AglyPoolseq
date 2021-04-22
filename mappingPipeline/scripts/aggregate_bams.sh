@@ -91,7 +91,7 @@ samtools index $output/$sample/${sample}.dedup.bam
   
 java -Xmx12g -jar $GATK -T RealignerTargetCreator \
 -nt $threads \
--R /fs/scratch/PAS1715/aphidpool/ref/hologenome/holo_agly_b4_r2.1.fa \
+-R /fs/scratch/PAS1715/aphidpool/ref/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
 -o $output/$sample/${sample}.hologenome.intervals
 
@@ -99,7 +99,7 @@ check_exit_status "GATK_RealignerTargetCreator" $?
 
 java -Xmx12g -jar $GATK \
 -T IndelRealigner \
--R /fs/scratch/PAS1715/aphidpool/ref/hologenome/holo_agly_b4_r2.1.fa \
+-R /fs/scratch/PAS1715/aphidpool/ref/holo_agly_b4_r2.1.fa \
 -I $output/$sample/${sample}.dedup.bam \
 -targetIntervals $output/$sample/${sample}.hologenome.intervals \
 -o $output/$sample/${sample}.contaminated_realigned.bam
@@ -120,3 +120,10 @@ agly_scaffolds="scaffold_1 scaffold_2 scaffold_3 scaffold_4 scaffold_5 scaffold_
   rm $output/$sample/${sample}.contaminated_realigned.bai
 
   check_exit_status "mpileup" $?
+  
+  echo "Sample name: $sample" >> $output/$sample/${sample}_aggregate.parameters.txt
+  echo "Input directory: $output" >> $output/$sample/${sample}_aggregate.parameters.txt
+  echo "list of BAM files: $BAMLIST" >> $output/$sample/${sample}_aggregate.parameters.txt
+  echo "BAM file suffix: $suffix" >> $output/$sample/${sample}_aggregate.parameters.txt
+  echo "Output directory: $output" >> $output/$sample/${sample}_aggregate.parameters.txt
+  echo "Number of cores used: $threads" >> $output/$sample/${sample}_aggregate.parameters.txt
