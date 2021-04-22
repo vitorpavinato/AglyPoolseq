@@ -123,7 +123,8 @@ agly_scaffolds="scaffold_1 scaffold_2 scaffold_3 scaffold_4 scaffold_5 scaffold_
   
   echo "Sample name: $sample" >> $output/$sample/${sample}_aggregate.parameters.txt
   echo "Input directory: $input" >> $output/$sample/${sample}_aggregate.parameters.txt
-  echo "list of BAM files: $BAMLIST" >> $output/$sample/${sample}_aggregate.parameters.txt
+  echo "List of BAM files: $BAMLIST" >> $output/$sample/${sample}_aggregate.parameters.txt
+  echo "Number of files: $NUM_FILES" >> $output/$sample/${sample}_aggregate.parameters.txt
   echo "BAM file suffix: $suffix" >> $output/$sample/${sample}_aggregate.parameters.txt
   echo "Output directory: $output" >> $output/$sample/${sample}_aggregate.parameters.txt
   echo "Number of cores used: $threads" >> $output/$sample/${sample}_aggregate.parameters.txt

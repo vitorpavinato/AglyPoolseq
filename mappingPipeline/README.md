@@ -1,7 +1,7 @@
-# Modified scripts to download, map, call polymorphism in pooled sequencing data-sets for Aphis glycines
+# Modified scripts for downloading, mapping, and variant calling of Aphis glycines pool-seq data
 
 ## Description
-> This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data and defines a Dockerfile to build a docker image which can act as a standalone tool to run the pipeline.
+###> This set of scripts provides a pipeline to build wholeGenomeSync files for each population sample from raw FASTQ data and defines a Dockerfile to build a docker image which can act as a standalone tool to run the pipeline (forked from https://github.com/alanbergland/DEST).
 
 ### 0. Define working directory
 ```bash
@@ -42,5 +42,19 @@ sbatch ${wd}/DEST-AglyPoolseq/mappingPipeline/docker_pull_osc.sh
 ### 5. Run the singularity container across list of populations (technical replicates files)
 ```bash
 sbatch --array=2-$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \
+${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runDocker.sh
+```
+
+### 6. Aggregate BAM files from technical replicates 
+This script combines BAM files from replicated runs and re-process the combined BAM by sorting reads by coordinate, removing duplicated reads and re-aligning reads around indels.
+ It assumes that all technical replicated BAMs are sorted and contains reads aligned to the hologenome.
+```bash
+sbatch --array=2-$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \ 
+${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runAggregateBams.sh
+```
+
+### 7. Run the singularity container across list of populations (aggregated BAM files)
+```bash
+sbatch --array=2-$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \
 ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runDocker.sh
 ```
