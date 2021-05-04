@@ -32,7 +32,7 @@ module load python/3.6
 ## working & temp directory
   wd="/fs/scratch/PAS1715/aphidpool"
   #outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs"
-  outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs/aggregated"
+  outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs/aggregated_sample"
   popSet=${1}
   method=${2}
   maf=${3}
