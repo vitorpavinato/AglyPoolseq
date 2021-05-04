@@ -20,7 +20,8 @@
   }
 
 ### split into how many jobs?
-  nJobs <- 199
+  #nJobs <- 199
+  nJobs <- 999
 
 ### how many jobs per chr
   chrs.dt[,nJobs:=floor(maxLen/sum(chrs.dt$maxLen)*nJobs) + 1]

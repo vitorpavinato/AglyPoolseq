@@ -14,9 +14,11 @@ Rscript ${wd}/DEST-AglyPoolseq/snpCalling/makeJobs.R
 ```
 
 ### 2a. Make PoolSNP based VCF file (bgzip out). 
-#### Uses MAF > 0.001 & MAC > 50 for the set of gSYNC files from the  technical replicates runs. 
-#### For the set of aggregate files (21 Pools), MAF > 0.001 & MAC >  12 should work fine. 
-First paramter is the population set ('all' technical replicate runs samples or 'PoolSeq' samples for the aggregated runs of each pool). Second parameter is the SNP calling method (PoolSNP or SNAPE). If method == PoolSNP, third parameter is MAF filter, fourth is MAC filter. These are retained for the SNAPE version just to keep things consistent.
+#### I used MAF > 0.001 & MAC > 50 for the set of gSYNC files for the technical replicated runs. 
+#### For the aggregated files (four or five technical replicated BAM files aggregated by population pool),  MAF > 0.001 & MAC >  12 should work fine. 
+#### But, for more accurate assessment of how these parameters affect the calling, see the parameter evaluation below.
+First paramter in the command is the population set ('all' for technical replicated runs; 'PoolSeq' for the aggregated technical replicates BAM files for each pool ). 
+Second parameter is the SNP calling method (PoolSNP or SNAPE). If method == PoolSNP, third parameter is MAF filter, fourth is MAC filter. These are retained for the SNAPE version just to keep things consistent.
 
 ```bash
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh all PoolSNP 001 50 15Apr2021 poolSNP_jobs.csv
@@ -52,7 +54,7 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
   module load parallel
 
   runJob () {
-    wd="/scratch/aob2x/dest"
+    wd="/fs/scratch/PAS1715/aphidpool"
     sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh all PoolSNP ${1} ${2} paramTest poolSNP_jobs.sample.csv
   }
   export -f runJob
@@ -67,7 +69,7 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
   module load parallel
 
   runJob () {
-    wd="/scratch/aob2x/dest"
+    wd="/fs/scratch/PAS1715/aphidpool"
     sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP ${1} ${2} paramTest
   }
   export -f runJob
@@ -81,7 +83,7 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
   module load parallel
 
   runJob () {
-    wd="/scratch/aob2x/dest"
+    wd="/fs/scratch/PAS1715/aphidpool"
     sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP ${1} ${2} paramTest
   }
   export -f runJob
