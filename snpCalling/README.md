@@ -14,9 +14,9 @@ Rscript ${wd}/DEST-AglyPoolseq/snpCalling/makeJobs.R
 ```
 
 ### 2a. Make PoolSNP based VCF file (bgzip out). 
-#### I used MAF > 0.001 & MAC > 50 for the set of gSYNC files for the technical replicated runs. 
-#### For the aggregated files (four or five technical replicated BAM files aggregated by population pool),  MAF > 0.001 & MAC >  12 should work fine. 
-#### But, for more accurate assessment of how these parameters affect the calling, see the parameter evaluation below.
+I used MAF > 0.001 & MAC > 50 for the set of gSYNC files for the technical replicated runs. 
+For the aggregated files (four or five technical replicated BAM files aggregated by population pool),  MAF > 0.001 & MAC >  12 should work fine. 
+But, for more accurate assessment of how these parameters affect the calling, see the parameter evaluation below.
 First paramter in the command is the population set ('all' for technical replicated runs; 'PoolSeq' for the aggregated technical replicates BAM files for each pool ). 
 Second parameter is the SNP calling method (PoolSNP or SNAPE). If method == PoolSNP, third parameter is MAF filter, fourth is MAC filter. These are retained for the SNAPE version just to keep things consistent.
 
