@@ -52,18 +52,17 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
 
 ### 3b. Run pool_snp
 ```bash
-  module load parallel
+  module load parallel2
 
   runJob () {
     wd="/fs/scratch/PAS1715/aphidpool"
-    sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh all PoolSNP ${1} ${2} paramTest poolSNP_jobs.sample.csv
+    sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP ${1} ${2} paramTest poolSNP_jobs.sample.csv
   }
   export -f runJob
 
   parallel -j 1 runJob ::: 001 01 05 ::: 5 10 15 20 50 100
 
 ```
-
 
 ### 3c. Run gather
 ```bash
@@ -71,13 +70,12 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
 
   runJob () {
     wd="/fs/scratch/PAS1715/aphidpool"
-    sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh all PoolSNP ${1} ${2} paramTest
+    sbatch --array=1-8 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP ${1} ${2} paramTest
   }
   export -f runJob
 
   parallel -j 1 runJob ::: 001 01 05 ::: 5 10 15 20 50 100
 ```
-
 
 ### 3d. Run annotate
 ```bash
@@ -85,7 +83,7 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
 
   runJob () {
     wd="/fs/scratch/PAS1715/aphidpool"
-    sbatch ${wd}/DEST/snpCalling/annotate.sh all PoolSNP ${1} ${2} paramTest
+    sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP ${1} ${2} paramTest
   }
   export -f runJob
 
