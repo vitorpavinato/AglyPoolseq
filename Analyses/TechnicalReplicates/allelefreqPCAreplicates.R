@@ -3,9 +3,8 @@
 #     Allele frequency calculation from vcf and PCA         #
 #############################################################
 
-# Each library, that corresponds to pooled sequecing of 5 individuals that share the same
-# barcode, were sequenced 4-5x in different days. The libraries were the same, but they were 
-# loaded and sequenced in different runs.
+# Each library have 5 pooled individuals and they were sequenced 4-5 times (4-5 days.)
+# They were the same library, with same barcode, but the sequencing was splitted in 4-5 days. 
 
 ## Vitor Pavinato
 ## vitor.pavinato@supagro.fr
@@ -54,7 +53,7 @@ poolnames <- c("MN_BIO1_S1_140711", "MN_BIO1_S1_140722", "MN_BIO1_S1_140725", "M
                "WO_BIO4_S3_140711", "WO_BIO4_S3_140722", "WO_BIO4_S3_140725", "WO_BIO4_S3_140730")
 
 dt <- vcf2pooldata(
-          vcf.file = "aphidpool.all.PoolSNP.001.50.15Apr2021.vcf.gz",
+          vcf.file = "vcf/aphidpool.all.PoolSNP.001.50.15Apr2021.vcf.gz",
           poolsizes = poolsizes,
           poolnames = poolnames,
           min.cov.per.pool = -1,
@@ -86,10 +85,10 @@ coverage = dt@readcoverage[selectedsnps, ]
 counts = dt@refallele.readcount[selectedsnps, ]
 snpInfo = dt@snp.info[selectedsnps, ]
 
-write.table(snpInfo, file = "analysis/snps.technical.rep.20000.snps.txt", sep = "\t",
+write.table(snpInfo, file = "results/analysis_technical_reps/snps.technical.rep.20000.snps.txt", sep = "\t",
             quote = F, col.names = F, row.names = F)
 
-nbr.gene.copies = 10 # 60 diploid individuals per pool
+nbr.gene.copies = 10
 nbr.loci = length(selectedsnps)
 
 # For the first pool
@@ -158,12 +157,12 @@ for (k in 1:87){
 
 # Prepare the vectors: color, points, names
 # for the plot and for the legends
-run.colors <- c(rep("#00441b",5), rep("#67001f",4), #MN
-                rep("#006d2c",4), rep("#980043",4), #ND
-                rep("#238b45",4), rep("#41ab5d",4), rep("#ce1256",5), rep("#df65b0",4), rep("#c994c7",4), #NW
-                rep("#ccece6",4), rep("#d4b9da",4), rep("#e7e1ef",4), #PA
-                rep("#08519c",4), rep("#2171b5",5), rep("#fc4e2a",4), rep("#fd8d3c",4), rep("#feb24c",4), #WI
-                rep("#4292c6",4), rep("#6baed6",4), rep("#737373",4), rep("#d9d9d9",4) #WO
+run.colors <- c(rep("#0000FF",5), rep("#FF0000",4), #MN
+                rep("#8282FF",4), rep("#FF8282",4), #ND
+                rep("#10B717",4), rep("#64C366",4), rep("#FD63CB",5), rep("#F98AD1",4), rep("#F4A8D6",4), #NW
+                rep("#B78560",4), rep("#9E5C00",4), rep("#7D3200",4), #PA
+                rep("#B2B2FF",4), rep("#D5D5FF",5), rep("#FFB2B2",4), rep("#FFD5D5",4), rep("#FFF2F2",4), #WI
+                rep("#90CE91",4), rep("#EFC0DB",4), rep("#E9D2DF",4), rep("#E4DFE2",4) #WO
                 )
 
 lib.pch <- c(c(8, 15, 17, 18, 19), c(8, 15, 17, 18),
@@ -173,12 +172,13 @@ lib.pch <- c(c(8, 15, 17, 18, 19), c(8, 15, 17, 18),
              c(8, 15, 17, 18), c(8, 15, 17, 18, 19), c(8, 15, 17, 18), c(8, 15, 17, 18), c(8, 15, 17, 18),
              c(8, 15, 17, 18), c(8, 15, 17, 18), c(8, 15, 17, 18), c(8, 15, 17, 18))
 
-legend.colors <- c("#00441b", "#67001f", 
-                   "#006d2c", "#980043", 
-                   "#238b45", "#41ab5d", "#ce1256", "#df65b0", "#c994c7",
-                   "#ccece6", "#d4b9da", "#e7e1ef", 
-                   "#08519c", "#2171b5", "#fc4e2a", "#fd8d3c", "#feb24c",
-                   "#4292c6", "#6baed6", "#737373", "#d9d9d9", rep("black", 5)
+legend.colors <- c("#0000FF", "#FF0000", #MN
+                   "#8282FF", "#FF8282", #ND
+                   "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
+                   "#B78560", "#9E5C00", "#7D3200", #PA
+                   "#B2B2FF", "#D5D5FF", "#FFB2B2", "#FFD5D5", "#FFF2F2", #WI
+                   "#90CE91", "#EFC0DB", "#E9D2DF", "#E4DFE2", #WO
+                   rep("black", 5)
                    )
 
 legend.names <- c("MN_BIO1_S1", "MN_BIO4_S1",
@@ -187,7 +187,7 @@ legend.names <- c("MN_BIO1_S1", "MN_BIO4_S1",
                   "PA_BIO1_S1", "PA_BIO4_S1", "PA_BIO4_S2",
                   "WI_BIO1_S1", "WI_BIO1_S2", "WI_BIO4_S1", "WI_BIO4_S2", "WI_BIO4_S3",
                   "WO_BIO1_S1", "WO_BIO4_S1", "WO_BIO4_S2", "WO_BIO4_S3",
-                  paste0("L",1:5)
+                  paste0("r_",1:5)
                   )
 
 legend.pch <- c(rep(19, 21), c(8, 15, 17, 18, 19))
@@ -202,24 +202,59 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-#pdf(file = ".pdf")
-plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b')
-#dev.off()
-100*lambda[1]/sum(lambda) # 3.181362
-100*lambda[2]/sum(lambda) # 2.685206
+pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.pdf")
+par(mar=c(5,5,4,1)+.1)
+plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
+     cex.lab=1.6, pch=19, col="black")
+lines(lambda/sum(lambda), col="red")
+dev.off()
+
+100*lambda[1]/sum(lambda) # 3.184528
+100*lambda[2]/sum(lambda) # 2.690479
 
 # PCA plot
-pdf(file = "analysis/pca.technical.rep.20000.snps.pdf")
+pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=run.colors,
-     xlim = c(-0.25, 0.25), ylim = c(-0.25, 0.25),
-     xlab="PC1 (3.18%)", ylab="PC2 (2.68%)", cex=1.5, pch=lib.pch)
+     xlim = c(-0.40, 0.25), ylim = c(-0.25, 0.25),
+     xlab="PC1 (3.19%)", ylab="PC2 (2.69%)", cex=1.5, pch=lib.pch)
 legend("topleft", 
        legend = legend.names, col = legend.colors, 
        pch = legend.pch, bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
 dev.off()
 
+## Remove the _AddRun_ from the allele frequency matrix (5th technical replication)
+W<-scale(t(refcount.matrix[,-c(5,30,59)]), scale=TRUE) #centering
+W[1:10,1:10]
+W[is.na(W)]<-0
+cov.W<-cov(t(W))
+eig.result<-eigen(cov.W)
+eig.vec<-eig.result$vectors
+lambda<-eig.result$values
+
+# PVE
+pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.wtAddRun.pdf")
+par(mar=c(5,5,4,1)+.1)
+plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
+     cex.lab=1.6, pch=19, col="black")
+lines(lambda/sum(lambda), col="red")
+dev.off()
+
+100*lambda[1]/sum(lambda) # 3.196523
+100*lambda[2]/sum(lambda) # 2.685886
+
+# PCA plot
+pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.wtAddRun.pdf")
+par(mar=c(5,5,4,1)+.1)
+plot(eig.vec[,1],eig.vec[,2], col=run.colors[-c(5,30,59)],
+     xlim = c(-0.30, 0.35), ylim = c(-0.25, 0.25),
+     xlab="PC1 (3.20%)", ylab="PC2 (2.68%)", cex=1.5, pch=lib.pch[-c(5,30,59)])
+legend("topleft", 
+       legend = legend.names[-c(26)], col = legend.colors[-c(26)], 
+       pch = legend.pch[-c(26)], bty = "n", cex = 0.6)
+abline(v=0,h=0,col="grey",lty=3)
+dev.off()
 
 ## Aggregate read counts data for each pool
 ## and repeat the allele frequency estimates
@@ -301,21 +336,21 @@ for (k in 1:21){
   refcount.matrix[,k] <- ALF.allele.counts.1/10
 }
 
-legend.colors.c <- c("#00441b", "#67001f", 
-                   "#006d2c", "#980043", 
-                   "#238b45", "#41ab5d", "#ce1256", "#df65b0", "#c994c7",
-                   "#ccece6", "#d4b9da", "#e7e1ef", 
-                   "#08519c", "#2171b5", "#fc4e2a", "#fd8d3c", "#feb24c",
-                   "#4292c6", "#6baed6", "#737373", "#d9d9d9"
-)
+legend.colors.c <- c("#0000FF", "#FF0000", #MN
+                     "#8282FF", "#FF8282", #ND
+                     "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
+                     "#B78560", "#9E5C00", "#7D3200", #PA
+                     "#B2B2FF", "#D5D5FF", "#FFB2B2", "#FFD5D5", "#FFF2F2", #WI
+                     "#90CE91", "#EFC0DB", "#E9D2DF", "#E4DFE2" #WO
+                     )
 
 legend.names.c <- c("MN_BIO1_S1", "MN_BIO4_S1",
-                  "ND_BIO1_S1", "ND_BIO4_S1",
-                  "NW_BIO1_S1", "NW_BIO1_S2", "NW_BIO4_S1", "NW_BIO4_S2", "NW_BIO4_S3",
-                  "PA_BIO1_S1", "PA_BIO4_S1", "PA_BIO4_S2",
-                  "WI_BIO1_S1", "WI_BIO1_S2", "WI_BIO4_S1", "WI_BIO4_S2", "WI_BIO4_S3",
-                  "WO_BIO1_S1", "WO_BIO4_S1", "WO_BIO4_S2", "WO_BIO4_S3"
-)
+                    "ND_BIO1_S1", "ND_BIO4_S1",
+                    "NW_BIO1_S1", "NW_BIO1_S2", "NW_BIO4_S1", "NW_BIO4_S2", "NW_BIO4_S3",
+                    "PA_BIO1_S1", "PA_BIO4_S1", "PA_BIO4_S2",
+                    "WI_BIO1_S1", "WI_BIO1_S2", "WI_BIO4_S1", "WI_BIO4_S2", "WI_BIO4_S3",
+                    "WO_BIO1_S1", "WO_BIO4_S1", "WO_BIO4_S2", "WO_BIO4_S3"
+                    )
 
 
 W<-scale(t(refcount.matrix), scale=TRUE) #centering
@@ -327,20 +362,60 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-#pdf(file = ".pdf")
-plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b')
-#dev.off()
-100*lambda[1]/sum(lambda) # 11.11057
-100*lambda[2]/sum(lambda) # 10.07788
+pdf(file = "results/analysis_technical_reps/pve.technical.combined.20000.snps.pdf")
+par(mar=c(5,5,4,1)+.1)
+plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
+     cex.lab=1.6, pch=19, col="black")
+lines(lambda/sum(lambda), col="red")
+dev.off()
+
+100*lambda[1]/sum(lambda) # 11.27312
+100*lambda[2]/sum(lambda) # 10.09401
 
 # PCA plot
-pdf(file = "analysis/pca.pools.20000.snps.pdf")
+pdf(file = "results/analysis_technical_reps/pca.technical.combined.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c,
-     xlim = c(-0.16, 0.16), ylim = c(-0.2, 0.2),
-     xlab="PC1 (11.11%)", ylab="PC2 (10.07%)", cex=1.5, pch=19)
+     xlim = c(-1.1, 0.2), ylim = c(-0.8, 0.3),
+     xlab="PC1 (11.27%)", ylab="PC2 (10.09%)", cex=1.5, pch=19, cex.lab=1.6)
 legend("topleft", 
        legend = legend.names.c, col = legend.colors.c, 
        pch = legend.pch, bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
 dev.off()
+
+# Without the outlier population
+W<-scale(t(refcount.matrix[,-c(5,21)]), scale=TRUE) #centering
+W[1:10,1:10]
+W[is.na(W)]<-0
+cov.W<-cov(t(W))
+eig.result<-eigen(cov.W)
+eig.vec<-eig.result$vectors
+lambda<-eig.result$values
+
+# PVE
+pdf(file = "results/analysis_technical_reps/pve.technical.combined.popoutlier.20000.snps.pdf")
+par(mar=c(5,5,4,1)+.1)
+plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
+     cex.lab=1.6, pch=19, col="black")
+lines(lambda/sum(lambda), col="red")
+dev.off()
+
+100*lambda[1]/sum(lambda) # 11.66399
+100*lambda[2]/sum(lambda) # 8.749927
+
+# PCA plot
+pdf(file = "results/analysis_technical_reps/pca.technical.combined.popoutlier.20000.snps.pdf")
+par(mar=c(5,5,4,1)+.1)
+plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c[-c(5,21)],
+     xlim = c(-1.1, 0.3), ylim = c(-0.7, 0.4),
+     xlab="PC1 (11.27%)", ylab="PC2 (10.09%)", cex=1.5, pch=19, cex.lab=1.6)
+legend("topleft", 
+       legend = legend.names.c[-c(5,21)], col = legend.colors.c[-c(5,21)], 
+       pch = legend.pch, bty = "n", cex = 0.6)
+abline(v=0,h=0,col="grey",lty=3)
+dev.off()
+
+
+
+
