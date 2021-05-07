@@ -55,7 +55,7 @@ module load python/3.6
     syncPath1=${syncPath1orig}
     syncPath2=""
   fi
-
+  
 ## get job
   job=$( cat ${wd}/${jobs} | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
@@ -120,7 +120,7 @@ module load python/3.6
     echo $method
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 5 \
+    --min-cov 4 \
     --max-cov 0.95 \
     --miss-frac 0.1 \
     --min-count 0 \
@@ -134,7 +134,7 @@ module load python/3.6
 
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 5 \
+    --min-cov 4 \
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
