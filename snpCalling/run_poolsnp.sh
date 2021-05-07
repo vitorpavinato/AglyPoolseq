@@ -62,18 +62,18 @@ module load python/3.6
   echo $job
 
 # set up RAM disk
-#  [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
-#  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
-#  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
-#
-#  tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+  [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
+  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
+  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+
+  tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 # set up RAM disk
-  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/ ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/
-  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}
-  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
-
-  tmpdir=/fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+#  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/ ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/
+#  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}
+#  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+#
+#  tmpdir=/fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 ## get sub section
   subsection () {
