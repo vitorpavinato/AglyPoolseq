@@ -50,9 +50,9 @@ module load python/3.6
 ### target pops
   if [[ "${popSet}" == "PoolSeq" ]]; then
     syncPath1=""
-    syncPath2=${syncPath1orig}
+    syncPath2=${syncPath2orig}
   elif [[ "${popSet}" == "all" ]]; then
-    syncPath1=${syncPath2orig}
+    syncPath1=${syncPath1orig}
     syncPath2=""
   fi
   
@@ -62,18 +62,18 @@ module load python/3.6
   echo $job
 
 # set up RAM disk
-#  [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
-#  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
-#  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
-#
-#  tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+  [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
+  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
+  [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+
+  tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 # set up RAM disk
-  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/ ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/
-  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}
-  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
-
-  tmpdir=/fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+#  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/ ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/
+#  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}
+#  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
+#
+#  tmpdir=/fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 ## get sub section
   subsection () {
@@ -120,7 +120,7 @@ module load python/3.6
     echo $method
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 3 \
+    --min-cov 5 \
     --max-cov 0.95 \
     --miss-frac 0.5 \
     --min-count 0 \
@@ -134,7 +134,7 @@ module load python/3.6
 
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 3 \
+    --min-cov 5 \
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
