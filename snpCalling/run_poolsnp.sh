@@ -122,7 +122,7 @@ module load python/3.6
     --sync - \
     --min-cov 4 \
     --max-cov 0.95 \
-    --miss-frac 0.1 \
+    --miss-frac 0.7 \
     --min-count 0 \
     --min-freq 0 \
     --posterior-prob 0.9 \
@@ -138,7 +138,7 @@ module load python/3.6
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
-    --miss-frac 0.1 \
+    --miss-frac 0.7 \
     --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf
   fi
 
