@@ -209,15 +209,15 @@ plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='
 lines(lambda/sum(lambda), col="red")
 dev.off()
 
-100*lambda[1]/sum(lambda) # 3.184528
-100*lambda[2]/sum(lambda) # 2.690479
+100*lambda[1]/sum(lambda) # 3.159421
+100*lambda[2]/sum(lambda) # 2.674815
 
 # PCA plot
 pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=run.colors,
      xlim = c(-0.40, 0.25), ylim = c(-0.25, 0.25),
-     xlab="PC1 (3.19%)", ylab="PC2 (2.69%)", cex=1.5, pch=lib.pch)
+     xlab="PC1 (3.15%)", ylab="PC2 (2.67%)", cex=1.5, pch=lib.pch)
 legend("topleft", 
        legend = legend.names, col = legend.colors, 
        pch = legend.pch, bty = "n", cex = 0.6)
@@ -241,15 +241,15 @@ plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='
 lines(lambda/sum(lambda), col="red")
 dev.off()
 
-100*lambda[1]/sum(lambda) # 3.196523
-100*lambda[2]/sum(lambda) # 2.685886
+100*lambda[1]/sum(lambda) # 3.174587
+100*lambda[2]/sum(lambda) # 2.676656
 
 # PCA plot
 pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.wtAddRun.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=run.colors[-c(5,30,59)],
-     xlim = c(-0.30, 0.35), ylim = c(-0.25, 0.25),
-     xlab="PC1 (3.20%)", ylab="PC2 (2.68%)", cex=1.5, pch=lib.pch[-c(5,30,59)])
+     xlim = c(-0.40, 0.40), ylim = c(-0.25, 0.25),
+     xlab="PC1 (3.17%)", ylab="PC2 (2.67%)", cex=1.5, pch=lib.pch[-c(5,30,59)])
 legend("topleft", 
        legend = legend.names[-c(26)], col = legend.colors[-c(26)], 
        pch = legend.pch[-c(26)], bty = "n", cex = 0.6)
@@ -369,15 +369,15 @@ plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='
 lines(lambda/sum(lambda), col="red")
 dev.off()
 
-100*lambda[1]/sum(lambda) # 11.27312
-100*lambda[2]/sum(lambda) # 10.09401
+100*lambda[1]/sum(lambda) # 11.0807
+100*lambda[2]/sum(lambda) # 10.02013
 
 # PCA plot
 pdf(file = "results/analysis_technical_reps/pca.technical.combined.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c,
      xlim = c(-1.1, 0.2), ylim = c(-0.8, 0.3),
-     xlab="PC1 (11.27%)", ylab="PC2 (10.09%)", cex=1.5, pch=19, cex.lab=1.6)
+     xlab="PC1 (11.08%)", ylab="PC2 (10.02%)", cex=1.5, pch=19, cex.lab=1.6)
 legend("topleft", 
        legend = legend.names.c, col = legend.colors.c, 
        pch = legend.pch, bty = "n", cex = 0.6)
@@ -401,21 +401,58 @@ plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='
 lines(lambda/sum(lambda), col="red")
 dev.off()
 
-100*lambda[1]/sum(lambda) # 11.66399
-100*lambda[2]/sum(lambda) # 8.749927
+100*lambda[1]/sum(lambda) # 11.60427
+100*lambda[2]/sum(lambda) # 8.669536
 
 # PCA plot
 pdf(file = "results/analysis_technical_reps/pca.technical.combined.popoutlier.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c[-c(5,21)],
      xlim = c(-1.1, 0.3), ylim = c(-0.7, 0.4),
-     xlab="PC1 (11.27%)", ylab="PC2 (10.09%)", cex=1.5, pch=19, cex.lab=1.6)
+     xlab="PC1 (11.60%)", ylab="PC2 (8.66%)", cex=1.5, pch=19, cex.lab=1.6)
 legend("topleft", 
        legend = legend.names.c[-c(5,21)], col = legend.colors.c[-c(5,21)], 
        pch = legend.pch, bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
 dev.off()
 
+# NA's count
+dt.af.20000 <- refcount.matrix
+colnames(dt.af.20000) <- legend.names.c
+colSums(is.na(dt.af.20000))
 
+100*(colSums(is.na(dt.af.20000))/20000)
 
+hist(rowSums(is.na(dt.af.20000)))
+100*(max(rowSums(is.na(dt.af.20000)))/21)
+100*(min(rowSums(is.na(dt.af.20000)))/21)
+100*(median(rowSums(is.na(dt.af.20000)))/21)
 
+# Coverage ranking
+cov.20000 <- comb.coverage
+colnames(cov.20000) <- legend.names.c
+
+hist(100*(colSums(cov.20000)/sum(cov.20000)))
+mean(100*(colSums(cov.20000)/sum(cov.20000)))
+quantile(100*(colSums(cov.20000)/sum(cov.20000)), c(0.025, 0.5, 0.975))
+
+# SFS
+hist(dt.af.20000[,1])
+hist(dt.af.20000[,5])
+hist(dt.af.20000[,10])
+hist(dt.af.20000[,11])
+hist(dt.af.20000[,21])
+
+overall.pi <- function(x)
+{
+  p <- x
+  q <- (1 - x)
+  pq <- 2*p*q
+  pi <- sum(pq, na.rm = T)/sum(!is.na(x))
+  return(pi)
+}
+
+pop.pi <- apply(dt.af.20000, MARGIN = 2, overall.pi)
+barplot(pop.pi)
+
+theta <- pop.pi/(1-pop.pi)
