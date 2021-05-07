@@ -3,7 +3,7 @@
 ##SBATCH --ntasks-per-node=1 # one core
 #SBATCH -c 3
 #SBATCH -N 1 # on one node
-#SBATCH -t 3:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
+#SBATCH -t 6:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
 #SBATCH --mem 12G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.err # Standard error
@@ -18,16 +18,14 @@
 #### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
 #### cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,21912590,21926361" | cut -f1
 
+
+## Load modules
 module load htslib
 module load bcftools/1.9.2
 module load vcftools/0.1.16
 module load parallel2/19.10
 module load R/4.0.2-gnu9.1
 module load python/3.6
-
-#module spider python/3.7.7
-
-##
 
 ## working & temp directory
   wd="/fs/scratch/PAS1715/aphidpool"
@@ -59,15 +57,11 @@ module load python/3.6
   fi
 
 ## get job
-  #SLURM_ARRAY_TASK_ID=2
   job=$( cat ${wd}/${jobs} | sed "${SLURM_ARRAY_TASK_ID}q;d" )
   jobid=$( echo ${job} | sed 's/,/_/g' )
   echo $job
 
 # set up RAM disk
-  ## rm /scratch/aob2x/test/*
-  #tmpdir="/scratch/aob2x/test"
-  #SLURM_JOB_ID=1
   [ ! -d /dev/shm/$USER/ ] && mkdir /dev/shm/$USER/
   [ ! -d /dev/shm/$USER/${SLURM_JOB_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}
   [ ! -d /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID} ] && mkdir /dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
@@ -75,8 +69,6 @@ module load python/3.6
   tmpdir=/dev/shm/$USER/${SLURM_JOB_ID}/${SLURM_ARRAY_TASK_ID}
 
 # set up RAM disk
-#  ## rm /scratch/aob2x/test/*
-#  #tmpdir="/scratch/aob2x/test"
 #  #SLURM_JOB_ID=1
 #  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/ ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/
 #  [ ! -d /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID} ] && mkdir /fs/scratch/PAS1715/aphidpool/$USER/${SLURM_JOB_ID}
@@ -93,11 +85,6 @@ module load python/3.6
 
     pop=$( echo ${syncFile} | rev | cut -f1 -d'/' | rev | sed 's/.masked.sync.gz//g' )
     
-    #syncFile=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz
-
-    #job=2L,1,13766
-    #job=mitochondrion_genome,1,19524
-
     chr=$( echo $job | cut -f1 -d',' )
     start=$( echo $job | cut -f2 -d',' )
     stop=$( echo $job | cut -f3 -d',' )
@@ -134,7 +121,7 @@ module load python/3.6
     echo $method
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 3 \
+    --min-cov 5 \
     --max-cov 0.95 \
     --miss-frac 0.5 \
     --min-count 0 \
@@ -148,7 +135,7 @@ module load python/3.6
 
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 3 \
+    --min-cov 5 \
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
