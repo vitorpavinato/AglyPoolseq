@@ -120,9 +120,9 @@ module load python/3.6
     echo $method
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 4 \
+    --min-cov 3 \
     --max-cov 0.95 \
-    --miss-frac 1 \
+    --miss-frac 0.5 \
     --min-count 0 \
     --min-freq 0 \
     --posterior-prob 0.9 \
@@ -134,11 +134,11 @@ module load python/3.6
 
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 4 \
+    --min-cov 3 \
     --max-cov 0.95 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
-    --miss-frac 1 \
+    --miss-frac 0.5 \
     --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf
   fi
 
