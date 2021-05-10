@@ -5,7 +5,6 @@ job=args[1]
 tmpdir=args[2]
 method=args[3]
 
-#job="2L_138316_276631"; tmpdir="/dev/shm/aob2x/1/2"; method="PoolSNP"
 #job=gsub("mitochondrion_genome", "mitochondrionGenome", job)
 jobId=gsub(",", "_", job)
 
@@ -49,10 +48,8 @@ jobId=gsub(",", "_", job)
   ow <- dcast(o, V1+V2~pop, value.var="V4")
 
 ## get reference
-  #ow.ref <- o[pop=="AT_gr_12_fall", c("V1", "V2", "V3"), with=F]
-  #ow.ref <- o[pop=="MN_BIO1_S1_140711", c("V1", "V2", "V3"), with=F]
-  #ow.ref <- o[pop=="MN_BIO1_S1", c("V1", "V2", "V3"), with=F]
-  ow.ref <- o[pop=="PA_BIO4_S1", c("V1", "V2", "V3"), with=F]
+  #ow.ref <- o[pop=="MN_BIO1_S1_140711", c("V1", "V2", "V3"), with=F] # replicated runs
+  ow.ref <- o[pop=="MN_BIO1_S1", c("V1", "V2", "V3"), with=F]
 
   setkey(ow, V1, V2)
   setkey(ow.ref, V1, V2)
