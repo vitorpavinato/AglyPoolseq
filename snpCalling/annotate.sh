@@ -38,29 +38,29 @@ agly_mitochondrion="mitochondrion_genome"
 # For the chromosomes
 for i in ${agly_scaffolds};
 do
-    bcftools index -f ${wd}/sub_bcf/aggregated_sample/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+    bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
 done
   
 # For the mitochondrion genome
 if "$mitochondrion";
 then
-    bcftools index -f ${wd}/sub_bcf/aggregated_sample/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+    bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
 fi
 
 ## Work around in case there are some empty bcfs
 ## Check if subsub_bcf exists
-  [ ! -d ${wd}/sub_bcf/aggregated_sample/subsub_bcf ] && mkdir ${wd}/sub_bcf/aggregated_sample/subsub_bcf
+  [ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf
 
-ls ${wd}/sub_bcf/aggregated_sample/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf/aggregated_sample/bcfindexed_scaffolds.txt
+ls ${wd}/sub_bcf_aggregated/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt
 
-for i in $(cat ${wd}/sub_bcf/aggregated_sample/bcfindexed_scaffolds.txt);
-do mv ${wd}/sub_bcf/aggregated_sample/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf/aggregated_sample/subsub_bcf/;
+for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt);
+do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf/;
 done
 
 
 echo "concat"
   bcftools concat \
-  ${wd}/sub_bcf/aggregated_sample/subsub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf_aggregated/subsub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
   -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 

@@ -19,10 +19,10 @@ module load parallel2/19.10
  
 wd="/fs/scratch/PAS1715/aphidpool"
 #outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs"
-outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs/aggregated_sample"
+outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated/"
 
 ## Check if outdir exists
-[ ! -d /fs/scratch/PAS1715/aphidpool/sub_bcf/aggregated_sample/ ] && mkdir /fs/scratch/PAS1715/aphidpool/sub_bcf/aggregated_sample/
+[ ! -d /fs/scratch/PAS1715/aphidpool/sub_bcf_aggregated/ ] && mkdir /fs/scratch/PAS1715/aphidpool/sub_bcf_aggregated/
 
 #SLURM_ARRAY_TASK_ID=2
 chr=$( cat ${wd}/poolSNP_jobs.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
@@ -35,11 +35,11 @@ version=${5}
 #maf=01; mac=50; popSet="all"; method="PoolSNP"; version="paramTest"
 
 ls -d ${outdir}/*.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz | sort -t"_" -k2,2 -k3g,3  | \
-grep /${chr}_ > /fs/scratch/PAS1715/aphidpool/sub_vcfs/aggregated_sample/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort
+grep /${chr}_ > /fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort
 
 bcftools concat \
 --threads 20 \
--f /fs/scratch/PAS1715/aphidpool/sub_vcfs/aggregated_sample/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort \
+-f /fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated/vcfs_order.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.sort \
 -O v \
 -n \
--o /fs/scratch/PAS1715/aphidpool/sub_bcf/aggregated_sample/aphidpool.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+-o /fs/scratch/PAS1715/aphidpool/sub_bcf_aggregated/aphidpool.${chr}.${popSet}.${method}.${maf}.${mac}.${version}.bcf
