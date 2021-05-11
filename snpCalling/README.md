@@ -15,7 +15,7 @@ Rscript ${wd}/DEST-AglyPoolseq/snpCalling/makeJobs.R
 
 ### 2a. Make PoolSNP based VCF file (bgzip out). 
 I used MAF > 0.001 & MAC > 50 for the set of gSYNC files of the technical replicated runs.
-For the aggregated files (four or five technical replicated BAM files aggregated by population pool),  I decide to set flexible thresholds that can generate a set of SNPs that can be filtered later; MAF > 0.001 & MAC > 5 should work fine. 
+For the aggregated files (four or five technical replicated BAM files aggregated by population pool),  I decide to set flexible thresholds that can generate a set of SNPs that can be filtered later; MAF > 0.01 & MAC > 12 should work fine. 
 But, for more accurate assessment of how these parameters affect the calling, see the parameter evaluation below.
 
 First paramter in the command is the population set ('all' for technical replicated runs; 'PoolSeq' for the aggregated technical replicates BAM files for each pool ). 
@@ -23,14 +23,14 @@ Second parameter is the SNP calling method (PoolSNP or SNAPE). If method == Pool
 
 ```bash
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh all PoolSNP 001 50 15Apr2021 poolSNP_jobs.csv
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 001 5 10May2021 poolSNP_jobs.csv
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 01 12 11May2021 poolSNP_jobs.csv
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq SNAPE NA NA 15Apr2021 poolSNP_jobs.csv
 ```
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
 sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh all PoolSNP 001 50 15Apr2021
-sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 001 5 10May2021
+sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 01 12 11May2021
 sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 15Apr2021
 ```
 
@@ -38,7 +38,7 @@ sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq
 ### 2c. Bind chromosomes, annotate and convert (bgzip out)
 ```bash
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh all PoolSNP 001 50 15Apr2021
-sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 001 5 10May2021
+sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 01 12 11May2021
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr2021
 ```
 

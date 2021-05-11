@@ -25,7 +25,8 @@ mac=${4}
 version=${5}
 #maf=001; mac=100; popSet="all"; method="PoolSNP"; version="paramTest"
 
-mitochondrion=true
+scaffolds=true
+mitochondrion=false
 
 wd="/fs/scratch/PAS1715/aphidpool"
 
@@ -35,11 +36,15 @@ agly_scaffolds="scaffold_1 scaffold_2 scaffold_3 scaffold_4 scaffold_5 scaffold_
 
 agly_mitochondrion="mitochondrion_genome"
 
-# For the chromosomes
-for i in ${agly_scaffolds};
-do
-    bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
-done
+# For the scaffolds
+if "$scaffolds";
+then
+    for i in ${agly_scaffolds};
+    do
+        bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+    done
+fi
+
   
 # For the mitochondrion genome
 if "$mitochondrion";
