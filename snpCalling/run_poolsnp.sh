@@ -121,7 +121,7 @@ module load python/3.6
     --sync - \
     --min-cov 5 \
     --max-cov 0.95 \
-    --miss-frac 0.5 \
+    --miss-frac 0.3 \
     --min-count 0 \
     --min-freq 0 \
     --posterior-prob 0.9 \

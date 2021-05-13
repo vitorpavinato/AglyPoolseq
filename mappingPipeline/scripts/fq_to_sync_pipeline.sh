@@ -184,11 +184,15 @@ if [ $do_prep -eq "1" ]; then
 
   rm $output/$sample/${sample}.trimmed*
 
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools flagstat -@ $threads - > $output/$sample/${sample}.merged_un_q0_flagstat.txt
+  
   bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged_un.bam
 
   rm $output/$sample/${sample}.1_un.fq.gz
   rm $output/$sample/${sample}.2_un.fq.gz
 
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz | samtools flagstat -@ $threads - > $output/$sample/${sample}.merged_q0_flagstat.txt
+  
   bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged.bam
 
   check_exit_status "bwa_mem" $?
