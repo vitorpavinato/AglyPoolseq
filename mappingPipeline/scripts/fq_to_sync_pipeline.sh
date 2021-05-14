@@ -184,12 +184,24 @@ if [ $do_prep -eq "1" ]; then
 
   rm $output/$sample/${sample}.trimmed*
 
-  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged_un.bam
-
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh - > $output/$sample/${sample}.q0_merged_un.bam
+  
+  samtools flagstat -@ $threads $output/$sample/${sample}.q0_merged_un.bam > $output/$sample/${sample}.flagstat_q0_merged_un.txt
+  
+  samtools view -@ $threads -Sbh -q 20 -F 0x100 $output/$sample/${sample}.q0_merged_un.bam > $output/$sample/${sample}.merged_un.bam
+  
+  #bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.1_un.fq.gz $output/$sample/${sample}.2_un.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged_un.bam
+  
   rm $output/$sample/${sample}.1_un.fq.gz
   rm $output/$sample/${sample}.2_un.fq.gz
 
-  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged.bam
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz samtools view -@ $threads -Sbh - > $output/$sample/${sample}.q0_merged.bam
+  
+  samtools flagstat -@ $threads $output/$sample/${sample}.q0_merged.bam > $output/$sample/${sample}.flagstat_q0_merged.txt
+  
+  samtools view -@ $threads -Sbh -q 20 -F 0x100 $output/$sample/${sample}.q0_merged.bam > $output/$sample/${sample}.merged.bam
+  
+ #bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh -q 20 -F 0x100 - > $output/$sample/${sample}.merged.bam
 
   check_exit_status "bwa_mem" $?
 
@@ -199,6 +211,9 @@ if [ $do_prep -eq "1" ]; then
 
   check_exit_status "Picard_MergeSamFiles" $?
 
+  rm $output/$sample/${sample}.q0_merged.bam
+  rm $output/$sample/${sample}.q0_merged_un.bam
+  
   rm $output/$sample/${sample}.merged.bam
   rm $output/$sample/${sample}.merged_un.bam
 

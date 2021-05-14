@@ -21,7 +21,7 @@
   wd=/fs/scratch/PAS1715/aphidpool
   
   # For technical replicates run files
-  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped_2/pipeline_output
+  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output
   
   # For aggregated data
   #outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
@@ -59,7 +59,7 @@
   singularity run \
   ${wd}/aglypoolseq_latest.sif \
   /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz \
-  /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz \
+  /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R2.fastq.gz \
   ${pop} \
   ${outputDir} \
   --cores $SLURM_CPUS_PER_TASK \
@@ -75,7 +75,7 @@
   #singularity run \
   #${wd}/aglypoolseq_latest.sif \
   #/fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R1.fastq.gz \
-  #/fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R1.fastq.gz \
+  #/fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R2.fastq.gz \
   #${pop} \
   #${outputDir} \
   #--cores $SLURM_CPUS_PER_TASK \
