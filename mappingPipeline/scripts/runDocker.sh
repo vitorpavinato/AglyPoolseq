@@ -21,7 +21,7 @@
   wd=/fs/scratch/PAS1715/aphidpool
   
   # For technical replicates run files
-  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output
+  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped_2/pipeline_output
   
   # For aggregated data
   #outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
