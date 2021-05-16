@@ -195,7 +195,7 @@ if [ $do_prep -eq "1" ]; then
   rm $output/$sample/${sample}.1_un.fq.gz
   rm $output/$sample/${sample}.2_un.fq.gz
 
-  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz samtools view -@ $threads -Sbh - > $output/$sample/${sample}.q0_merged.bam
+  bwa mem -t $threads -M -R "@RG\tID:$sample\tSM:sample_name\tPL:illumina\tLB:lib1" /opt/hologenome/holo_agly_b4_r2.1.fa $output/$sample/${sample}.merged.fq.gz | samtools view -@ $threads -Sbh - > $output/$sample/${sample}.q0_merged.bam
   
   samtools flagstat -@ $threads $output/$sample/${sample}.q0_merged.bam > $output/$sample/${sample}.flagstat_q0_merged.txt
   
