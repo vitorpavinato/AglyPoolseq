@@ -21,11 +21,17 @@
   
   echo $pop
   
-  touch /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.agly.bam
+  #touch /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.agly.bam
+  touch /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.original.bam
   
 ### run weGot_thisCoveraged.sh
   
+  #sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/weGot_thisCoveraged.sh \
+  #/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.agly.bam \
+  #${pop} \
+  #${outputDir}
+
   sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/weGot_thisCoveraged.sh \
-  /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.agly.bam \
+  /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.original.bam \
   ${pop} \
   ${outputDir}
