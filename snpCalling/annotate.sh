@@ -17,6 +17,7 @@ module load bcftools/1.9.2
 module load parallel2/19.10
 module load R/4.0.2-gnu9.1
 
+SNPEFF="/users/PAS1554/vitorpavinato/local//snpEff/5.0e/snpEff.jar"
 
 popSet=${1}
 method=${2}
@@ -45,7 +46,6 @@ then
     done
 fi
 
-  
 # For the mitochondrion genome
 if "$mitochondrion";
 then
@@ -54,34 +54,31 @@ fi
 
 ## Work around in case there are some empty bcfs
 ## Check if subsub_bcf exists
-  [ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf
-
-ls ${wd}/sub_bcf_aggregated/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt
-
-for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt);
-do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf/;
-done
-
+#[ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf
+#
+#ls ${wd}/sub_bcf_aggregated/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt
+#
+#for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt);
+#do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf/;
+#done
 
 echo "concat"
   bcftools concat \
-  ${wd}/sub_bcf_aggregated/subsub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf_aggregated/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
   -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
-
 echo "convert to vcf & annotate"
-  #bcftools view \
-  #--threads 10 \
-  #${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf | \
-  #java -jar ~/snpEff/snpEff.jar \
-  #eff \
-  #BDGP6.86 - > \
-  #${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-  
   bcftools view \
   --threads 5 \
-  ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf > \
-  ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf
+  ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf | \
+  java -jar $SNPEFF \
+  Aphis_glycines - > \
+  ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  
+  #bcftools view \
+  #--threads 5 \
+  #${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf > \
+  #${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf
 
 
 #echo "fix header" #this is now fixed in PoolSNP.py
@@ -92,14 +89,14 @@ echo "convert to vcf & annotate"
 #
 #  bcftools view -h ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/tmp.header
 #
-#  bcftools reheader --threads 10 -h ${wd}/tmp.header -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+#  bcftools reheader --threads 5 -h ${wd}/tmp.header -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 #
 #echo "make GDS"
 #  #Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
 
 echo "bgzip & tabix"
-  #bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
-  #tabix -p vcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
+  bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
+  tabix -p vcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
   
-  bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
-  tabix -p vcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
+  #bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
+  #tabix -p vcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
