@@ -54,17 +54,17 @@ fi
 
 ## Work around in case there are some empty bcfs
 ## Check if subsub_bcf exists
-#[ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf
-#
-#ls ${wd}/sub_bcf_aggregated/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt
-#
-#for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt);
-#do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf/;
-#done
+[ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf
+
+ls ${wd}/sub_bcf_aggregated/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt
+
+for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt);
+do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf/;
+done
 
 echo "concat"
   bcftools concat \
-  ${wd}/sub_bcf_aggregated/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf_aggregated/subsub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
   -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 echo "convert to vcf & annotate"
