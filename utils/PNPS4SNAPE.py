@@ -32,8 +32,8 @@ def load_data(x):
   return y
 
 if options.PA:
-    print(options.IN.split("dest.all.PoolSNP.")[1].split(".paramTest.ann.vcf.gz"))
-    MAF,MAC=options.IN.split("dest.all.PoolSNP.")[1].split(".paramTest.ann.vcf.gz")[0].split(".")
+    print(options.IN.split("aphidpool.PoolSeq.PoolSNP.")[1].split(".paramTest.ann.vcf.gz"))
+    MAF,MAC=options.IN.split("aphidpool.PoolSeq.PoolSNP.")[1].split(".paramTest.ann.vcf.gz")[0].split(".")
 
 stepsize=[float(x) for x in options.MAF.split(",")]
 Counts=d(lambda: d(lambda: d(lambda: d(int))))
