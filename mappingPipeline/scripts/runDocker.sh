@@ -21,10 +21,10 @@
   wd=/fs/scratch/PAS1715/aphidpool
   
   # For technical replicates run files
-  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped_2/pipeline_output
+  #outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped_2/pipeline_output # last time I run to get raw mapping statistics
   
   # For aggregated data
-  #outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
+  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
     
 ### check
   #cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l
@@ -33,14 +33,14 @@
 ### get job number
   #SLURM_ARRAY_TASK_ID=10
   # For the technical replicated run files
-  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  #pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  #prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  #numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
   
   # For aggregated data
-  #pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  #prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-  #numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo ${SLURM_ARRAY_TASK_ID}
   echo $pop
@@ -48,41 +48,41 @@
   echo $numFlies
   
   # For the replicated run files
-  touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz
-  touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R2.fastq.gz
+  #touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz
+  #touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R2.fastq.gz
   
   # Ror aggregated data
-  #touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R1.fastq.gz
-  #touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R2.fastq.gz
+  touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R1.fastq.gz
+  touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R2.fastq.gz
   
   # For the replicated run files
-  singularity run \
-  ${wd}/aglypoolseq_latest.sif \
-  /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz \
-  /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R2.fastq.gz \
-  ${pop} \
-  ${outputDir} \
-  --cores $SLURM_CPUS_PER_TASK \
-  --min-indel 5 \
-  --max-cov 0.95 \
-  --min-cov 3 \
-  --base-quality-threshold 25 \
-  --num-flies ${numFlies} #\
-  #--dont-prep \
-  #--do_poolsnp
-  
-  # For aggregated data
   #singularity run \
   #${wd}/aglypoolseq_latest.sif \
-  #/fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R1.fastq.gz \
-  #/fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R2.fastq.gz \
+  #/fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz \
+  #/fs/scratch/PAS1715/aphidpool/fastq/${prx}.R2.fastq.gz \
   #${pop} \
   #${outputDir} \
   #--cores $SLURM_CPUS_PER_TASK \
   #--min-indel 5 \
   #--max-cov 0.95 \
-  #--min-cov 5 \
+  #--min-cov 3 \
   #--base-quality-threshold 25 \
-  #--num-flies ${numFlies} \
+  #--num-flies ${numFlies} #\
   #--dont-prep \
   #--do_poolsnp
+  
+  # For aggregated data
+  singularity run \
+  ${wd}/aglypoolseq_latest.sif \
+  /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R1.fastq.gz \
+  /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R2.fastq.gz \
+  ${pop} \
+  ${outputDir} \
+  --cores $SLURM_CPUS_PER_TASK \
+  --min-indel 5 \
+  --max-cov 0.99 \
+  --min-cov 3 \
+  --base-quality-threshold 25 \
+  --num-flies ${numFlies} \
+  --dont-prep \
+  --do_poolsnp
