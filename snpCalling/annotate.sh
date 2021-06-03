@@ -54,17 +54,17 @@ fi
 
 ## Work around in case there are some empty bcfs
 ## Check if subsub_bcf exists
-[ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf
+[ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version} ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}
 
-ls ${wd}/sub_bcf_aggregated/*.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt
+ls ${wd}/sub_bcf_aggregated/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt
 
-for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.txt);
-do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf/;
+for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt);
+do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/;
 done
 
 echo "concat"
   bcftools concat \
-  ${wd}/sub_bcf_aggregated/subsub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
   -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 echo "convert to vcf & annotate"
@@ -75,10 +75,10 @@ echo "convert to vcf & annotate"
   Aphis_glycines - > \
   ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
   
-  #bcftools view \
-  #--threads 5 \
-  #${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf > \
-  #${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf
+  bcftools view \
+  --threads 5 \
+  ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf > \
+  ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf
 
 
 #echo "fix header" #this is now fixed in PoolSNP.py
@@ -98,5 +98,5 @@ echo "bgzip & tabix"
   bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
   tabix -p vcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
   
-  #bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
-  #tabix -p vcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
+  bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
+  tabix -p vcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
