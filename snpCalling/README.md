@@ -23,14 +23,14 @@ Second parameter is the SNP calling method (PoolSNP or SNAPE). If method == Pool
 
 ```bash
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh all PoolSNP 001 50 15Apr2021 poolSNP_jobs.csv
-sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 01 12 11May2021 poolSNP_jobs.csv
+sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP 01 20 03Jun2021 poolSNP_jobs.csv
 sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq SNAPE NA NA 15Apr2021 poolSNP_jobs.csv
 ```
 
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
 sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh all PoolSNP 001 50 15Apr2021
-sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 01 12 11May2021
+sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 01 20 03Jun2021
 sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 15Apr2021
 ```
 
@@ -38,16 +38,17 @@ sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq
 ### 2c. Bind chromosomes, annotate and convert (bgzip out)
 ```bash
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh all PoolSNP 001 50 15Apr2021
-sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 01 12 11May2021
-sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr2021
+sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 01 20 03Jun2021
+sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 03Jun2021
 ```
 
 
 
 ## 3. Parameter evaluation for PoolSNP (global MAC & MAF thresholds)
 ### 3a. Random sample of ~10% of data:
+Make sure to have only one region per scaffold. Remove repeated scaffold and add another one.
 ```bash
-  shuf -n 100 ${wd}/poolSNP_jobs.csv > ${wd}/poolSNP_jobs.sample.csv
+  shuf -n 150 ${wd}/poolSNP_jobs.csv > ${wd}/poolSNP_jobs.sample.csv
 ```
 
 ### 3b. Run pool_snp
@@ -56,11 +57,11 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
 
   runJob () {
     wd="/fs/scratch/PAS1715/aphidpool"
-    sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP ${1} ${2} paramTest poolSNP_jobs.csv
+    sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d' ' ) ${wd}/DEST-AglyPoolseq/snpCalling/run_poolsnp.sh PoolSeq PoolSNP ${1} ${2} paramTest poolSNP_jobs.sample.csv
   }
   export -f runJob
 
-  parallel -j 1 runJob ::: 001 01 05 ::: 5 10 15 20 50 100
+  parallel -j 1 runJob ::: 0 ::: 5 10 15 20 50 100
 
 ```
 
@@ -70,11 +71,11 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
 
   runJob () {
     wd="/fs/scratch/PAS1715/aphidpool"
-    sbatch --array=1-942 ${wd}/DEST/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP ${1} ${2} paramTest
+    sbatch --array=1-150 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP ${1} ${2} paramTest
   }
   export -f runJob
 
-  parallel -j 1 runJob ::: 001 01 05 ::: 5 10 15 20 50 100
+  parallel -j 1 runJob ::: 0 ::: 5 10 15 20 50 100
 ```
 
 ### 3d. Run annotate
@@ -83,9 +84,23 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr20
 
   runJob () {
     wd="/fs/scratch/PAS1715/aphidpool"
-    sbatch ${wd}/DEST/snpCalling/annotate.sh PoolSeq PoolSNP ${1} ${2} paramTest
+    sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP ${1} ${2} paramTest
   }
   export -f runJob
 
-  parallel -j 1 runJob ::: 001 01 05 ::: 5 10 15 20 50 100
+  parallel -j 1 runJob ::: 0 ::: 5 10 15 20 50 100
+```
+
+### 3.e Calculate pN/pS
+```bash
+  module load parallel2
+  
+  runJob () {
+    wd="/fs/scratch/PAS1715/aphidpool";
+    python3 ${wd}/DEST-AglyPoolseq/utils/PNPS4VCF.py --input=paramTest/aphidpool.PoolSeq.PoolSNP.0.${1}.paramTest.ann.vcf.gz --output=paramTest/PoolSNP.pnps.mafs.${1}.mincov3.maxcov99.gz --MAF=0,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.15,0.2;
+  }
+  export -f runJob
+
+  parallel -j 1 runJob ::: 5 10 15 20 50 100
+  
 ```
