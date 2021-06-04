@@ -25,8 +25,8 @@ outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated/"
 [ ! -d /fs/scratch/PAS1715/aphidpool/sub_bcf_aggregated/ ] && mkdir /fs/scratch/PAS1715/aphidpool/sub_bcf_aggregated/
 
 #SLURM_ARRAY_TASK_ID=2
-#chr=$( cat ${wd}/poolSNP_jobs.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
-chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+chr=$( cat ${wd}/poolSNP_jobs.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+#chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 popSet=${1}
 method=${2}
