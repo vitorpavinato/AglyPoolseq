@@ -51,7 +51,7 @@
   #touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz
   #touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R2.fastq.gz
   
-  # Ror aggregated data
+  # For aggregated data
   touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R1.fastq.gz
   touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}_140711.R2.fastq.gz
   
@@ -80,8 +80,8 @@
   ${outputDir} \
   --cores $SLURM_CPUS_PER_TASK \
   --min-indel 5 \
-  --max-cov 0.99 \
-  --min-cov 3 \
+  --max-cov 0.95 \
+  --min-cov 4 \
   --base-quality-threshold 25 \
   --num-flies ${numFlies} \
   --dont-prep \
