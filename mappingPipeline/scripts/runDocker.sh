@@ -81,7 +81,7 @@
   --cores $SLURM_CPUS_PER_TASK \
   --min-indel 5 \
   --max-cov 0.99 \
-  --min-cov 3 \
+  --min-cov 4 \
   --base-quality-threshold 25 \
   --num-flies ${numFlies} \
   --dont-prep \
