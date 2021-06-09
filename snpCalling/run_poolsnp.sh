@@ -119,8 +119,8 @@ module load python/3.6
     echo $method
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 5 \
-    --max-cov 0.95 \
+    --min-cov 3 \
+    --max-cov 0.99 \
     --miss-frac 0.5 \
     --min-count 0 \
     --min-freq 0 \
@@ -133,8 +133,8 @@ module load python/3.6
 
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 5 \
-    --max-cov 0.95 \
+    --min-cov 3 \
+    --max-cov 0.99 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
     --miss-frac 0.5 \
