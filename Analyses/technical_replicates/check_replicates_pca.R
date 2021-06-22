@@ -25,6 +25,8 @@ library(poolfstat)
 ###
 ###
 
+### DATASET: VCF WITH REPLICATED RUNS
+
 ## ADD CITATION HERE
 
 # First load vcf using poolfsta function vcf2pooldata from poolfstat package
@@ -53,13 +55,13 @@ poolnames <- c("MN_BIO1_S1_140711", "MN_BIO1_S1_140722", "MN_BIO1_S1_140725", "M
                "WO_BIO4_S3_140711", "WO_BIO4_S3_140722", "WO_BIO4_S3_140725", "WO_BIO4_S3_140730")
 
 dt <- vcf2pooldata(
-          vcf.file = "vcf/aphidpool.all.PoolSNP.001.50.15Apr2021.vcf.gz",
+          vcf.file = "vcf/technical_replicates/minmaxcov_3_95/aphidpool.all.PoolSNP.001.50.15Apr2021.vcf.gz",
           poolsizes = poolsizes,
           poolnames = poolnames,
           min.cov.per.pool = -1,
           min.rc = 1,
           max.cov.per.pool = 1e+06,
-          min.maf = 0.01,
+          min.maf = 0.001,
           remove.indels = FALSE,
           nlines.per.readblock = 1e+06
           )
@@ -256,10 +258,151 @@ legend("topleft",
 abline(v=0,h=0,col="grey",lty=3)
 dev.off()
 
+
+###
+###
+### ---- % OF MISSING DATA AND CORRELATION WITH REPLICATE COVERAGE----
+###
+###
+
 # NA's count
-dt.af.20000 <- refcount.matrix
-colnames(dt.af.20000) <- poolnames
-100*(colSums(is.na(dt.af.20000))/20000)
+dt.raf.20000 <- refcount.matrix
+colnames(dt.raf.20000) <- poolnames
+dt.missing.20000 <- 100*(colSums(is.na(dt.raf.20000))/20000)
+
+# Mean replicate coverage
+dt.cov.20000 <- coverage
+mean.cov.20000 <- apply(dt.cov.20000, 2, mean)
+
+mean(mean.cov.20000) +c(-3.92, +3.92)*sd(mean.cov.20000)/sqrt(87)
+
+## MISSING DATA AS A FUNCTION OF SNP DEPTH
+plot(dt.missing.20000 ~ mean.cov.20000)
+lines(lowess(dt.missing.20000 ~ mean.cov.20000), col='blue')
+
+boxplot(coverage, col=ifelse(mean.cov.20000 < 10, "red", "black"))
+
+dt.missing.20000[mean.cov.20000 < 10 & dt.missing.20000 > 30]
+
+#NW_BIO1_S1_140711 NW_BIO1_S1_140722 NW_BIO1_S1_140725 NW_BIO1_S1_140730 PA_BIO1_S1_140711 PA_BIO1_S1_140722 PA_BIO1_S1_140725 
+#53.430            72.380            70.005            69.380            73.265            72.575            71.440 
+#PA_BIO1_S1_140730 WI_BIO1_S1_140711 WO_BIO4_S3_140711 WO_BIO4_S3_140722 WO_BIO4_S3_140725 WO_BIO4_S3_140730 
+#71.270            31.920            46.545            52.670            49.065            49.420 
+
+## MEAN COVERAGE PER SCAFFOLD FROM THE ALIGNMENTS
+
+pipeline.folder = "dest_mapped/pipeline_output/"
+sulfixe.file.name = "_meandepth_original.bam.txt"
+header.names <- c("rname", "startpos", "endpos",  "numreads", 
+                  "covbases", "coverage", "meandepth", "meanbaseq", "meanmapq")
+
+mapped.files <- paste0(pipeline.folder, "/", poolnames, "/", poolnames, sulfixe.file.name)
+
+mapped.files.list <- lapply(mapped.files, function(x){read.table(file= x, col.names = header.names, na.strings = "NA")})
+
+## MISSING DATA AS A FUNCTION OF MEAN SCAFFOLD COVERAGE %
+mapped.files.coverage <- mapped.files.list[[1]][,c(1,2,3,6)]
+names(mapped.files.coverage)[4] <- poolnames[1]
+
+c = 5 
+for (l in 2:length(mapped.files.list))
+{
+  mapped.files.coverage[, c] <- mapped.files.list[[l]][, 6]
+  names(mapped.files.coverage)[c] <- poolnames[l]
+  c = c + 1
+}
+
+mean.coverage <- colMeans(mapped.files.coverage[-c(831:1518), -c(1:3)])
+plot(dt.missing.20000 ~ mean.coverage)
+lines(lowess(dt.missing.20000 ~ mean.coverage), col='blue')
+
+dt.missing.20000[mean.coverage < 30 & dt.missing.20000 > 30]
+#NW_BIO1_S1_140711 NW_BIO1_S1_140722 NW_BIO1_S1_140725 NW_BIO1_S1_140730 PA_BIO1_S1_140711 PA_BIO1_S1_140722 PA_BIO1_S1_140725 
+#53.430            72.380            70.005            69.380            73.265            72.575            71.440 
+#PA_BIO1_S1_140730 WO_BIO4_S3_140711 WO_BIO4_S3_140722 WO_BIO4_S3_140725 WO_BIO4_S3_140730 
+#71.270            46.545            52.670            49.065            49.420 
+
+## MISSING DATA AS A FUNCTION OF MEAN DEPTH
+mapped.files.depth <- mapped.files.list[[1]][,c(1,2,3,7)]
+names(mapped.files.depth)[4] <- poolnames[1]
+
+c = 5 
+for (l in 2:length(mapped.files.list))
+{
+  mapped.files.depth[, c] <- mapped.files.list[[l]][, 7]
+  names(mapped.files.depth)[c] <- poolnames[l]
+  c = c + 1
+}
+
+mean.depth <- colMeans(mapped.files.depth[-c(831:1518), -c(1:3)])
+plot(dt.missing.20000 ~ mean.depth)
+lines(lowess(dt.missing.20000 ~ mean.depth), col='blue')
+
+
+dt.missing.20000[mean.depth < 1 & dt.missing.20000 > 30]
+# NW_BIO1_S1_140711 NW_BIO1_S1_140722 NW_BIO1_S1_140725 NW_BIO1_S1_140730 WO_BIO4_S3_140711 WO_BIO4_S3_140722 WO_BIO4_S3_140725 
+#53.430            72.380            70.005            69.380            46.545            52.670            49.065 
+#WO_BIO4_S3_140730 
+#49.420 
+
+dt.missing.20000[mean.depth > 1 & dt.missing.20000 > 30]
+# PA_BIO1_S1_140711 PA_BIO1_S1_140722 PA_BIO1_S1_140725 PA_BIO1_S1_140730 WI_BIO1_S1_140711 
+#73.265            72.575            71.440            71.270            31.920 
+
+## MISSING DATA AS A FUNCTION OF MEAN BASE Q
+mapped.files.baseq <- mapped.files.list[[1]][,c(1,2,3,8)]
+names(mapped.files.baseq)[4] <- poolnames[1]
+
+c = 5 
+for (l in 2:length(mapped.files.list))
+{
+  mapped.files.baseq[, c] <- mapped.files.list[[l]][, 8]
+  names(mapped.files.baseq)[c] <- poolnames[l]
+  c = c + 1
+}
+
+mean.baseq <- colMeans(mapped.files.baseq[-c(831:1518), -c(1:3)])
+plot(dt.missing.20000 ~ mean.baseq)
+lines(lowess(dt.missing.20000 ~ mean.baseq), col='blue')
+
+
+## MISSING DATA AS A FUNCTION OF MEAN BASE MAPQ
+mapped.files.mapq <- mapped.files.list[[1]][,c(1,2,3,9)]
+names(mapped.files.mapq)[4] <- poolnames[1]
+
+c = 5 
+for (l in 2:length(mapped.files.list))
+{
+  mapped.files.mapq[, c] <- mapped.files.list[[l]][, 8]
+  names(mapped.files.mapq)[c] <- poolnames[l]
+  c = c + 1
+}
+
+mean.mapq <- colMeans(mapped.files.mapq[-c(831:1518), -c(1:3)])
+plot(dt.missing.20000 ~ mean.mapq)
+lines(lowess(dt.missing.20000 ~ mean.mapq), col='blue')
+
+dt.missing.20000[mean.mapq > 40]
+# MN_BIO1_S1_140711 
+# 18.42 
+
+## CONCLUSION: WHAT CAUSED MISSING DATA?
+## LOWER SEQUENCE INPUT (for NW_BIO1_S1) AND LOWER NUMBER q20 READS (for both Pools)
+## Pools from NW_BIO1_S1 and WO_BIO4_3 had less overall number of reads which caused:
+## 1) Lower scaffold coverage: less than ~30% of the scaffold were coverade in these pools.
+## 2) Lower depth: less than ~1 read/base were coverade in most of scaffolds of these pools.
+
+## UNEVEN SEQUENCING
+## Pools from PA_BIO1_S1 had a decent mean depth/based per scaffolds, decent of q20 mapping, but lower % of scaffold coverage
+## which indicated that some  parts were more sequenced than other because probably genome shearing was not good.
+
+###
+###
+### ---- MAXIMUM LIKELIHOOD ESTIMATION FROM ALLELE COUNTS ----
+###
+###
+
+### DATASET: AGGREGATED DATA OF EACH POOL
 
 ## Aggregate read counts data for each pool
 ## and repeat the allele frequency estimates
@@ -341,6 +484,12 @@ for (k in 1:21){
   refcount.matrix[,k] <- ALF.allele.counts.1/10
 }
 
+###
+###
+### ---- PCA ON ML ALLELE FREQUENCIES ----
+###
+###
+
 legend.colors.c <- c("#0000FF", "#FF0000", #MN
                      "#8282FF", "#FF8282", #ND
                      "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
@@ -421,33 +570,79 @@ legend("topleft",
 abline(v=0,h=0,col="grey",lty=3)
 dev.off()
 
-# NA's count
-dt.af.20000 <- refcount.matrix
-colnames(dt.af.20000) <- legend.names.c
-colSums(is.na(dt.af.20000))
+###
+###
+### ---- % OF MISSING DATA AND CORRELATION WITH REPLICATE COVERAGE----
+###
+###
 
-barplot(100*(colSums(is.na(dt.af.20000))/20000))
+# NA's count
+dt.raf.20000.c <- refcount.matrix
+colnames(dt.raf.20000.c) <- legend.names.c
+dt.missing.20000.c <- 100*(colSums(is.na(dt.raf.20000.c))/20000)
+
+barplot(dt.missing.20000.c)
 abline(h=30, col="red")
 
-hist(rowSums(is.na(dt.af.20000)))
-100*(max(rowSums(is.na(dt.af.20000)))/21)
-100*(min(rowSums(is.na(dt.af.20000)))/21)
-100*(median(rowSums(is.na(dt.af.20000)))/21)
+# Mean replicate coverage
+dt.cov.20000.c <- comb.coverage
+mean.cov.20000.c <- apply(dt.cov.20000.c, 2, mean)
+
+mean(mean.cov.20000.c) +c(-1.96, +1.96)*sd(mean.cov.20000.c)/sqrt(21)
+
+## MISSING DATA AS A FUNCTION OF COVERAGE
+plot(dt.missing.20000.c ~ mean.cov.20000.c)
+lines(lowess(dt.missing.20000.c ~ mean.cov.20000.c), col='blue')
+
+boxplot(comb.coverage, col=ifelse(mean.cov.20000.c < 10, "red", "black"))
+
+quantile(comb.coverage, probs = c(0.12, 0.5, 0.99))
+hist(comb.coverage, breaks = 100)
+abline(v= 482, col="red")
+
+quantile(comb.coverage[,3], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,4], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,5], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,6], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,10], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,11], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,12], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,16], probs = c(0.05, 0.5, 0.99))
+quantile(comb.coverage[,21], probs = c(0.05, 0.5, 0.99))
+
+# FUNCTION TO PRODUCE THE PLOTS - LOG and LOGIT SCALE
+plot.mult.densities <- function(table=NULL, par.name=NULL, 
+                                col.vect=NULL, name.vect=NULL, y_lim=c(0,0.2), cex_axis = 1.2, cex_lab  = 1.2,
+                                plot.legend=TRUE, legend.side="topright")
+{
+  xlim.min = min(apply(table, 2, min))
+  xlim.max = min(apply(table, 2, max))
+  
+  plot(density(table[,1]), lty=3, col=col.vect[1], xlim=c(xlim.min, xlim.max), ylim=y_lim, 
+       main = "", ylab = "Density", xlab = par.name, cex.axis = cex_axis, cex.lab  = cex_lab)
+  lines(density(table[,1]), col=col.vect[1])
+  
+  for (p in 2:dim(table)[2])
+  {
+    lines(density(table[,p]),lty=3, col=col.vect[p])
+    lines(density(table[,p]), col=col.vect[p])
+  }
+  if (plot.legend) {
+    legend(legend.side, col = col.vect, lty = 1, cex = 0.7,
+           legend = name.vect, box.lwd = 0, box.col = NULL, bg = NULL)
+  }
+}
+
+plot.mult.densities(comb.coverage, col.vect = legend.colors.c, name.vect = legend.names.c)
+
 
 # Coverage ranking
-cov.20000 <- comb.coverage
-colnames(cov.20000) <- legend.names.c
-
-hist(100*(colSums(cov.20000)/sum(cov.20000)))
-mean(100*(colSums(cov.20000)/sum(cov.20000)))
-quantile(100*(colSums(cov.20000)/sum(cov.20000)), c(0.025, 0.5, 0.975))
-
 # SFS
-hist(dt.af.20000[,1])
-hist(dt.af.20000[,5])
-hist(dt.af.20000[,10])
-hist(dt.af.20000[,11])
-hist(dt.af.20000[,21])
+hist(1-dt.af.20000[,1])
+hist(1-dt.af.20000[,5])
+hist(1-dt.af.20000[,10])
+hist(1-dt.af.20000[,11])
+hist(1-dt.af.20000[,21])
 
 overall.pi <- function(x)
 {
