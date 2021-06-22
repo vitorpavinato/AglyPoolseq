@@ -26,6 +26,8 @@ outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated/"
 
 #SLURM_ARRAY_TASK_ID=2
 chr=$( cat ${wd}/poolSNP_jobs.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
+
+## ONLY FOR PARAMETER TEST RUNS
 #chr=$( cat ${wd}/poolSNP_jobs.sample.csv | cut -f1 -d',' | sort | uniq | sed "${SLURM_ARRAY_TASK_ID}q;d" )
 
 popSet=${1}
