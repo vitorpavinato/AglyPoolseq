@@ -18,10 +18,6 @@ library(poolfstat)
 packageVersion("poolfstat")   
 source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
-### COMPLETE DATASET
-## Data set 1: Min_cov=4; Max_cov=0.99; [start MAF=0.001; final MAF=0.05]; MAC=5; 21 pools; miss_fraction=0.50
-###
-
 poolsizes <- rep(10,21)
 poolnames <- c("MN-B1.1", "MN-B4.1",
                "ND-B1.1", "ND-B4.1", 
@@ -38,8 +34,11 @@ biotype.col <- c("#247F00","#AB1A53",
                  "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
                  "#247F00","#AB1A53","#AB1A53","#AB1A53")
 
+###
+## Data set 1: Min_cov=4; Max_cov=0.99; MAF=0.001; MAC=5; 21 pools; miss_fraction=0.50
+###
+
 ## INVESTIGATE THE RELANTIOSHIP BETWEEN MAC AND MAF IN ONE DATASET
-## MAF=0.001
 #testcase.dt.1 <- vcf2pooldata(
 #                              vcf.file = "vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.gz",
 #                              poolsizes = poolsizes,
@@ -118,11 +117,15 @@ biotype.col <- c("#247F00","#AB1A53",
 #
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pop_genomics/poolfstat.poolsnp.workspace.RData")
 #
-load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace.RData")
 
-######
+###
+## Data set 2: Min_cov=4; Max_cov=0.99; MAF=0.05; MAC=5; 21 pools; miss_fraction=0.50
+###
+
+## POPULATION GENOMICS ANALYSES
 dt.1 <- vcf2pooldata(
-                     vcf.file = "vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.gz",
+                     vcf.file = "vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.vcf.gz",
                      poolsizes = poolsizes,
                      poolnames = poolnames,
                      min.cov.per.pool = -1,
@@ -134,11 +137,11 @@ dt.1 <- vcf2pooldata(
 )
 dt.1
 # * * * PoolData Object * * * 
-# * Number of SNPs   = 259691
+# * Number of SNPs   = 262866 
 # * Number of Pools  =  21 
 # Number of scaffolds:
 
-length(unique(sort(dt.1@snp.info$Chromosome))) #706
+length(unique(sort(dt.1@snp.info$Chromosome))) #705
 
 ## COMPUTE MAXIMUM LIKELIHOOD IMPUTED SAMPLE ALLELE COUNT
 dt.1.imputedMLCount <- imputedRefMLCount(dt.1)
@@ -152,44 +155,44 @@ hist(apply(dt.1.imputedRefMLFreq == 1, 1, function(x) sum(x, na.rm = T)))
 table(apply(dt.1.imputedRefMLFreq == 1, 1, function(x) sum(x, na.rm = T)))
 quasi.fixed <- which(apply(dt.1.imputedRefMLFreq == 1, 1, function(x) sum(x, na.rm = T)) == 20) 
 
-higher.than05.alt.freq <- which(apply(dt.1.imputedRefMLFreq, 1, function(x) 1-mean(x, na.rm = T)) >= 0.05) 
-length(higher.than05.alt.freq)
+#higher.than05.alt.freq <- which(apply(dt.1.imputedRefMLFreq, 1, function(x) 1-mean(x, na.rm = T)) >= 0.05) 
+#length(higher.than05.alt.freq)
 
-min(apply(dt.1.imputedRefMLFreq[higher.than05.alt.freq,], 1,  function(x) 1-mean(x, na.rm = T)))
-max(apply(dt.1.imputedRefMLFreq[higher.than05.alt.freq,], 1,  function(x) 1-mean(x, na.rm = T)))
+#min(apply(dt.1.imputedRefMLFreq[higher.than05.alt.freq,], 1,  function(x) 1-mean(x, na.rm = T)))
+#max(apply(dt.1.imputedRefMLFreq[higher.than05.alt.freq,], 1,  function(x) 1-mean(x, na.rm = T)))
 
 ## KEEP LOCI WITH AF >= 0.05
 # SUBSET READ COUNT DATA
-dt.1 <- pooldata.subset(
-                        pooldata=dt.1,
-                        snp.index = higher.than05.alt.freq,
-                        min.cov.per.pool = -1,
-                        max.cov.per.pool = 1e+06,
-                        min.maf = -1,
-                        cov.qthres.per.pool = c(0, 1),
-                        return.snp.idx = FALSE,
-                        verbose = TRUE
-)
-
-dt.1.imputedRefMLCount <- dt.1.imputedMLCount[[1]][higher.than05.alt.freq, ]
-dt.1.imputedGeneMLCount <- dt.1.imputedMLCount[[3]][higher.than05.alt.freq, ]
-
-dt.1.imputedRefMLFreq <-  dt.1.imputedRefMLFreq[higher.than05.alt.freq, ]
+#dt.1 <- pooldata.subset(
+#                        pooldata=dt.1,
+#                        snp.index = higher.than05.alt.freq,
+#                        min.cov.per.pool = -1,
+#                        max.cov.per.pool = 1e+06,
+#                        min.maf = -1,
+#                        cov.qthres.per.pool = c(0, 1),
+#                        return.snp.idx = FALSE,
+#                        verbose = TRUE
+#)
+#
+#dt.1.imputedRefMLCount <- dt.1.imputedMLCount[[1]][higher.than05.alt.freq, ]
+#dt.1.imputedGeneMLCount <- dt.1.imputedMLCount[[3]][higher.than05.alt.freq, ]
+#
+#dt.1.imputedRefMLFreq <-  dt.1.imputedRefMLFreq[higher.than05.alt.freq, ]
 
 ## COMPUTE THE GLOBAL FST
 dt.1.fst <- computeFST(dt.1, method = "Anova", nsnp.per.bjack.block = 10, verbose=FALSE)
 
 # genome-wide estimate
 dt.1.fst$FST 
-# 0.008102438
+# 0.004362626
 
 # mean Block-Jackknife estimation
 dt.1.fst$mean.fst
-# 0.008328822
+# 0.004459117
 
 # CI
 dt.1.fst$mean.fst+c(-1.96,1.96)*dt.1.fst$se.fst
-# 0.006408122 0.010249523
+# 0.002462227 0.006456007
 
 ## FST GENOME SCAN
 dt.1.fst.scan <- computeFST(dt.1,sliding.window.size=10)
@@ -215,7 +218,6 @@ for (i in seq_along(chrm.splitted.counts))
 }
 
 # Manhattan plot
-
 par(mar=c(5,5,4,1)+.1)
 plot(dt.1.fst.scan$sliding.windows.fst$CumulatedPosition/1e6,
      dt.1.fst.scan$sliding.windows.fst$MultiLocusFst,
@@ -234,8 +236,6 @@ heatmap(dt.1.pfst)
 
 dt.1.pfst <- compute.pairwiseFST(dt.1,nsnp.per.bjack.block = 100, verbose=FALSE)
 plot(dt.1.pfst, cex=0.4)
-
-#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace.RData")
 
 ## COMPUTE THE F-STATISTICS 
 dt.1.fstats<-compute.fstats(dt.1, nsnp.per.bjack.block = 10, verbose=FALSE)
