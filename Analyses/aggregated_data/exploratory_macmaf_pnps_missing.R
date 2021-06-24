@@ -19,12 +19,13 @@ library(tidyverse)
 library(gridExtra)
 library(scales)
 library(ggpubr)
+source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
 ## Set global Alpha value
 ALPHA=0.75
 
 MAC = c(5, 10, 15, 20, 50, 100)
-MAF = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2)
+MAF = c(0, 0.001, 0.005, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2)
 
 ###
 # MISSING DATA AS A FUNCTION OF MAF & MAC
@@ -32,7 +33,8 @@ MAF = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.15, 0.2)
 
 ## REMEMBER THIS VCFs CONTAINS ONLY A SAMPLE OF MARKERS
 
-poolsizes <- rep(5,21)
+poolsizes <- rep(10,21)
+
 poolnames <- c("MN_BIO1_S1", "MN_BIO4_S1",
                "ND_BIO1_S1", "ND_BIO4_S1", 
                "NW_BIO1_S1", "NW_BIO1_S2", "NW_BIO4_S1", "NW_BIO4_S2", "NW_BIO4_S3", 
@@ -40,7 +42,7 @@ poolnames <- c("MN_BIO1_S1", "MN_BIO4_S1",
                "WI_BIO1_S1", "WI_BIO1_S2", "WI_BIO4_S1", "WI_BIO4_S2", "WI_BIO4_S3", 
                "WO_BIO1_S1", "WO_BIO4_S1", "WO_BIO4_S2", "WO_BIO4_S3")
 
-#paste0("paramTest/aggregated_data/minmaxcov_3_99/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
+#paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
 #paste0("paramTest/aggregated_data/minmaxcov_4_95/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
 #paste0("paramTest/aggregated_data/minmaxcov_5_95/snps_sample/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
 #paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
@@ -52,7 +54,7 @@ for (i in seq_along(MAC))
   for (j in seq_along(MAF))
   {
    print(paste0("MAC:", MAC[i], " MAF:", MAF[j]))
-   dt <- vcf2pooldata(vcf.file = paste0("paramTest/aggregated_data/minmaxcov_3_99/aphidpool.PoolSeq.PoolSNP.",0, ".", MAC[i],".paramTest.vcf"),
+   dt <- vcf2pooldata(vcf.file = paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.",0, ".", MAC[i],".paramTest.vcf"),
                       poolsizes = poolsizes,
                       poolnames = poolnames,
                       min.cov.per.pool = -1,
@@ -73,16 +75,15 @@ for (i in seq_along(MAC))
   }
 }
 
-write.table(missing_data, file = "paramTest/aggregated_data/minmaxcov_3_99/maf_mac_missing.mincov3.maxcov99.txt",
+write.table(missing_data, file = "paramTest/aggregated_data/minmaxcov_4_99/maf_mac_missing.mincov4.maxcov99.txt",
             row.names = F, col.names = T, quote = F)
 
 
-missing_data <- read.table("paramTest/aggregated_data/minmaxcov_3_99/maf_mac_missing.mincov3.maxcov99.txt", header=TRUE, na.strings = NA)
+missing_data <- read.table("paramTest/aggregated_data/minmaxcov_4_99/maf_mac_missing.mincov4.maxcov99.txt", header=TRUE, na.strings = NA)
 
 ## FOR EACH POOL
 # Remove Overall data
 DATA.missing.pools <- missing_data %>%
-  #filter(POP !="Overall" & MAF == 0 | MAF == 0.01 | MAF == 0.05 | MAF == 0.1) 
   filter(POP !="Overall") 
 
 # Plot all pools
@@ -93,7 +94,7 @@ pools.missing.mac <- ggplot(DATA.missing.pools, aes(x=MAC, y=Missing, color=fact
                      ylim(0,75) +
                      xlab("Minor allele count (MAC)") +
                      ylab("% of missing data") +
-                     facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                     facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                      theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                         panel.grid.major = element_blank(),
                                         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -107,7 +108,7 @@ pools.missing.maf <- ggplot(DATA.missing.pools, aes(x=MAF, y=Missing, color=fact
                      ylim(0,75) +
                      xlab("Minor allele frequency (MAF)") +
                      ylab("% of missing data") +
-                     facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                     facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                      theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                         panel.grid.major = element_blank(),
                                         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -130,6 +131,10 @@ table(DATA.missing.pools[which(DATA.missing.pools$Missing >= 30), 3])
 #NW_BIO1_S1 PA_BIO1_S1 PA_BIO4_S1 PA_BIO4_S2 WO_BIO4_S3 
 #65         65         52         52         65
 
+# Mincov=4; Maxcov=99 (more mafs)
+#NW_BIO1_S1 PA_BIO1_S1 PA_BIO4_S1 PA_BIO4_S2 WO_BIO4_S3 
+#75         75         60         60         75 
+
 # Mincov=5; Maxcov=95
 #NW_BIO1_S1 PA_BIO1_S1 PA_BIO4_S1 PA_BIO4_S2 WO_BIO1_S1 WO_BIO4_S3 
 #78         78         60         52         36         66 
@@ -146,7 +151,7 @@ pools.missing.mac.filtered <- ggplot(DATA.missing.pools.filtered, aes(x=MAC, y=M
                               ylim(0,75) +
                               xlab("Minor allele count (MAC)") +
                               ylab("% of missing data") +
-                              facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                              facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                               theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                                  panel.grid.major = element_blank(),
                                                  panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -160,7 +165,7 @@ pools.missing.maf.filtered <- ggplot(DATA.missing.pools.filtered, aes(x=MAF, y=M
                               ylim(0,75) +
                               xlab("Minor allele frequency (MAF)") +
                               ylab("% of missing data") +
-                              facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                              facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                               theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                                  panel.grid.major = element_blank(),
                                                  panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -186,7 +191,7 @@ missingP<-ggarrange(ggarrange(pools.missing.mac,
 
 missingP
 
-ggsave("results/aggregated_data/minmaxcov_3_99/Figure_missing_maf_mac_pools.pdf",
+ggsave("results/aggregated_data/minmaxcov_4_99/Figure_missing_maf_mac_pools.pdf",
        missingP,
        device="pdf",
        width=15,
@@ -206,7 +211,7 @@ overall.missing.mac <- ggplot(DATA.missing.overall, aes(x=MAC, y=Missing, color=
                               ylim(0,75) +
                               xlab("Minor allele count (MAC)") +
                               ylab("% of missing data") +
-                              facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                              facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                               theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                                  panel.grid.major = element_blank(),
                                                  panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -220,7 +225,7 @@ overall.missing.maf <- ggplot(DATA.missing.overall, aes(x=MAF, y=Missing, color=
                        ylim(0,75) +
                        xlab("Minor allele frequency (MAF)") +
                        ylab("% of missing data") +
-                       facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                       facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                        theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                           panel.grid.major = element_blank(),
                                           panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -234,7 +239,7 @@ for (i in seq_along(MAC))
   for (j in seq_along(MAF))
   {
    print(paste0("MAC:", MAC[i], " MAF:", MAF[j]))
-   dt <- vcf2pooldata(vcf.file = paste0("paramTest/aggregated_data/minmaxcov_3_99/aphidpool.PoolSeq.PoolSNP.",0, ".", MAC[i],".paramTest.vcf"),
+   dt <- vcf2pooldata(vcf.file = paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.",0, ".", MAC[i],".paramTest.vcf"),
                       poolsizes = poolsizes,
                       poolnames = poolnames,
                       min.cov.per.pool = -1,
@@ -257,11 +262,11 @@ for (i in seq_along(MAC))
   }
 }
 
-write.table(missing_data_filtered, file = "paramTest/aggregated_data/minmaxcov_3_99/maf_mac_missing_filtered.mincov3.maxcov99.txt",
+write.table(missing_data_filtered, file = "paramTest/aggregated_data/minmaxcov_4_99/maf_mac_missing_filtered.mincov4.maxcov99.txt",
             row.names = F, col.names = T, quote = F)
 
 
-missing_data_filtered <- read.table("paramTest/aggregated_data/minmaxcov_3_99/maf_mac_missing_filtered.mincov3.maxcov99.txt", header=TRUE, na.strings = NA)
+missing_data_filtered <- read.table("paramTest/aggregated_data/minmaxcov_4_99/maf_mac_missing_filtered.mincov4.maxcov99.txt", header=TRUE, na.strings = NA)
 
 # Keep only Overall data after filtering pools
 DATA.missing.overall.filtered <- missing_data_filtered %>%
@@ -275,7 +280,7 @@ overall.missing.mac.filtered <- ggplot(DATA.missing.overall.filtered, aes(x=MAC,
                                 ylim(0,75) +
                                 xlab("Minor allele count (MAC)") +
                                 ylab("% of missing data") +
-                                facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                                facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                                 theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                                    panel.grid.major = element_blank(),
                                                    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -289,7 +294,7 @@ overall.missing.maf.filtered <- ggplot(DATA.missing.overall.filtered, aes(x=MAF,
                                 ylim(0,75) +
                                 xlab("Minor allele frequency (MAF)") +
                                 ylab("% of missing data") +
-                                facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                                facet_wrap(vars("Pool's % of missing data ('min cov' = 4; 'max cov' = 99%)")) +
                                 theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                                    panel.grid.major = element_blank(),
                                                    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -314,12 +319,184 @@ missingP.overall <- ggarrange(ggarrange(overall.missing.mac,
 
 missingP.overall
 
-ggsave("results/aggregated_data/minmaxcov_3_99/Figure_missing_maf_mac_global.pdf",
+ggsave("results/aggregated_data/minmaxcov_4_99/Figure_missing_maf_mac_global.pdf",
        missingP.overall,
        device="pdf",
        width=15,
        height=9)
 
+
+###
+# FST, SAMPLE SIZE AND REALIZED MAF
+###
+
+poolfstat_data=NULL
+for (i in seq_along(MAC))
+{
+  for (j in seq_along(MAF))
+  {
+    print(paste0("MAC:", MAC[i], " MAF:", MAF[j]))
+    dt <- vcf2pooldata(vcf.file = paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.",0, ".", MAC[i],".paramTest.vcf"),
+                       poolsizes = poolsizes,
+                       poolnames = poolnames,
+                       min.cov.per.pool = -1,
+                       min.rc = 1,
+                       max.cov.per.pool = 1e+20,
+                       min.maf = MAF[j],
+                       remove.indels = FALSE,
+                       nlines.per.readblock = 1e+20)
+    
+    
+    # Realized MAF calculations
+    imputedMLCount <- imputedRefMLCount(dt)
+    imputedRefMLFreq <- imputedMLCount[[1]]/imputedMLCount[[3]]
+    
+    a <- apply(imputedRefMLFreq, 1,  function(x) mean(x, na.rm = T))
+    b <- apply(imputedRefMLFreq, 1,  function(x) 1-mean(x, na.rm = T))
+    
+    p <- pmin(a, b)
+    maf <- min(p)
+    
+    # Fst
+    dt.fst <- computeFST(dt, method = "Anova", nsnp.per.bjack.block = 10, verbose=FALSE)
+    
+    gfst = dt.fst$FST 
+    mean.gfst = dt.fst$mean.fst
+    se.gfst = dt.fst$mean.fst+c(-1.96,1.96)*dt.fst$se.fst
+    
+    
+    res <- data.frame(MAC=MAC[i], MAF=MAF[j], NSNPs= dt@nsnp, rMAF=maf, 
+                      gFST=gfst, mean_gFST=mean.gfst, l_se_gFST=se.gfst[1], u_se_gFST=se.gfst[2])
+    
+    poolfstat_data <- rbind(poolfstat_data, res)
+  }
+}
+
+write.table(poolfstat_data, file = "paramTest/aggregated_data/minmaxcov_4_99/nsnps_rmaf_fst.mincov4.maxcov99.txt",
+            row.names = F, col.names = T, quote = F)
+
+
+poolfstat_data <- read.table("paramTest/aggregated_data/minmaxcov_4_99/nsnps_rmaf_fst.mincov4.maxcov99.txt", header=TRUE, na.strings = NA)
+
+# Number of SNPs
+number.snps.mac <- ggplot(poolfstat_data, aes(x=MAC, y=NSNPs, color=factor(MAF))) + 
+                          geom_point() +
+                          geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
+                          labs(color="MAF") + 
+                          #ylim(0,75) +
+                          xlab("Minor allele count (MAC)") +
+                          ylab("Number of SNPs") +
+                          facet_wrap(vars("Pool's number of SNPs ('min cov' = 4; 'max cov' = 99%)")) +
+                          theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
+                                             panel.grid.major = element_blank(),
+                                             panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+                                             legend.position = "right", axis.text = element_text(size = 14),
+                                             axis.title=element_text(size=16))
+                      
+number.snps.maf <- ggplot(poolfstat_data, aes(x=MAF, y=NSNPs, color=factor(MAC))) + 
+                   geom_point() +
+                   geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
+                   labs(color="MAC") + 
+                   #ylim(0,75) +
+                   xlab("Minor allele frequency (MAF)") +
+                   ylab("Number of SNPs") +
+                   facet_wrap(vars("Pool's number of SNPs ('min cov' = 4; 'max cov' = 99%)")) +
+                   theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
+                                      panel.grid.major = element_blank(),
+                                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+                                      legend.position = "right", axis.text = element_text(size = 14),
+                                      axis.title=element_text(size=16))
+
+## Realized MAF
+#rMAF.mac <- ggplot(poolfstat_data, aes(x=MAC, y=rMAF, color=factor(MAF))) + 
+#            geom_point() +
+#            geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
+#            labs(color="MAF") + 
+#            #ylim(0,75) +
+#            xlab("Minor allele count (MAC)") +
+#            ylab("Realized MAF") +
+#            facet_wrap(vars("Pool's realized MAF ('min cov' = 4; 'max cov' = 99%)")) +
+#            theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
+#                               panel.grid.major = element_blank(),
+#                               panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+#                               legend.position = "right", axis.text = element_text(size = 14),
+#                               axis.title=element_text(size=16))
+#          
+#rMAF.maf <- ggplot(poolfstat_data, aes(x=MAF, y=rMAF, color=factor(MAC))) + 
+#                   geom_point() +
+#                   geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
+#                   labs(color="MAC") + 
+#                   #ylim(0,75) +
+#                   xlab("Minor allele frequency (MAF)") +
+#                   ylab("Realized MAF") +
+#                   facet_wrap(vars("Pool's realized MAF ('min cov' = 4; 'max cov' = 99%)")) +
+#                   theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
+#                                      panel.grid.major = element_blank(),
+#                                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+#                                      legend.position = "right", axis.text = element_text(size = 14),
+#                                      axis.title=element_text(size=16))
+#
+poolfstat_data[poolfstat_data$MAF == 0.001, ]
+#MAC   MAF NSNPs        rMAF  
+#2    5 0.001 52350 0.004761905
+#17  10 0.001 45098 0.014285714
+#32  15 0.001 41126 0.022222222
+#47  20 0.001 37473 0.022222222
+#62  50 0.001 17847 0.055555556
+#77 100 0.001  5709 0.077777778
+
+# global FST
+gfst.mac <- ggplot(poolfstat_data, aes(x=MAC, y=gFST, color=factor(MAF))) + 
+            geom_point() +
+            geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
+            labs(color="MAF") + 
+            #ylim(0,75) +
+            xlab("Minor allele count (MAC)") +
+            ylab("gFST") +
+            facet_wrap(vars("Pool's gFST ('min cov' = 4; 'max cov' = 99%)")) +
+            theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
+                               panel.grid.major = element_blank(),
+                               panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+                               legend.position = "right", axis.text = element_text(size = 14),
+                               axis.title=element_text(size=16))
+          
+gfst.maf <- ggplot(poolfstat_data, aes(x=MAF, y=gFST, color=factor(MAC))) + 
+                   geom_point() +
+                   geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
+                   labs(color="MAC") + 
+                   #ylim(0,75) +
+                   xlab("Minor allele frequency (MAF)") +
+                   ylab("gFST") +
+                   facet_wrap(vars("Pool's gFST ('min cov' = 4; 'max cov' = 99%)")) +
+                   theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
+                                      panel.grid.major = element_blank(),
+                                      panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+                                      legend.position = "right", axis.text = element_text(size = 14),
+                                      axis.title=element_text(size=16))
+                                                    
+par(mfrow=c(3, 1))
+nsnps.fst.rmaf <- ggarrange(ggarrange(number.snps.mac,
+                                      gfst.mac,
+                                      labels = "A",
+                                      common.legend = T,
+                                      legend = "bottom",
+                                      font.label = list(size = 24, face = "bold"),
+                                      nrow=2),
+                              ggarrange(number.snps.maf,
+                                        gfst.maf,
+                                        labels = "B",
+                                        common.legend = T,
+                                        legend = "bottom",
+                                        font.label = list(size = 24, face = "bold"),
+                                        nrow=2))
+
+nsnps.fst.rmaf
+
+ggsave("results/aggregated_data/minmaxcov_4_99/Figure_nsnps_gfst_maf_mac.pdf",
+       nsnps.fst.rmaf,
+       device="pdf",
+       width=15,
+       height=9)
 
 ###
 # pN/pS DATA AS A FUNCTION OF MAF & MAC
@@ -330,7 +507,7 @@ ggsave("results/aggregated_data/minmaxcov_3_99/Figure_missing_maf_mac_global.pdf
 # Combine multiples files
 macs.mafs = NULL
 for (i in seq_along(MAC)){
-  mac.file <- read.table(file = paste0("paramTest/aggregated_data/minmaxcov_3_99/PoolSNP.pnps.mafs.", MAC[i],".mincov3.maxcov99.gz"), 
+  mac.file <- read.table(file = paste0("paramTest/aggregated_data/minmaxcov_4_99/PoolSNP.pnps.mafs.", MAC[i],".mincov4.maxcov99.gz"), 
                          header = T, na.strings = NA)
   mac.file$MAC <- MAC[i]
   
@@ -338,10 +515,10 @@ for (i in seq_along(MAC)){
   
 }
 
-write.table(macs.mafs, file = "paramTest/aggregated_data/minmaxcov_3_99/maf_mac_pnps.mincov3.maxcov99.txt",
+write.table(macs.mafs, file = "paramTest/aggregated_data/minmaxcov_4_99/maf_mac_pnps.mincov4.maxcov99.txt",
             row.names = F, col.names = T, quote = F)
 
-macs.mafs <- read.table("paramTest/aggregated_data/minmaxcov_3_99/maf_mac_pnps.mincov3.maxcov99.txt", header=TRUE, na.strings = NA)
+macs.mafs <- read.table("paramTest/aggregated_data/minmaxcov_4_99/maf_mac_pnps.mincov4.maxcov99.txt", header=TRUE, na.strings = NA)
 
 
 # Keep only genomewid data
@@ -351,11 +528,12 @@ DATA.pnps.pools.mafs <- macs.mafs %>%
 # Plot 
 genomewide.pspn.mac <- ggplot(DATA.pnps.pools.mafs, aes(x=MAC, y=pNpS, color=factor(MAF))) + 
                        geom_point() +
-                       geom_smooth(method = 'loess', se=TRUE,fullrange=TRUE) +
+                       geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
                        labs(color="MAF") + 
                        ylim(0.6,2.2) +
                        xlab("Minor allele count (MAC)") +
                        ylab(expression(italic("p")["N"]/italic("p")["S"])) +
+                       facet_wrap(vars("Pool's pNpS ('min cov' = 4; 'max cov' = 99%)")) +
                        theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                           panel.grid.major = element_blank(),
                                           panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -364,11 +542,12 @@ genomewide.pspn.mac <- ggplot(DATA.pnps.pools.mafs, aes(x=MAC, y=pNpS, color=fac
                       
 genomewide.pspn.maf <- ggplot(DATA.pnps.pools.mafs, aes(x=MAF, y=pNpS, color=factor(MAC))) + 
                        geom_point() +
-                       geom_smooth(method = 'loess', se=TRUE,fullrange=TRUE) +
+                       geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
                        labs(color="MAC") + 
                        ylim(0.6,2.2) +
                        xlab("Minor allele frequency (MAF)") +
                        ylab(expression(italic("p")["N"]/italic("p")["S"])) +
+                       facet_wrap(vars("Pool's pNpS ('min cov' = 4; 'max cov' = 99%)")) +
                        theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                           panel.grid.major = element_blank(),
                                           panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -383,12 +562,12 @@ DATA.pnps.pools.mafs.filtered <- DATA.pnps.pools.mafs %>%
 
 genomewide.pspn.mac.filtered <- ggplot(DATA.pnps.pools.mafs.filtered, aes(x=MAC, y=pNpS, color=factor(MAF))) + 
                                 geom_point() +
-                                geom_smooth(method = 'loess', se=TRUE,fullrange=TRUE) +
+                                geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
                                 labs(color="MAF") + 
                                 ylim(0.6,2.2) +
                                 xlab("Minor allele count (MAC)") +
                                 ylab(expression(italic("p")["N"]/italic("p")["S"])) +
-                                #facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                                facet_wrap(vars("Pool's pNpS ('min cov' = 4; 'max cov' = 99%)")) +
                                 theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                                    panel.grid.major = element_blank(),
                                                    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -397,12 +576,12 @@ genomewide.pspn.mac.filtered <- ggplot(DATA.pnps.pools.mafs.filtered, aes(x=MAC,
                                
 genomewide.pspn.maf.filtered <- ggplot(DATA.pnps.pools.mafs.filtered, aes(x=MAF, y=pNpS, color=factor(MAC))) + 
                                 geom_point() +
-                                geom_smooth(method = 'loess', se=TRUE,fullrange=TRUE) +
+                                geom_smooth(method = 'loess', se=FALSE,fullrange=TRUE) +
                                 labs(color="MAC") + 
                                 ylim(0.6,2.2) +
                                 xlab("Minor allele frequency (MAF)") +
                                 ylab(expression(italic("p")["N"]/italic("p")["S"])) +
-                                #facet_wrap(vars("Pool's % of missing data ('min cov' = 3; 'max cov' = 99%)")) +
+                                facet_wrap(vars("Pool's pNpS ('min cov' = 4; 'max cov' = 99%)")) +
                                 theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
                                                    panel.grid.major = element_blank(),
                                                    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
@@ -429,7 +608,7 @@ pnpsP <- ggarrange(ggarrange(genomewide.pspn.mac,
 
 pnpsP
 
-ggsave("results/aggregated_data/minmaxcov_3_99/Figure_pnps_maf_mac.pdf",
+ggsave("results/aggregated_data/minmaxcov_4_99/Figure_pnps_maf_mac.pdf",
        pnpsP,
        device="pdf",
        width=15,
@@ -447,16 +626,16 @@ DATA.pnps.mean.maf.mac <- DATA.pnps.pools.mafs %>%
   )
 
 DATA.pnps.mean.maf.mac.selected.maf <- DATA.pnps.mean.maf.mac %>%
-  filter(MAF == 0 | MAF == 0.01 | MAF == 0.05 | MAF == 0.1)
+  filter(MAF == 0.005 | MAF == 0.01 | MAF == 0.05 | MAF == 0.1)
 
 DATA.pnps.mean.maf.mac.selected.mac <- DATA.pnps.mean.maf.mac %>%
-  filter(MAC == 5 | MAC == 10 | MAC == 50 | MAC == 100)
+  filter(MAC == 5 | MAC == 20 | MAC == 50 | MAC == 100)
 
 # More fancy plot
 
 # All MAC as a function of MAF
 genomewide.mean.pspn.mac <- ggplot(DATA.pnps.mean.maf.mac.selected.maf, aes(x=MAC, y=pnps.m, color=factor(MAF))) + 
-                            geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAF==0.), aes(x=MAC,y=pNpS)) +
+                            geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAF==0.005), aes(x=MAC,y=pNpS)) +
                             geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAF==0.01), aes(x=MAC,y=pNpS)) +
                             geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAF==0.05), aes(x=MAC,y=pNpS)) +
                             geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAF==0.1), aes(x=MAC,y=pNpS)) +
@@ -490,10 +669,14 @@ genomewide.mean.pspn.mac <- ggplot(DATA.pnps.mean.maf.mac.selected.maf, aes(x=MA
                                                              alpha=ALPHA)), name="MAF")
 genomewide.mean.pspn.mac
 
+
+
+
+
 # All MAF as a function of MAC
 genomewide.mean.pspn.maf <- ggplot(DATA.pnps.mean.maf.mac.selected.mac, aes(x=MAF, y=pnps.m, color=factor(MAC))) + 
                             geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAC==5), aes(x=MAF,y=pNpS)) +
-                            geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAC==10), aes(x=MAF,y=pNpS)) +
+                            geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAC==20), aes(x=MAF,y=pNpS)) +
                             geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAC==50), aes(x=MAF,y=pNpS)) +
                             geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAC==100), aes(x=MAF,y=pNpS)) +
                             geom_ribbon(aes(ymin = pnps.m-pnps.sd, ymax = pnps.m+pnps.sd, fill=factor(MAC)), colour = NA, alpha=0.2) +
@@ -515,7 +698,7 @@ genomewide.mean.pspn.maf <- ggplot(DATA.pnps.mean.maf.mac.selected.mac, aes(x=MA
                                                        alpha(c("#56B4E9"),
                                                              alpha=ALPHA),
                                                        alpha(c("#009E73"),
-                                                             alpha=ALPHA)), name="MAC", breaks = c("5", "10", "50", "100"))+
+                                                             alpha=ALPHA)), name="MAC", breaks = c("5", "20", "50", "100"))+
                             scale_colour_manual(values=c(alpha(c("#999999"),
                                                                alpha=ALPHA),
                                                          alpha(c("#E69F00"),
@@ -523,7 +706,7 @@ genomewide.mean.pspn.maf <- ggplot(DATA.pnps.mean.maf.mac.selected.mac, aes(x=MA
                                                          alpha(c("#56B4E9"),
                                                                alpha=ALPHA),
                                                          alpha(c("#009E73"),
-                                                               alpha=ALPHA)), name="MAC", breaks = c("5", "10", "50", "100"))
+                                                               alpha=ALPHA)), name="MAC", breaks = c("5", "20", "50", "100"))
 genomewide.mean.pspn.maf
 
 
@@ -539,15 +722,15 @@ DATA.pnps.mean.maf.mac.filtered <- DATA.pnps.pools.mafs.filtered %>%
   )
 
 DATA.pnps.mean.maf.mac.selected.maf.filtered <- DATA.pnps.mean.maf.mac.filtered %>%
-  filter(MAF == 0 | MAF == 0.01 | MAF == 0.05 | MAF == 0.1)
+  filter(MAF == 0.005 | MAF == 0.01 | MAF == 0.05 | MAF == 0.1)
 
 DATA.pnps.mean.maf.mac.selected.mac.filtered <- DATA.pnps.mean.maf.mac.filtered %>%
-  filter(MAC == 5 | MAC == 10 | MAC == 50 | MAC == 100)
+  filter(MAC == 5 | MAC == 20 | MAC == 50 | MAC == 100)
 
 # More fancy plot
 # All MAC as a function of MAF
 genomewide.mean.pspn.mac.filtered <- ggplot(DATA.pnps.mean.maf.mac.selected.maf.filtered, aes(x=MAC, y=pnps.m, color=factor(MAF))) + 
-                                     geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAF==0), aes(x=MAC,y=pNpS)) +   
+                                     geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAF==0.005), aes(x=MAC,y=pNpS)) +   
                                      geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAF==0.01), aes(x=MAC,y=pNpS)) +
                                      geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAF==0.05), aes(x=MAC,y=pNpS)) +
                                      geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAF==0.1), aes(x=MAC,y=pNpS)) +
@@ -585,7 +768,7 @@ genomewide.mean.pspn.mac.filtered
 # All MAF as a function of MAC
 genomewide.mean.pspn.maf.filtered <- ggplot(DATA.pnps.mean.maf.mac.selected.mac.filtered, aes(x=MAF, y=pnps.m, color=factor(MAC))) + 
                                      geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAC==5), aes(x=MAF,y=pNpS)) +
-                                     geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAC==10), aes(x=MAF,y=pNpS)) +
+                                     geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAC==20), aes(x=MAF,y=pNpS)) +
                                      geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAC==50), aes(x=MAF,y=pNpS)) +
                                      geom_jitter(data=filter(DATA.pnps.pools.mafs.filtered, MAC==100), aes(x=MAF,y=pNpS)) +
                                      geom_ribbon(aes(ymin = pnps.m-pnps.sd, ymax = pnps.m+pnps.sd, fill=factor(MAC)), colour = NA, alpha=0.2) +
@@ -607,7 +790,7 @@ genomewide.mean.pspn.maf.filtered <- ggplot(DATA.pnps.mean.maf.mac.selected.mac.
                                                                 alpha(c("#56B4E9"),
                                                                       alpha=ALPHA),
                                                                 alpha(c("#009E73"),
-                                                                      alpha=ALPHA)), name="MAC", breaks = c("5", "10", "50", "100"))+
+                                                                      alpha=ALPHA)), name="MAC", breaks = c("5", "20", "50", "100"))+
                                      scale_colour_manual(values=c(alpha(c("#999999"),
                                                                         alpha=ALPHA),
                                                                   alpha(c("#E69F00"),
@@ -615,7 +798,7 @@ genomewide.mean.pspn.maf.filtered <- ggplot(DATA.pnps.mean.maf.mac.selected.mac.
                                                                   alpha(c("#56B4E9"),
                                                                         alpha=ALPHA),
                                                                   alpha(c("#009E73"),
-                                                                        alpha=ALPHA)), name="MAC", breaks = c("5", "10", "50", "100"))
+                                                                        alpha=ALPHA)), name="MAC", breaks = c("5", "20", "50", "100"))
 genomewide.mean.pspn.maf.filtered
 
 
@@ -638,7 +821,7 @@ mean.pnpsP <- ggarrange(ggarrange(genomewide.mean.pspn.mac,
 mean.pnpsP
 
 
-ggsave("results/aggregated_data/minmaxcov_3_99/Figure_fancy_pnps_maf_mac.pdf",
+ggsave("results/aggregated_data/minmaxcov_4_99/Figure_fancy_pnps_maf_mac.pdf",
        mean.pnpsP,
        device="pdf",
        width=15,
@@ -721,7 +904,8 @@ Classify.plot<-ggplot(DATA,aes(x = pnps.m ,y = missing.m, col = TH.missing))+
                scale_colour_manual(values=c(alpha(c("red"),
                                                 alpha=ALPHA-0.50),
                                           alpha(c("black"),
-                                                alpha=ALPHA-0.50)), name = "Pool status")
+                                                alpha=ALPHA-0.50)), name = "Pool status") +
+               facet_wrap(vars("PoolSNP MAF = 0"))
 Classify.plot
 
 
@@ -730,12 +914,12 @@ STATUSLIST=data.frame(POP=DATA$POP,Status=DATA$TH.missing)
 
 ## keep pnps without MAF filtering only
 DATA.poolsnp.group.MAF0 <- macs.mafs %>%
-  filter(MAF == 0.01 & MAC==10 & Chrom =="genomewide")
+  filter(MAF == 0.05 & MAC==5 & Chrom =="genomewide")
 
 macs.mafs<-merge(macs.mafs, STATUSLIST,by.x="POP",by.y="POP")
 
 DATA.pnps.group.mac.plot <- macs.mafs %>%
-  filter(Chrom =="genomewide" & MAF==0.01) %>%
+  filter(Chrom =="genomewide" & MAF==0.05) %>%
   group_by(MAC) %>%
   summarise(
     n=n(),
@@ -746,7 +930,7 @@ DATA.pnps.group.mac.plot <- macs.mafs %>%
 
 
 DATA.poolsnp.plot.mac <- ggplot(DATA.pnps.group.mac.plot, aes(x=MAC,y=pnps.m))+
-                         geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAF==0.01),
+                         geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAF==0.05),
                                      aes(x=MAC,y=pNpS,col=Status))+
                          geom_ribbon(aes(ymin = pnps.m-pnps.sd, ymax = pnps.m+pnps.sd),
                                      colour = NA,
@@ -771,12 +955,12 @@ DATA.poolsnp.plot.mac <- ggplot(DATA.pnps.group.mac.plot, aes(x=MAC,y=pnps.m))+
                                                           alpha=ALPHA-0.50),
                                                     alpha(c("black"),
                                                           alpha=ALPHA-0.50)))+
-                         facet_wrap(vars("PoolSNP MAF=0.01"))
+                         facet_wrap(vars("PoolSNP MAF = 0.05"))
 DATA.poolsnp.plot.mac
 
 
 DATA.pnps.group.maf.plot <- macs.mafs %>%
-  filter(Chrom =="genomewide" & MAC==10) %>%
+  filter(Chrom =="genomewide" & MAC==5) %>%
   group_by(MAF) %>%
   summarise(
     n=n(),
@@ -787,7 +971,7 @@ DATA.pnps.group.maf.plot <- macs.mafs %>%
 
 
 DATA.poolsnp.plot.maf <- ggplot(DATA.pnps.group.maf.plot, aes(x=MAF,y=pnps.m))+
-                          geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAC==10),
+                          geom_jitter(data=filter(macs.mafs,Chrom=="genomewide" & MAC==5),
                                       aes(x=MAF,y=pNpS,col=Status))+
                           geom_ribbon(aes(ymin = pnps.m-pnps.sd, ymax = pnps.m+pnps.sd),
                                       colour = NA,
@@ -813,7 +997,7 @@ DATA.poolsnp.plot.maf <- ggplot(DATA.pnps.group.maf.plot, aes(x=MAF,y=pnps.m))+
                                                              alpha=ALPHA-0.50),
                                                        alpha(c("black"),
                                                              alpha=ALPHA-0.50)))+
-                          facet_wrap(vars("PoolSNP MAC=10"))
+                          facet_wrap(vars("PoolSNP MAC = 5"))
 DATA.poolsnp.plot.maf
 
 
@@ -830,7 +1014,7 @@ FP<-ggarrange(Classify.plot,
               font.label = list(size = 28, face = "bold"))
 FP
 
-ggsave("results/aggregated_data/minmaxcov_3_99/Figure_missing_pnps.pdf",
+ggsave("results/aggregated_data/minmaxcov_4_99/Figure_missing_pnps.pdf",
        FP,
        device="pdf",
        width=15,

@@ -19,7 +19,7 @@ packageVersion("poolfstat")
 source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
 ### COMPLETE DATASET
-## Data set 1: Min_cov=4; Max_cov=0.99; [start MAF=0.001; final MAF=0.01]; MAC=5; 21 pools; miss_fraction=0.50
+## Data set 1: Min_cov=4; Max_cov=0.99; [start MAF=0.001; final MAF=0.05]; MAC=5; 21 pools; miss_fraction=0.50
 ###
 
 poolsizes <- rep(10,21)
@@ -38,46 +38,131 @@ biotype.col <- c("#247F00","#AB1A53",
                  "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
                  "#247F00","#AB1A53","#AB1A53","#AB1A53")
 
+## INVESTIGATE THE RELANTIOSHIP BETWEEN MAC AND MAF IN ONE DATASET
+## MAF=0.001
+#testcase.dt.1 <- vcf2pooldata(
+#                              vcf.file = "vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.gz",
+#                              poolsizes = poolsizes,
+#                              poolnames = poolnames,
+#                              min.cov.per.pool = -1,
+#                              min.rc = 1,
+#                              max.cov.per.pool = 1e+06,
+#                              min.maf = 0.001,
+#                              remove.indels = FALSE,
+#                              nlines.per.readblock = 1e+06
+#)
+#
+#testcase.dt.1
+## * * * PoolData Object * * * 
+## * Number of SNPs   = 344524 
+## * Number of Pools  =  21 
+## Number of scaffolds:
+#
+## CHECK THE FREQUENCY OF EACH MAC CLASS FROM THE ORIGINAL READ COUNT DATA
+#testcase.ALTallele.count <- (testcase.dt.1@readcoverage - testcase.dt.1@refallele.readcount)
+#
+#testcase.overall.ALTallele.count <- apply(testcase.ALTallele.count, 1, sum)
+#testcase.overall.REFallele.count <- apply(testcase.dt.1@refallele.readcount, 1, sum)
+#
+## MAC
+#overall.MAC <- pmin(testcase.overall.REFallele.count, testcase.overall.ALTallele.count)
+#
+## MAF
+#testcase.imputedMLCount <- imputedRefMLCount(testcase.dt.1)
+#testcase.imputedRefMLFreq <- testcase.imputedMLCount[[1]]/testcase.imputedMLCount[[3]]
+#
+#testcase.overall.ALTallele.freq <- apply(testcase.imputedRefMLFreq, 1,  function(x) 1-mean(x, na.rm = T))
+#testcase.overall.REFallele.freq <- apply(testcase.imputedRefMLFreq, 1,  function(x) mean(x, na.rm = T))
+#
+#overall.MAF <- pmin(testcase.overall.REFallele.freq, testcase.overall.ALTallele.freq)
+#
+## HOW MAF CHANGE WITH MAC
+#macs <- seq(5, 100, 5)
+#mafs.macs.table <- NULL
+#for (i in seq_along(macs))
+#{
+#  # REF/ALT Alleles
+#  a <- testcase.overall.REFallele.freq[overall.MAC >= macs[i]] 
+#  b <- testcase.overall.ALTallele.freq[overall.MAC >= macs[i]] 
+#  ref.min <- min(a); ref.max <- max(a)
+#  alt.min <- min(b); alt.max <- max(b)
+#  
+#  # MAF
+#  p <- pmin(a,b)
+#  maf <- min(p)
+#  
+#  #OUTPUT
+#  res <- data.frame(MAC=macs[i], MAF=maf, REF_MIN=ref.min, REF_MAX=ref.max, ALT_MIN=alt.min, ALT_MAX=alt.max)
+#  mafs.macs.table <- rbind(mafs.macs.table,res)
+#}
+#
+## MAF as a function of MAC
+#plot(mafs.macs.table$MAC, mafs.macs.table$MAF,  type = "l", lty = 1, col="black", xlab="MAC", ylab="MAF", ylim=c(0,0.15))
+#lines(mafs.macs.table$MAC, mafs.macs.table$REF_MIN,  type = "l", lty = 1, col="blue")
+##lines(mafs.macs.table$MAC, mafs.macs.table$REF_MAX,  type = "l", lty = 2, col="blue")
+#lines(mafs.macs.table$MAC, mafs.macs.table$ALT_MIN,  type = "l", lty = 1, col="red")
+##lines(mafs.macs.table$MAC, mafs.macs.table$ALT_MAX,  type = "l", lty = 2, col="red")
+#
+## MAC         MAF    REF_MIN
+##   5 0.004761905 0.01904762 
+##  10 0.014285714 0.03529412 
+##  15 0.019047619 0.04210526 
+##  20 0.022222222 0.05555556 
+##  25 0.023809524 0.08500000 
+##  30 0.023809524 0.09000000 
+##  35 0.023809524 0.09000000 
+##  40 0.023809524 0.09000000 
+##  45 0.023809524 0.09005848 
+##  50 0.023809524 0.09473684 
+## 100 0.061904762 0.10333333 
+#
+#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pop_genomics/poolfstat.poolsnp.workspace.RData")
+#
+load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace.RData")
+
+######
 dt.1 <- vcf2pooldata(
-                     vcf.file = "vcf/aggregated_data/minmaxcov_4_99/pools_all/miss_frac05/aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.gz",
+                     vcf.file = "vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.gz",
                      poolsizes = poolsizes,
                      poolnames = poolnames,
                      min.cov.per.pool = -1,
                      min.rc = 1,
                      max.cov.per.pool = 1e+06,
-                     min.maf = 0.01,
+                     min.maf = 0.05,
                      remove.indels = FALSE,
                      nlines.per.readblock = 1e+06
 )
-
 dt.1
 # * * * PoolData Object * * * 
-# * Number of SNPs   = 321056 
+# * Number of SNPs   = 259691
 # * Number of Pools  =  21 
 # Number of scaffolds:
-length(unique(sort(dt.1@snp.info$Chromosome))) #708
+
+length(unique(sort(dt.1@snp.info$Chromosome))) #706
 
 ## COMPUTE MAXIMUM LIKELIHOOD IMPUTED SAMPLE ALLELE COUNT
-dt.1.refallelecount <- imputedRefMLCount(dt.1)
+dt.1.imputedMLCount <- imputedRefMLCount(dt.1)
+dt.1.imputedRefMLFreq <- dt.1.imputedMLCount[[1]]/dt.1.imputedMLCount[[3]]
 
-dt.1.refalllefreq <- dt.1.refallelecount/dt.1@poolsizes[1]
+min(apply(dt.1.imputedRefMLFreq, 1,  function(x) 1-mean(x, na.rm = T)))
+max(apply(dt.1.imputedRefMLFreq, 1,  function(x) 1-mean(x, na.rm = T)))
 
 # Sanity check if the MAF correspond to the MAF used in filtering
-hist(apply(dt.1.refalllefreq == 1, 1, function(x) sum(x, na.rm = T)))
-table(apply(dt.1.refalllefreq == 1, 1, function(x) sum(x, na.rm = T)))
-#quasi.fixed <- which(apply(dt.1.refalllefreq == 1, 1, function(x) sum(x, na.rm = T)) == 20) 
+hist(apply(dt.1.imputedRefMLFreq == 1, 1, function(x) sum(x, na.rm = T)))
+table(apply(dt.1.imputedRefMLFreq == 1, 1, function(x) sum(x, na.rm = T)))
+quasi.fixed <- which(apply(dt.1.imputedRefMLFreq == 1, 1, function(x) sum(x, na.rm = T)) == 20) 
 
-high.than01.af <- which(apply(dt.1.refalllefreq, 1, function(x) 1-mean(x, na.rm = T)) >= 0.01) 
-length(high.than01.af)
+higher.than05.alt.freq <- which(apply(dt.1.imputedRefMLFreq, 1, function(x) 1-mean(x, na.rm = T)) >= 0.05) 
+length(higher.than05.alt.freq)
 
-min(apply(dt.1.refalllefreq[high.than01.af,], 1,  function(x) 1-mean(x, na.rm = T)))
-max(apply(dt.1.refalllefreq[high.than01.af,], 1,  function(x) 1-mean(x, na.rm = T)))
+min(apply(dt.1.imputedRefMLFreq[higher.than05.alt.freq,], 1,  function(x) 1-mean(x, na.rm = T)))
+max(apply(dt.1.imputedRefMLFreq[higher.than05.alt.freq,], 1,  function(x) 1-mean(x, na.rm = T)))
 
-## KEEP LOCI WITH AF >= 0.01
+## KEEP LOCI WITH AF >= 0.05
 # SUBSET READ COUNT DATA
 dt.1 <- pooldata.subset(
                         pooldata=dt.1,
-                        snp.index = high.than01.af,
+                        snp.index = higher.than05.alt.freq,
                         min.cov.per.pool = -1,
                         max.cov.per.pool = 1e+06,
                         min.maf = -1,
@@ -86,23 +171,25 @@ dt.1 <- pooldata.subset(
                         verbose = TRUE
 )
 
-dt.1.refallelecount <- dt.1.refallelecount[high.than01.af, ]
-dt.1.refalllefreq <- dt.1.refalllefreq[high.than01.af,]
+dt.1.imputedRefMLCount <- dt.1.imputedMLCount[[1]][higher.than05.alt.freq, ]
+dt.1.imputedGeneMLCount <- dt.1.imputedMLCount[[3]][higher.than05.alt.freq, ]
+
+dt.1.imputedRefMLFreq <-  dt.1.imputedRefMLFreq[higher.than05.alt.freq, ]
 
 ## COMPUTE THE GLOBAL FST
 dt.1.fst <- computeFST(dt.1, method = "Anova", nsnp.per.bjack.block = 10, verbose=FALSE)
 
 # genome-wide estimate
 dt.1.fst$FST 
-# 0.002508262
+# 0.008102438
 
 # mean Block-Jackknife estimation
 dt.1.fst$mean.fst
-# 0.002532572
+# 0.008328822
 
 # CI
 dt.1.fst$mean.fst+c(-1.96,1.96)*dt.1.fst$se.fst
-# 0.0007563193 0.0043088252
+# 0.006408122 0.010249523
 
 ## FST GENOME SCAN
 dt.1.fst.scan <- computeFST(dt.1,sliding.window.size=10)
@@ -128,6 +215,7 @@ for (i in seq_along(chrm.splitted.counts))
 }
 
 # Manhattan plot
+
 par(mar=c(5,5,4,1)+.1)
 plot(dt.1.fst.scan$sliding.windows.fst$CumulatedPosition/1e6,
      dt.1.fst.scan$sliding.windows.fst$MultiLocusFst,
@@ -135,20 +223,26 @@ plot(dt.1.fst.scan$sliding.windows.fst$CumulatedPosition/1e6,
      col=chrm.colors,pch=20, cex.lab=1.4, cex.axis=1.2)
 abline(h=dt.1.fst.scan$FST,lty=2, col="lightgreen", lwd=3)
 
+# TOP Multilocus FST
+high.multi.fst <- data.frame(CHRM=dt.1.fst.scan$sliding.windows.fst$Chr[which(dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)], 
+                             POS=dt.1.fst.scan$sliding.windows.fst$Position[which(dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)], 
+                             FST= dt.1.fst.scan$sliding.windows.fst$MultiLocusFst[which(dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)])
 
 ## COMPUTE PAIRWISE FST
 dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE)
 heatmap(dt.1.pfst)
 
 dt.1.pfst <- compute.pairwiseFST(dt.1,nsnp.per.bjack.block = 100, verbose=FALSE)
-plot(dt.1.pfst, cex=0.5)
+plot(dt.1.pfst, cex=0.4)
+
+#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace.RData")
 
 ## COMPUTE THE F-STATISTICS 
-dt.1.fstats<-compute.fstats(dt.1, nsnp.per.bjack.block = 100, verbose=FALSE)
+dt.1.fstats<-compute.fstats(dt.1, nsnp.per.bjack.block = 10, verbose=FALSE)
 dt.1.fstats@heterozygosities
 
 ## COMPUTE THETA FROM F-STATS HE 
-barplot(dt.1.fstats@heterozygosities[,1]/(1-dt.1.fstats@heterozygosities[,1]))
+#barplot(dt.1.fstats@heterozygosities[,1]/(1-dt.1.fstats@heterozygosities[,1]))
 
 ## POOL MEAN HE
 pool.meanHE <- apply(dt.1.refalllefreq, 2, meanHE)
@@ -209,30 +303,29 @@ pooldata2genoselestim(pooldata = dt.1,
                       writing.dir = "data/aggregated_data/genoselestim//",
                       prefix = "aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.missfrac05.allpools")
 
-save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pop_genomics/poolfstat.poolsnp.workspace.RData")
-load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pop_genomics/poolfstat.poolsnp.workspace.RData")
 
 ### REDUCED DATASET
-## Data set 2: Min_cov=4; Max_cov=0.99; [start MAF=0.01 (from above); final MAF=0.01]; MAC=10; 21 pools; miss_fraction=0.30
+## Data set 2: Min_cov=4; Max_cov=0.99; [start MAF=0.01 (from above); final MAF=0.01]; MAC=5; 16 pools; miss_fraction=0.50
 ###
 
 # REMOVE 5 SAMPLES IDENTIFIED WITH > 30% MISSING DATA
-# REMOVE SNPS WITH > 30% AFTER THE REMOVAL OF THE SAMPLES
+# REMOVE SNPS WITH > 50% AFTER THE REMOVAL OF THE SAMPLES
 # RAW SNPS WERE ALREADY FILTERED FOR MAF=0.01
+# CHECK IF AFTER SAMPLE FILTERING, THERE ARE SNPS WITH MAF < 0.01
 # SUBSET READ COUNT DATA
 # PERFORM ALL THE ANALYSES
 
-missing.p.pools <- (apply(refcount.matrix, 2, function(x) sum(is.na(x)))/nbr.loci)*100
+missing.p.pools <- (apply(dt.1.refalllefreq, 2, function(x) sum(is.na(x)))/dt.1@nsnp)*100
 names(missing.p.pools) <- poolnames
 
 # REMOVE 5 SAMPLES IDENTIFIED WITH > 30% MISSING DATA
-reduced.refcount.matrix <- refcount.matrix[,!(missing.p.pools > 30)]
+reduced.refalllefreq.matrix <- dt.1.refalllefreq[,!(missing.p.pools > 30)]
 keep.pools <- which(missing.p.pools <= 30)
 
-nbr.pools.reduced <- dim(reduced.refcount.matrix)[2]
+nbr.pools.reduced <- dim(reduced.refalllefreq.matrix)[2]
 
 # REMOVE SNPS WITH > 50% AFTER THE REMOVAL OF THE SAMPLES
-missing.p.loci <- (apply(reduced.refcount.matrix, 1, function(x) sum(is.na(x)))/nbr.pools.reduced)*100
+missing.p.loci <- (apply(reduced.refalllefreq.matrix, 1, function(x) sum(is.na(x)))/nbr.pools.reduced)*100
 length(missing.p.loci)
 min(missing.p.loci)
 max(missing.p.loci)
@@ -243,18 +336,26 @@ length(keep.snps)
 # How many were removed?
 length(missing.p.loci) - length(keep.snps)
 
-reduced.refcount.matrix.03.filtered <- reduced.refcount.matrix[keep.snps, ] 
+reduced.refalllefreq.matrix.05.filtered <- reduced.refalllefreq.matrix[keep.snps, ] 
 
-missing.p.loci.filtered <- (apply(reduced.refcount.matrix.03.filtered, 1, function(x) sum(is.na(x)))/nbr.pools.reduced)*100
+missing.p.loci.filtered <- (apply(reduced.refalllefreq.matrix.05.filtered, 1, function(x) sum(is.na(x)))/nbr.pools.reduced)*100
 length(missing.p.loci.filtered)
 min(missing.p.loci.filtered)
 max(missing.p.loci.filtered)
+
+high.than01.af.reduced <- which(apply(reduced.refalllefreq.matrix.05.filtered, 1, function(x) 1-mean(x, na.rm = T)) >= 0.01) 
+length(high.than01.af.reduced)
+
+min(apply(reduced.refalllefreq.matrix.05.filtered[high.than01.af.reduced,], 1,  function(x) 1-mean(x, na.rm = T)))
+max(apply(reduced.refalllefreq.matrix.05.filtered[high.than01.af.reduced,], 1,  function(x) 1-mean(x, na.rm = T)))
+
+reduced.refalllefreq.matrix.05.filtered.maf01 <- reduced.refalllefreq.matrix.05.filtered[high.than01.af.reduced, ]
 
 # SUBSET READ COUNT DATA
 s.dt.1 <- pooldata.subset(
                           pooldata=dt.1,
                           pool.index = keep.pools,
-                          snp.index = keep.snps,
+                          snp.index = high.than01.af.reduced,
                           min.cov.per.pool = -1,
                           max.cov.per.pool = 1e+06,
                           min.maf = -1,
@@ -265,27 +366,27 @@ s.dt.1 <- pooldata.subset(
 
 s.dt.1
 # * * * PoolData Object * * * 
-# * Number of SNPs   =  253361 
+# * Number of SNPs   =  319860 
 # * Number of Pools  =  16
 # Number of scaffolds:
-length(unique(sort(s.dt.1@snp.info$Chromosome))) #690
+length(unique(sort(s.dt.1@snp.info$Chromosome))) #708
 
 ## PERFORM ALL THE ANALYSES 
 
 ## COMPUTE THE GLOBAL FST
-s.dt.1.fst <- computeFST(s.dt.1, method = "Anova", nsnp.per.bjack.block = 100, verbose=FALSE)
+s.dt.1.fst <- computeFST(s.dt.1, method = "Anova", nsnp.per.bjack.block = 10, verbose=FALSE)
 
 # genome-wide estimate
 s.dt.1.fst$FST 
-# -0.02009295
+# -0.01887216
 
 # mean Block-Jackknife estimation
 s.dt.1.fst$mean.fst 
-# -0.01920418
+# -0.01894181
 
 # CI
 s.dt.1.fst$mean.fst+c(-1.96,1.96)*s.dt.1.fst$se.fst
-# -0.02227349 -0.01613487
+# -0.02010688 -0.01777675
 
 ## FST GENOME SCAN
 s.dt.1.fst.scan <- computeFST(s.dt.1,sliding.window.size=10)
@@ -335,7 +436,7 @@ barplot(s.dt.1.fstats@heterozygosities[,1]/(1-s.dt.1.fstats@heterozygosities[,1]
 ## REDUCED DATASET: reduced.refcount.matrix.03.filtered
 
 # POOL MEAN HE
-s.pool.meanHE <- apply(reduced.refcount.matrix.03.filtered, 2, meanHE)
+s.pool.meanHE <- apply(reduced.refalllefreq.matrix.05.filtered.maf01, 2, meanHE)
 names(s.pool.meanHE) <- s.dt.1@poolnames
 barplot(s.pool.meanHE)
 
@@ -344,7 +445,7 @@ s.pool.theta <- thetaHE(s.pool.meanHE)
 barplot(s.pool.theta)
 
 # MEAN LOCUS HE
-s.locus.meanHE <- apply(reduced.refcount.matrix.03.filtered, 1, meanLocusHE)
+s.locus.meanHE <- apply(reduced.refalllefreq.matrix.05.filtered.maf01, 1, meanLocusHE)
 
 ## PLOT INTRA-LOCUS FST AS A FUNCTION OF LOCUS MEAN HE
 plot(s.locus.meanHE, s.dt.1.fst.scan$snp.FST,
@@ -353,7 +454,7 @@ abline(h=dt.1.fst.scan$FST,lty=2, col="lightgreen")
 
 
 ## PCA ON INPUTED AF
-s.W<-scale(t(reduced.refcount.matrix.03.filtered), scale=TRUE) #centering
+s.W<-scale(t(reduced.refalllefreq.matrix.05.filtered.maf01), scale=TRUE) #centering
 s.W[is.na(s.W)]<-0
 cov.s.W<-cov(t(s.W))
 s.eig.result<-eigen(cov.s.W)
@@ -366,8 +467,8 @@ plot(s.lambda/sum(s.lambda),ylab="Fraction of total variance", ylim=c(0,0.1), ty
      cex.lab=1.6, pch=19, col="black")
 lines(s.lambda/sum(s.lambda), col="red")
 
-s.l1 <- 100*s.lambda[1]/sum(s.lambda) # 9.704683
-s.l2 <- 100*s.lambda[2]/sum(s.lambda) # 9.187907
+s.l1 <- 100*s.lambda[1]/sum(s.lambda) 
+s.l2 <- 100*s.lambda[2]/sum(s.lambda) 
 
 # PCA plot
 par(mar=c(5,5,4,1)+.1)
@@ -390,4 +491,6 @@ pooldata2genobaypass(pooldata = s.dt.1,
 pooldata2genoselestim(pooldata = s.dt.1,
                      writing.dir = "data/aggregated_data/genoselestim//",
                      prefix = "aphidpool.PoolSeq.PoolSNP.001.10.21Jun2021.vcf.misspools.missfrac03")
+
+
 
