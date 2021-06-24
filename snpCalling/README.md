@@ -29,7 +29,7 @@ sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST-Ag
 ### 2b. Collect PoolSNP (bcf out)
 ```bash
 sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh all PoolSNP 001 50 15Apr2021
-sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 05 5 22Jun2021
+sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq PoolSNP 05 5 24Jun2021
 sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq SNAPE NA NA 15Apr2021
 ```
 
@@ -37,7 +37,7 @@ sbatch --array=1-942 ${wd}/DEST-AglyPoolseq/snpCalling/gather_poolsnp.sh PoolSeq
 ### 2c. Bind chromosomes, annotate and convert (bgzip out)
 ```bash
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh all PoolSNP 001 50 15Apr2021
-sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 05 5 22Jun2021
+sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 05 5 24Jun2021
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 03Jun2021
 ```
 
