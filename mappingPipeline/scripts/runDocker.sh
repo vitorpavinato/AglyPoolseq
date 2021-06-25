@@ -24,8 +24,9 @@
   #outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped_2/pipeline_output # last time I run to get raw mapping statistics
   
   # For aggregated data
-  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
-    
+  outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated_2
+  # try to see if lower BQ in samtools mpileup helps to keep more SNPs
+   
 ### check
   #cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l
   #ls -lh ${wd}/dest_mapped/pipeline_output | wc -l
@@ -82,7 +83,7 @@
   --min-indel 5 \
   --max-cov 0.99 \
   --min-cov 4 \
-  --base-quality-threshold 25 \
+  --base-quality-threshold 20 \
   --num-flies ${numFlies} \
   --dont-prep \
   --do_poolsnp
