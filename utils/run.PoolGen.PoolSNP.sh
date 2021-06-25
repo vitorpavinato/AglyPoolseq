@@ -53,7 +53,7 @@ echo "run"
     echo ${chr} ${popName} ${numFlies}
 
     echo "extracting bed"
-      zcat -c /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated/${popName}/${popName}.bed.gz | grep "${chr}" > \
+      zcat -c /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated/${popName}/${popName}.bed.gz | grep  "\<${chr}\>" > \
       ${tmpdir}/${popName}.${chr}.bed
 
     echo "extracting chromosome"
