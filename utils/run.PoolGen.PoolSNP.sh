@@ -60,7 +60,7 @@ echo "run"
 
       bcftools view \
       -O v \
-      /fs/scratch/PAS1715/aphidpool/vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.ann.vcf.gz ${chr} > ${tmpdir}/${chr}.vcf
+      /fs/scratch/PAS1715/aphidpool/vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.05.5.25Jun2021.ann.vcf.gz ${chr} > ${tmpdir}/${chr}.vcf
       
     if [[ $chr == "mitochondrion_genome" ]]; then
       numChr=${numFlies}
@@ -78,8 +78,8 @@ echo "run"
     echo "running PoolGen"
       python3 ${wd}/DEST-AglyPoolseq/utils/PoolGen.py \
       --input ${tmpdir}/${chr}.vcf \
-      --step 200000 \
-      --window 200000 \
+      --step 1000 \
+      --window 1000 \
       --pool-size ${numChr} \
       --min-sites-frac 0.50 \
       --BED ${tmpdir}/${popName}.${chr}.bed \
