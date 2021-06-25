@@ -18,8 +18,8 @@
 ### cat /scratch/aob2x/dest/slurmOutput/poolgen.19358314_1.out
 
 ## Load modules
-module load gcc/9.2.0
-module load openmpi/3.1.6
+module load gcc-compatibility/9.1.0
+module load openmpi/3.1.6-hpcx
 module load python/3.6
 module load parallel2/19.10
 module load bcftools/1.9.2
