@@ -79,9 +79,9 @@ echo "run"
       python3 ${wd}/DEST-AglyPoolseq/utils/PoolGen.py \
       --input ${tmpdir}/${chr}.vcf \
       --step 5000 \
-      --window 20000 \
+      --window 25000 \
       --pool-size ${numChr} \
-      --min-sites-frac 0.75 \
+      --min-sites-frac 0.50 \
       --BED ${tmpdir}/${popName}.${chr}.bed \
       --sample ${popName} \
       --output /fs/scratch/PAS1715/aphidpool/PoolGenOut_PoolSNP/${popName}/${popName}.${chr}
