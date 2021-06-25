@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #SBATCH -J poolgen # A single job name for the array
 ##SBATCH --ntasks-per-node=5 # one core
-#SBATCH -c 3
+#SBATCH -c 5
 #SBATCH -N 1 # on one node
-#SBATCH -t 2:00:00 ### 1 hours
-#SBATCH --mem 12G
+#SBATCH -t 10:00:00 ### 1 hours
+#SBATCH --mem 20G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/poolgen.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/poolgen.%A_%a.err # Standard error
 #SBATCH --account PAS1715
@@ -72,16 +72,19 @@ echo "run"
     fi
     echo "numChr:" ${numChr}
 
+    ## Check if outdir exists
+    [ ! -d /fs/scratch/PAS1715/aphidpool/PoolGenOut_PoolSNP/${popName} ] && mkdir /fs/scratch/PAS1715/aphidpool/PoolGenOut_PoolSNP/${popName}
+    
     echo "running PoolGen"
       python3 ${wd}/DEST-AglyPoolseq/utils/PoolGen.py \
       --input ${tmpdir}/${chr}.vcf \
-      --step 20000 \
+      --step 5000 \
       --window 20000 \
       --pool-size ${numChr} \
       --min-sites-frac 0.75 \
       --BED ${tmpdir}/${popName}.${chr}.bed \
       --sample ${popName} \
-      --output /fs/scratch/PAS1715/aphidpool/PoolGenOut_PoolSNP/${popName}.${chr}
+      --output /fs/scratch/PAS1715/aphidpool/PoolGenOut_PoolSNP/${popName}/${popName}.${chr}
 
     rm ${tmpdir}/${chr}.vcf
 
