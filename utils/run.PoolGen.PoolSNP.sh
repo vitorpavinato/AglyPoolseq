@@ -28,8 +28,8 @@ export wd="/fs/scratch/PAS1715/aphidpool"
 
 ### get sample information
   #SLURM_ARRAY_TASK_ID=1
-  export popName=$( cat ${wd}/DEST/populationInfo/fieldPools_aggregated.csv | grep "Pooled" | cut -f1,14 -d',' | grep -v "NA"  | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  export numFlies=$( cat ${wd}/DEST/populationInfo/fieldPools_aggregated.csv | grep "Pooled" | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  export popName=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | grep "Pooled" | cut -f1,14 -d',' | grep -v "NA"  | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  export numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | grep "Pooled" | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
 
 ## set up RAM disk
