@@ -44,7 +44,7 @@ module load python/3.6
 ## get list of SNYC files based on popSet & method - all replicates of each pool vs pools of aggregated replicates
 ### full list
   syncPath1orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/*/*masked.sync.gz"
-  syncPath2orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated/*/*masked.sync.gz"
+  syncPath2orig="/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated_2/*/*masked.sync.gz"
   
 ### target pops
   if [[ "${popSet}" == "PoolSeq" ]]; then
@@ -121,7 +121,7 @@ module load python/3.6
     --sync - \
     --min-cov 4 \
     --max-cov 0.99 \
-    --miss-frac 0.3 \
+    --miss-frac 0.5 \
     --min-count 0 \
     --min-freq 0 \
     --posterior-prob 0.9 \
@@ -137,7 +137,7 @@ module load python/3.6
     --max-cov 0.99 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
-    --miss-frac 0.3 \
+    --miss-frac 0.5 \
     --names $( cat ${tmpdir}/allpops.${method}.names |  tr '\n' ',' | sed 's/,$//g' )  > ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf
   fi
 
