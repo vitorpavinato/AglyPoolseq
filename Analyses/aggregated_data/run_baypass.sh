@@ -24,8 +24,8 @@ wd="/fs/scratch/PAS1715/aphidpool"
 
 # Run BAYPASS
 echo "running baypass"
-baypass -gfile ${wd}/result/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.${dataset}.genobaypass \
-        -poolsizefile ${wd}/result/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.${dataset}.poolsize \
+baypass -gfile ${wd}/results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.${dataset}.genobaypass \
+        -poolsizefile ${wd}/results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.${dataset}.poolsize \
         -outprefix core.${popSet}.${method}.${maf}.${mac}.${version}.${dataset} -nthreads 5 -npilot 25 -pilotlength 1000 -burnin 5000 -seed 5001;
 
 echo "done"
