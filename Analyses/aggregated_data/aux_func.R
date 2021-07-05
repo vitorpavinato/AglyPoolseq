@@ -2,8 +2,7 @@
 ### AUXILIARY FUNCTIONS
 ####
 
-## COMPUTE MAXIMUM LIKELIHOOD IMPUTED SAMPLE ALLELE COUNT
-#' Compute the maximum likelihood reference allele count
+#' COMPUTE MAXIMUM LIKELIHOOD IMPUTED SAMPLE ALLELE COUNT
 #'
 #' This function obtains the reference allele count with 
 #' a maximum likelihood imputation appraoch.
@@ -103,3 +102,133 @@ meanLocusHE <- function(x)
   l = sum(!is.na(r))
   return(sum(r, na.rm = T)/(l-1))
 }
+
+#' CALCULATE MULTIPLE CORRELATION STATISTICS BETWEEN ELEMENTS IN A LIST OF MATRIX
+#' 
+#' Compute correlation, mean squared error, R squared and bias
+#' between vectors of observed and predicted values organized
+#' as two distinct matrix in a list of matrix.
+#' @param list The list with two matrices (e.g. observed and estimated AF of each population)
+#' @return a data.frame ncol_matrix * 4 (summary statistics)
+#' @export
+#' 
+calculate.multiple.correlations <- function(list)
+{
+  m <- do.call(cbind, list)
+  cor = NULL
+  mes = NULL
+  rsquared = NULL
+  bias = NULL
+  for (i in 1:(dim(m)[2]/2))
+  {
+    t = cbind(m[,i], m[, (i + (dim(m)[2]/2))])
+    t = t[complete.cases(t), ]
+    cor <- c(cor, round(cor(t[,1], t[,2]), 3))
+    mes <- c(mes, round(mean((t[,2] - t[,1])^2, na.rm = TRUE), 3))
+    rsquared <- c(rsquared, round(1 - (mean((t[,2] - t[,1])^2, na.rm = TRUE)/var(t[,1], na.rm = TRUE)),3))
+    bias <- c(bias, round(mean(t[,2] - t[,1], na.rm = TRUE),3))
+  }
+  
+  res <- data.frame(cor=cor, mes=mes, rsquared=rsquared, bias=bias)
+  return(res)
+}
+
+#' PLOT OMEGA AFTER SVD
+#' 
+#' Compute single value decomposition on the omega matrix and return a PC plot.
+#' Modified from baypass_utils.R.
+#' @param omega The omega matrix returned by BAYPASS core model.
+#' @param PC a vector of two elements indicating which PCs to plot.
+#' @param pop.names a vector with the pool names.
+#' @param main a string with the plot title.
+#' @param col a vector with the same size as number of pools with color definition.
+#' @return a plot
+#' @return a list
+#' @export
+plot.omega.mod <- function(omega, PC=c(1,2), pop.names=paste0("Pop",1:nrow(omega)), 
+                       main=expression("SVD of "*Omega), col=rainbow(nrow(omega)), pch=16,pos=2)
+{
+  om.svd=svd(omega)
+  eig=om.svd$d
+  pcent.var=100*eig/sum(eig)
+  plot(om.svd$u[,PC],main=main,pch=pch,col=col,
+       xlab=paste0("PC",PC[1]," (",round(pcent.var[PC[1]],2),"%)"),
+       ylab=paste0("PC",PC[2]," (",round(pcent.var[PC[2]],2),"%)"),
+       xlim=c((min(om.svd$u[,PC[1]])-0.1 ), (max(om.svd$u[,PC[1]])+0.1)),
+       ylim=c((min(om.svd$u[,PC[2]])-0.1 ), (max(om.svd$u[,PC[2]])+0.1)),
+  )
+  text(om.svd$u[,PC[1]],om.svd$u[,PC[2]],pop.names,col=col,pos=pos)
+  list(PC=om.svd$u,eig=eig,pcent.var=pcent.var)
+}
+
+#' MAKE SLURM SCRIPT TO RUN PODS TO CALIBRATE XtX STATISTICS
+#' @param n_nodes
+#' @param n_cores
+#' @param n_hours
+#' @param memory
+#' @param account
+#' @param g_file
+#' @param poolsize_file
+#' @param outprefix
+#' @param nthreads
+#' @param npilot
+#' @param pilotlength
+#' @param burnin
+#' @param logfile
+#' @param outdir
+#' @param wd
+#' @return vector containing the run specifications
+
+make_baypassrun_slurm_pods <- function(n_nodes=1, n_cores=5, n_hours=3, memory=10, account='PAS1715',
+                                       g_file=g_file, poolsize_file=poolsize_file, outprefix=outprefix,
+                                       nthreads=5, npilot=25, pilotlength=500, burnin=2500, logfile=logfile,
+                                       outdir=outdir, wd=wd)
+{
+  
+  parm = as.data.frame(cbind(n_nodes=n_nodes, n_cores=n_cores, n_hours=n_hours, account=account,
+                             nthreads=nthreads, npilot=npilot, pilotlength=pilotlength, burnin=burnin, logfile=logfile))
+  
+  run_baypass_sh = 'run_baypass_pods.sh'
+  
+  sink(file=run_baypass_sh, type='output');
+  
+  # SLURM HEADER
+  cat(
+    paste0(
+      '#!/usr/bin/env bash', '\n',
+      '#SBATCH -J run_baypass_pods', '\n',
+      '#SBATCH -c', ' ', n_cores, '\n',
+      '#SBATCH -N', ' ', n_nodes, '\n',
+      '#SBATCH -t', ' ', n_hours, ':00:00', '\n', 
+      '#SBATCH --mem', ' ', memory, 'G', '\n',
+      '#SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/run_baypass.%A_%a.out # Standard output', '\n',
+      '#SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/run_baypass.%A_%a.err # Standard error', '\n',
+      '#SBATCH --account', ' ', account,
+      '\n',
+      'module load baypass', 
+      '\n',
+      'wd="/fs/scratch/PAS1715/aphidpool"', 
+      '\n',
+      'echo "running baypass"', 
+      '\n',
+      'baypass -gfile', ' ', g_file, ' ', '-poolsizefile', ' ', poolsize_file, ' ', '-outprefix', ' ', outprefix, ' ',
+      '-nthreads', ' ', nthreads, ' ', '-npilot', ' ', npilot, ' ', '-pilotlength', ' ', pilotlength, ' ', '-burnin', ' ', burnin, ' ',
+      '>', ' ', logfile,
+      '\n',
+      'echo "moving files to baypass output folder"',
+      '\n',
+      'mv', ' ', outprefix,'.log', ' ', outdir, ' ', '\n',
+      'mv', ' ', outprefix,'_*', ' ', outdir, ' ',
+      '\n',
+      'echo "done"'
+    )
+  )
+  sink();
+  
+  #system(paste0('sinteractive', ' -N ', n_nodes, ' -c ', n_cores, ' -t ', n_hours, ':10:00', ' -J ', 'run_baypass_pods', ' -A ', account))
+  #system(paste0('wd=', wd))
+  #system(paste0('sbatch ${wd}/', run_baypass_sh))
+  return(parm)
+  
+}
+

@@ -21,6 +21,8 @@ library(scales)
 library(ggpubr)
 source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
+## MIN_COV = 4; MAX_COV=0.99; SAMPLE OF SNPS
+
 ## Set global Alpha value
 ALPHA=0.75
 
@@ -43,9 +45,9 @@ poolnames <- c("MN_BIO1_S1", "MN_BIO4_S1",
                "WO_BIO1_S1", "WO_BIO4_S1", "WO_BIO4_S2", "WO_BIO4_S3")
 
 #paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
-#paste0("paramTest/aggregated_data/minmaxcov_4_95/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
-#paste0("paramTest/aggregated_data/minmaxcov_5_95/snps_sample/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
-#paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
+##paste0("paramTest/aggregated_data/minmaxcov_4_95/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
+##paste0("paramTest/aggregated_data/minmaxcov_5_95/snps_sample/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
+##paste0("paramTest/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.", 0, ".", MAC[i], ".paramTest.vcf.gz")
 
 missing_data=NULL
 #t=NULL
@@ -1014,7 +1016,7 @@ FP<-ggarrange(Classify.plot,
               font.label = list(size = 28, face = "bold"))
 FP
 
-ggsave("results/aggregated_data/minmaxcov_4_99/Figure_missing_pnps.pdf",
+ggsave("results/aggregated_data/minmaxcov_4_99/pnps_mac_maf/Figure_missing_pnps.pdf",
        FP,
        device="pdf",
        width=15,
@@ -1022,7 +1024,7 @@ ggsave("results/aggregated_data/minmaxcov_4_99/Figure_missing_pnps.pdf",
 
 
 ###
-## Paramtest - all SNPs - MINCOV=5; MAXCOV=95
+## Paramtest - ALL SNPS - MINCOV=5; MAXCOV=95
 ###
 
 ###
