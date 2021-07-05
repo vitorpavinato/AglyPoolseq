@@ -18,6 +18,8 @@ ls()
 
 ## Load libraries
 library(poolfstat)
+packageVersion("poolfstat") 
+source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
 ###
 ###
@@ -31,7 +33,9 @@ library(poolfstat)
 
 # First load vcf using poolfsta function vcf2pooldata from poolfstat package
 
-poolsizes <- rep(5,87)
+ALPHA=0.75
+
+poolsizes <- rep(10,87)
 poolnames <- c("MN_BIO1_S1_140711", "MN_BIO1_S1_140722", "MN_BIO1_S1_140725", "MN_BIO1_S1_140730", "MN_BIO1_S1_AddRun", 
                "MN_BIO4_S1_140711", "MN_BIO4_S1_140722", "MN_BIO4_S1_140725", "MN_BIO4_S1_140730", 
                "ND_BIO1_S1_140711", "ND_BIO1_S1_140722", "ND_BIO1_S1_140725", "ND_BIO1_S1_140730", 
@@ -54,99 +58,24 @@ poolnames <- c("MN_BIO1_S1_140711", "MN_BIO1_S1_140722", "MN_BIO1_S1_140725", "M
                "WO_BIO4_S2_140711", "WO_BIO4_S2_140722", "WO_BIO4_S2_140725", "WO_BIO4_S2_140730", 
                "WO_BIO4_S3_140711", "WO_BIO4_S3_140722", "WO_BIO4_S3_140725", "WO_BIO4_S3_140730")
 
-dt <- vcf2pooldata(
-          vcf.file = "vcf/technical_replicates/minmaxcov_3_95/aphidpool.all.PoolSNP.001.50.15Apr2021.vcf.gz",
+dt.repl <- vcf2pooldata(
+          vcf.file = "vcf/technical_replicates/minmaxcov_3_99/aphidpool.all.PoolSNP.001.5.05Jul2021.vcf",
           poolsizes = poolsizes,
           poolnames = poolnames,
           min.cov.per.pool = -1,
           min.rc = 1,
           max.cov.per.pool = 1e+06,
-          min.maf = 0.001,
+          min.maf = 0.05,
           remove.indels = FALSE,
           nlines.per.readblock = 1e+06
           )
 
-
-# Check the Pairwise FST between replicates
-#pfst <- computePairwiseFSTmatrix(
-#                        dt,
-#                        method = "Anova",
-#                        min.cov.per.pool = -1,
-#                        max.cov.per.pool = 1e+06,
-#                       min.maf = -1,
-#                        output.snp.values = FALSE
-#                        )
-#
-#heatmap(pfst$PairwiseFSTmatrix)
-
-# sample 20,000 random SNPs
-selectedsnps <- sample(1:dim(dt@snp.info)[1], 20000, replace = F)
-
-# Pooling all the information for the allele frequency calculation
-coverage = dt@readcoverage[selectedsnps, ]
-counts = dt@refallele.readcount[selectedsnps, ]
-snpInfo = dt@snp.info[selectedsnps, ]
-
-write.table(snpInfo, file = "results/analysis_technical_reps/snps.technical.rep.20000.snps.txt", sep = "\t",
-            quote = F, col.names = F, row.names = F)
+# * * * PoolData Object * * * 
+# * Number of SNPs   =  35049 
+# * Number of Pools  =  87 
 
 nbr.gene.copies = 10
-nbr.loci = length(selectedsnps)
-
-# For the first pool
-#reads.ALF.allele.1 <- counts[,1]
-#reads.ALF.allele.2 <- coverage[,1] - counts[,1]
-#total.counts.ALF <- coverage[,1]
-
-#ALF.allele.counts.1 <- vector(length = nbr.loci, mode = "integer")
-#ALF.allele.counts.2 <- vector(length = nbr.loci, mode = "integer")
-
-#likelihood.ALF <- matrix(nrow = nbr.loci, ncol = (nbr.gene.copies + 1))
-
-#for (i in 1:nbr.loci) {
-#  if (total.counts.ALF[i] == 0){
-#    ALF.allele.counts.1[i] <- NA
-#    ALF.allele.counts.2[i] <- NA
-#  } else {
-#    for (j in 1:(nbr.gene.copies + 1)) {
-#      likelihood.ALF[i,j] <- dbinom(x = reads.ALF.allele.1[i], size = total.counts.ALF[i],
-#                                    prob = (j - 1) / nbr.gene.copies, log = FALSE)
-#    } # end of for i,j
-#    ALF.allele.counts.1[i] <- (which(likelihood.ALF[i,] == max(likelihood.ALF[i,])) - 1)
-#    ALF.allele.counts.2[i] <- (nbr.gene.copies - ALF.allele.counts.1[i])
-#  }# end o if
-#} # end of for i
-#
-#write.table(file="ML_count_ALF", ALF.allele.counts.1, row.names=F, quote=F, col.names=F)
-
-# for all technical replicates
-refcount.matrix = matrix(nrow=nbr.loci, ncol = 87)
-for (k in 1:87){
-  reads.ALF.allele.1 <- counts[,k]
-  reads.ALF.allele.2 <- coverage[,k] - counts[,k]
-  total.counts.ALF <- coverage[,k]
-  
-  ALF.allele.counts.1 <- vector(length = nbr.loci, mode = "integer")
-  ALF.allele.counts.2 <- vector(length = nbr.loci, mode = "integer")
-  
-  likelihood.ALF <- matrix(nrow = nbr.loci, ncol = (nbr.gene.copies + 1))
-  
-  for (i in 1:nbr.loci) {
-    if (total.counts.ALF[i] == 0){
-      ALF.allele.counts.1[i] <- NA
-      ALF.allele.counts.2[i] <- NA
-    } else {
-      for (j in 1:(nbr.gene.copies + 1)) {
-        likelihood.ALF[i,j] <- dbinom(x = reads.ALF.allele.1[i], size = total.counts.ALF[i],
-                                      prob = (j - 1) / nbr.gene.copies, log = FALSE)
-      } # end of for i,j
-      ALF.allele.counts.1[i] <- (which(likelihood.ALF[i,] == max(likelihood.ALF[i,])) - 1)
-      ALF.allele.counts.2[i] <- (nbr.gene.copies - ALF.allele.counts.1[i])
-    }# end o if
-  } # end of for i
-  
-  refcount.matrix[,k] <- ALF.allele.counts.1/10
-}
+nbr.loci = dt.repl@nsnp
 
 ###
 ###
@@ -154,6 +83,8 @@ for (k in 1:87){
 ###
 ###
 
+dt.repl.imputedRefMLCount <- imputedRefMLCount(dt.repl)
+dt.repl.imputedRefMLFreq <- dt.repl.imputedRefMLCount[[1]]/dt.repl.imputedRefMLCount[[3]]
 
 ## Price et al 2010 - vcov of matrix individuals x markers
 
@@ -183,19 +114,20 @@ legend.colors <- c("#0000FF", "#FF0000", #MN
                    rep("black", 5)
                    )
 
-legend.names <- c("MN_BIO1_S1", "MN_BIO4_S1",
-                  "ND_BIO1_S1", "ND_BIO4_S1",
-                  "NW_BIO1_S1", "NW_BIO1_S2", "NW_BIO4_S1", "NW_BIO4_S2", "NW_BIO4_S3",
-                  "PA_BIO1_S1", "PA_BIO4_S1", "PA_BIO4_S2",
-                  "WI_BIO1_S1", "WI_BIO1_S2", "WI_BIO4_S1", "WI_BIO4_S2", "WI_BIO4_S3",
-                  "WO_BIO1_S1", "WO_BIO4_S1", "WO_BIO4_S2", "WO_BIO4_S3",
+legend.names <- c("MN-B1.1", "MN-B4.1",
+                  "ND-B1.1", "ND-B4.1", 
+                  "NW-B1.1", "NW-B1.2", "NW-B4.1", "NW-B4.2", "NW-B4.3", 
+                  "PA-B1.1", "PA-B4.1", "PA-B4.2", 
+                  "WI-B1.1", "WI-B1.2", "WI-B4.1", "WI-B4.2", "WI-B4.3", 
+                  "WO-B1.1", "WO-B4.1", "WO-B4.2", "WO-B4.3",
                   paste0("r_",1:5)
                   )
+
 
 legend.pch <- c(rep(19, 21), c(8, 15, 17, 18, 19))
 
 
-W<-scale(t(refcount.matrix), scale=TRUE) #centering
+W<-scale(t(dt.repl.imputedRefMLFreq), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
 cov.W<-cov(t(W))
@@ -204,30 +136,31 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.pdf")
+#pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-dev.off()
+#dev.off()
 
-100*lambda[1]/sum(lambda) # 3.196219
-100*lambda[2]/sum(lambda) # 2.688172
+l1<- 100*lambda[1]/sum(lambda) 
+l2<- 100*lambda[2]/sum(lambda) 
 
 # PCA plot
-pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.pdf")
+#pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=run.colors,
-     xlim = c(-0.30, 0.4), ylim = c(-0.25, 0.25),
-     xlab="PC1 (3.20%)", ylab="PC2 (2.68%)", cex=1.5, pch=lib.pch)
+     xlim = c(-0.25, 0.2), ylim = c(-0.35, 0.35),
+     xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"), 
+     cex=1.5, pch=lib.pch)
 legend("topleft", 
        legend = legend.names, col = legend.colors, 
        pch = legend.pch, bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-dev.off()
+#dev.off()
 
 ## Remove the _AddRun_ from the allele frequency matrix (5th technical replication)
-W<-scale(t(refcount.matrix[,-c(5,30,59)]), scale=TRUE) #centering
+W<-scale(t(dt.repl.imputedRefMLFreq[,-c(5,30,59)]), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
 cov.W<-cov(t(W))
@@ -236,27 +169,28 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.wtAddRun.pdf")
+#pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.wtAddRun.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-dev.off()
+#dev.off()
 
-100*lambda[1]/sum(lambda) # 3.207863
-100*lambda[2]/sum(lambda) # 2.687338
+l1<- 100*lambda[1]/sum(lambda) 
+l2<- 100*lambda[2]/sum(lambda) 
 
 # PCA plot
 pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.wtAddRun.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=run.colors[-c(5,30,59)],
-     xlim = c(-0.30, 0.4), ylim = c(-0.25, 0.25),
-     xlab="PC1 (3.17%)", ylab="PC2 (2.67%)", cex=1.5, pch=lib.pch[-c(5,30,59)])
+     xlim = c(-0.25, 0.2), ylim = c(-0.35, 0.35),
+     xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"),
+     cex=1.5, pch=lib.pch[-c(5,30,59)])
 legend("topleft", 
        legend = legend.names[-c(26)], col = legend.colors[-c(26)], 
        pch = legend.pch[-c(26)], bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-dev.off()
+#dev.off()
 
 
 ###
@@ -265,39 +199,45 @@ dev.off()
 ###
 ###
 
-# NA's count
-dt.raf.20000 <- refcount.matrix
-colnames(dt.raf.20000) <- poolnames
-dt.missing.20000 <- 100*(colSums(is.na(dt.raf.20000))/20000)
+#####
+### Total % of of NA Markers in each replicated pool
+#####
+colnames(dt.repl.imputedRefMLCount[[1]]) <- poolnames
+dt.repl.missing <- 100*(colSums(is.na(dt.repl.imputedRefMLCount[[1]]))/nbr.loci)
 
-# Mean replicate coverage
-dt.cov.20000 <- coverage
-mean.cov.20000 <- apply(dt.cov.20000, 2, mean)
+# Mean coverage of each replicated pool
+dt.repl.coverage <- dt.repl@readcoverage
+mean.dt.repl.coverage <- apply(dt.repl.coverage, 2, mean)
 
-mean(mean.cov.20000) +c(-3.92, +3.92)*sd(mean.cov.20000)/sqrt(87)
+# Coverage CI 95%
+mean(mean.dt.repl.coverage) +c(-1.96, +1.96)*sd(mean.dt.repl.coverage)/sqrt(87)
 
-## MISSING DATA AS A FUNCTION OF SNP DEPTH
-plot(dt.missing.20000 ~ mean.cov.20000)
-lines(lowess(dt.missing.20000 ~ mean.cov.20000), col='blue')
+## MISSING DATA AS A FUNCTION OF MEAN COVERAGE FROM SNP TOTAL READS
+# IDENTIFY PROBLEMATIC POOLS/REPLICATES
+missing_coverage_data <- data.frame(MISSING=dt.repl.missing, COV=mean.dt.repl.coverage)
+missing_coverage_data[,'STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-boxplot(coverage, col=ifelse(mean.cov.20000 < 10, "red", "black"))
+missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 60 & missing_coverage_data$COV < 5] <- "orange"
+missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 20 & missing_coverage_data$COV > 15] <- "red"
+missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 60 & missing_coverage_data$COV > 4] <- "red"
+missing_coverage_data$STATUS_COL[is.na(missing_coverage_data$STATUS_COL)] <- "black"
 
-dt.missing.20000[mean.cov.20000 < 10 & dt.missing.20000 > 30]
+COL <- adjustcolor(missing_coverage_data$STATUS_COL, alpha.f = 0.5)
 
-#NW_BIO1_S1_140711 NW_BIO1_S1_140722 NW_BIO1_S1_140725 NW_BIO1_S1_140730 PA_BIO1_S1_140711 PA_BIO1_S1_140722 PA_BIO1_S1_140725 
-#53.430            72.380            70.005            69.380            73.265            72.575            71.440 
-#PA_BIO1_S1_140730 WI_BIO1_S1_140711 WO_BIO4_S3_140711 WO_BIO4_S3_140722 WO_BIO4_S3_140725 WO_BIO4_S3_140730 
-#71.270            31.920            46.545            52.670            49.065            49.420 
+plot(MISSING ~COV,
+     xlab="Mean coverage (number of reads)",ylab="% of Missing Data", cex=1.5,
+     col=COL, pch=19, cex.lab=1.4, cex.axis=1.2, data=missing_coverage_data)
+lines(lowess(missing_coverage_data$MISSING ~ missing_coverage_data$COV, f=0.99), col='blue', lwd=2)
 
-## MEAN COVERAGE PER SCAFFOLD FROM THE ALIGNMENTS
-
+#####
+### MEAN COVERAGE PER SCAFFOLD FROM THE READ ALIGNMENTS
+#####
 pipeline.folder = "dest_mapped/pipeline_output/"
 sulfixe.file.name = "_meandepth_original.bam.txt"
 header.names <- c("rname", "startpos", "endpos",  "numreads", 
                   "covbases", "coverage", "meandepth", "meanbaseq", "meanmapq")
 
 mapped.files <- paste0(pipeline.folder, "/", poolnames, "/", poolnames, sulfixe.file.name)
-
 mapped.files.list <- lapply(mapped.files, function(x){read.table(file= x, col.names = header.names, na.strings = "NA")})
 
 ## MISSING DATA AS A FUNCTION OF MEAN SCAFFOLD COVERAGE %
@@ -312,17 +252,28 @@ for (l in 2:length(mapped.files.list))
   c = c + 1
 }
 
-mean.coverage <- colMeans(mapped.files.coverage[-c(831:1518), -c(1:3)])
-plot(dt.missing.20000 ~ mean.coverage)
-lines(lowess(dt.missing.20000 ~ mean.coverage), col='blue')
+mean_scaffold_coverage <- colMeans(mapped.files.coverage[-c(831:1518), -c(1:3)])
+mean_scaffold_coverage_data <- data.frame(MISSING=dt.repl.missing, SCAFFOLD_COV=mean_scaffold_coverage)
 
-dt.missing.20000[mean.coverage < 30 & dt.missing.20000 > 30]
-#NW_BIO1_S1_140711 NW_BIO1_S1_140722 NW_BIO1_S1_140725 NW_BIO1_S1_140730 PA_BIO1_S1_140711 PA_BIO1_S1_140722 PA_BIO1_S1_140725 
-#53.430            72.380            70.005            69.380            73.265            72.575            71.440 
-#PA_BIO1_S1_140730 WO_BIO4_S3_140711 WO_BIO4_S3_140722 WO_BIO4_S3_140725 WO_BIO4_S3_140730 
-#71.270            46.545            52.670            49.065            49.420 
+mean_scaffold_coverage_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-## MISSING DATA AS A FUNCTION OF MEAN DEPTH
+mean_scaffold_coverage_data$STATUS_COL[mean_scaffold_coverage_data$MISSING > 60 & mean_scaffold_coverage_data$SCAFFOLD_COV < 40] <- "orange"
+mean_scaffold_coverage_data$STATUS_COL[mean_scaffold_coverage_data$MISSING > 25 & mean_scaffold_coverage_data$SCAFFOLD_COV > 45] <- "red"
+mean_scaffold_coverage_data$STATUS_COL[is.na(mean_scaffold_coverage_data$STATUS_COL)] <- "black"
+
+COL_SCAFFOLD_COV <- adjustcolor(mean_scaffold_coverage_data$STATUS_COL, alpha.f = 0.5)
+
+plot(MISSING ~SCAFFOLD_COV,
+     xlab="% of Scaffold covered",ylab="% of Missing Data", cex=1.5,
+     col=COL_SCAFFOLD_COV, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_scaffold_coverage_data)
+lines(lowess(mean_scaffold_coverage_data$MISSING ~ mean_scaffold_coverage_data$SCAFFOLD_COV, f=0.99), col='blue', lwd=2)
+
+
+#####
+### MEAN SITE DEPTH FROM THE READ ALIGNMENTS
+#####
+
+## MISSING DATA AS A FUNCTION OF MEAN SITE DEPTH
 mapped.files.depth <- mapped.files.list[[1]][,c(1,2,3,7)]
 names(mapped.files.depth)[4] <- poolnames[1]
 
@@ -334,20 +285,25 @@ for (l in 2:length(mapped.files.list))
   c = c + 1
 }
 
-mean.depth <- colMeans(mapped.files.depth[-c(831:1518), -c(1:3)])
-plot(dt.missing.20000 ~ mean.depth)
-lines(lowess(dt.missing.20000 ~ mean.depth), col='blue')
+mean_site_depth <- colMeans(mapped.files.depth[-c(831:1518), -c(1:3)])
+mean_site_depth_data <- data.frame(MISSING=dt.repl.missing, SITE_DEPTH=mean_site_depth)
 
+mean_site_depth_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-dt.missing.20000[mean.depth < 1 & dt.missing.20000 > 30]
-# NW_BIO1_S1_140711 NW_BIO1_S1_140722 NW_BIO1_S1_140725 NW_BIO1_S1_140730 WO_BIO4_S3_140711 WO_BIO4_S3_140722 WO_BIO4_S3_140725 
-#53.430            72.380            70.005            69.380            46.545            52.670            49.065 
-#WO_BIO4_S3_140730 
-#49.420 
+mean_site_depth_data$STATUS_COL[mean_site_depth_data$MISSING > 40 & mean_site_depth_data$SITE_DEPTH < 1] <- "orange"
+mean_site_depth_data$STATUS_COL[mean_site_depth_data$MISSING > 40 & mean_site_depth_data$SITE_DEPTH > 1] <- "red"
+mean_site_depth_data$STATUS_COL[is.na(mean_site_depth_data$STATUS_COL)] <- "black"
 
-dt.missing.20000[mean.depth > 1 & dt.missing.20000 > 30]
-# PA_BIO1_S1_140711 PA_BIO1_S1_140722 PA_BIO1_S1_140725 PA_BIO1_S1_140730 WI_BIO1_S1_140711 
-#73.265            72.575            71.440            71.270            31.920 
+COL_SITE_DEPTH <- adjustcolor(mean_site_depth_data$STATUS_COL, alpha.f = 0.5)
+
+plot(MISSING ~SITE_DEPTH,
+     xlab="Mean Site Depth",ylab="% of Missing Data", cex=1.5,
+     col=COL_SITE_DEPTH, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_site_depth_data)
+lines(lowess(mean_site_depth_data$MISSING ~ mean_site_depth_data$SITE_DEPTH, f=0.99), col='blue', lwd=2)
+
+#####
+### MEAN BASE QUALITY FROM THE READ ALIGNMENTS
+#####
 
 ## MISSING DATA AS A FUNCTION OF MEAN BASE Q
 mapped.files.baseq <- mapped.files.list[[1]][,c(1,2,3,8)]
@@ -361,10 +317,25 @@ for (l in 2:length(mapped.files.list))
   c = c + 1
 }
 
-mean.baseq <- colMeans(mapped.files.baseq[-c(831:1518), -c(1:3)])
-plot(dt.missing.20000 ~ mean.baseq)
-lines(lowess(dt.missing.20000 ~ mean.baseq), col='blue')
+mean_baseq <- colMeans(mapped.files.baseq[-c(831:1518), -c(1:3)])
+mean_baseq_data <- data.frame(MISSING=dt.repl.missing, BASEQ=mean_baseq)
 
+mean_baseq_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
+
+mean_baseq_data$STATUS_COL[mean_baseq_data$MISSING > 40] <- "orange"
+#mean_baseq_data$STATUS_COL[mean_baseq_data$MISSING > 40 & mean_site_depth_data$SITE_DEPTH > 1] <- "red"
+mean_baseq_data$STATUS_COL[is.na(mean_baseq_data$STATUS_COL)] <- "black"
+
+COL_BASEQ <- adjustcolor(mean_baseq_data$STATUS_COL, alpha.f = 0.5)
+
+plot(MISSING ~BASEQ,
+     xlab="Mean BaseQ",ylab="% of Missing Data", cex=1.5,
+     col=COL_BASEQ, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_baseq_data)
+lines(lowess(mean_baseq_data$MISSING ~ mean_baseq_data$BASEQ, f=0.99), col='blue', lwd=2)
+
+#####
+### MEAN BASE MAPQ FROM THE READ ALIGNMENTS
+#####
 
 ## MISSING DATA AS A FUNCTION OF MEAN BASE MAPQ
 mapped.files.mapq <- mapped.files.list[[1]][,c(1,2,3,9)]
@@ -378,16 +349,23 @@ for (l in 2:length(mapped.files.list))
   c = c + 1
 }
 
-mean.mapq <- colMeans(mapped.files.mapq[-c(831:1518), -c(1:3)])
-plot(dt.missing.20000 ~ mean.mapq)
-lines(lowess(dt.missing.20000 ~ mean.mapq), col='blue')
+mean_mapq <- colMeans(mapped.files.mapq[-c(831:1518), -c(1:3)])
+mean_mapq_data <- data.frame(MISSING=dt.repl.missing, MAPQ=mean_mapq)
 
-dt.missing.20000[mean.mapq > 40]
-# MN_BIO1_S1_140711 
-# 18.42 
+mean_mapq_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-## CONCLUSION: WHAT CAUSED MISSING DATA?
-## LOWER SEQUENCE INPUT (for NW_BIO1_S1) AND LOWER NUMBER q20 READS (for both Pools)
+mean_mapq_data$STATUS_COL[mean_mapq_data$MISSING > 40] <- "orange"
+mean_mapq_data$STATUS_COL[is.na(mean_mapq_data$STATUS_COL)] <- "black"
+
+COL_MAPQ <- adjustcolor(mean_mapq_data$STATUS_COL, alpha.f = 0.5)
+
+plot(MISSING ~MAPQ,
+     xlab="Mean MAPQ",ylab="% of Missing Data", cex=1.5,
+     col=COL_MAPQ, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_mapq_data)
+lines(lowess(mean_mapq_data$MISSING ~ mean_mapq_data$MAPQ, f=0.99), col='blue', lwd=2)
+
+## CONCLUSION: WHAT WERE THE CAUSES OF MISSING DATA?
+## LOW SEQUENCE INPUT (for NW_BIO1_S1) AND LOW NUMBER q20 READS
 ## Pools from NW_BIO1_S1 and WO_BIO4_3 had less overall number of reads which caused:
 ## 1) Lower scaffold coverage: less than ~30% of the scaffold were coverade in these pools.
 ## 2) Lower depth: less than ~1 read/base were coverade in most of scaffolds of these pools.
@@ -407,8 +385,10 @@ dt.missing.20000[mean.mapq > 40]
 ## Aggregate read counts data for each pool
 ## and repeat the allele frequency estimates
 ## and PCA.
+coverage <- dt.repl@readcoverage
+counts <- dt.repl@refallele.readcount
 
-comb.coverage <- cbind(coverage[,1]+coverage[,2]+coverage[,3]+coverage[,4]+coverage[,5], #MN_B1
+aggr.coverage <- cbind(coverage[,1]+coverage[,2]+coverage[,3]+coverage[,4]+coverage[,5], #MN_B1
                        coverage[,6]+coverage[,7]+coverage[,8]+coverage[,9],              #MN_B4
                        coverage[,10]+coverage[,11]+coverage[,12]+coverage[,13],          #ND_B1
                        coverage[,14]+coverage[,15]+coverage[,16]+coverage[,17],          #ND_B4
@@ -431,7 +411,7 @@ comb.coverage <- cbind(coverage[,1]+coverage[,2]+coverage[,3]+coverage[,4]+cover
                        coverage[,84]+coverage[,85]+coverage[,86]+coverage[,87]               #WO_BIO4
 )
 
-comb.counts <- cbind(counts[,1] +counts[,2] +counts[,3] +counts[,4] +counts[,5], #MN_B1
+aggr.counts <- cbind(counts[,1] +counts[,2] +counts[,3] +counts[,4] +counts[,5], #MN_B1
                      counts[,6] +counts[,7] +counts[,8] +counts[,9],              #MN_B4
                      counts[,10]+counts[,11]+counts[,12]+counts[,13],          #ND_B1
                      counts[,14]+counts[,15]+counts[,16]+counts[,17],          #ND_B4
@@ -454,35 +434,74 @@ comb.counts <- cbind(counts[,1] +counts[,2] +counts[,3] +counts[,4] +counts[,5],
                      counts[,84]+counts[,85]+counts[,86]+counts[,87]              #WO_BIO4
  )
 
+nbr.gene.copies = dt.repl@poolsizes[1]
+nbr.loci = dt.repl@nsnp
+nbr.pops = dim(aggr.counts)[2]
 
-# for all technical replicates
-refcount.matrix = matrix(nrow=nbr.loci, ncol = 21)
-for (k in 1:21){
-  reads.ALF.allele.1 <- comb.counts[,k]
-  reads.ALF.allele.2 <- comb.coverage[,k] - comb.counts[,k]
-  total.counts.ALF <- comb.coverage[,k]
+# Receive the outputs
+refcount.matrix = matrix(nrow=nbr.loci, ncol = nbr.pops)
+altcount.matrix = matrix(nrow=nbr.loci, ncol = nbr.pops)
+haplocount.matrix = matrix(nrow=nbr.loci, ncol = nbr.pops)
+
+for (k in 1:nbr.pops)
+{
+  reads.allele.1 <- aggr.counts[,k]
+  reads.allele.2 <- aggr.coverage[,k] - aggr.counts[,k]
+  total.counts <- aggr.coverage[,k]
   
-  ALF.allele.counts.1 <- vector(length = nbr.loci, mode = "integer")
-  ALF.allele.counts.2 <- vector(length = nbr.loci, mode = "integer")
+  allele.counts.1 <- vector(length = nbr.loci, mode = "integer")
+  allele.counts.2 <- vector(length = nbr.loci, mode = "integer")
+  haploid.counts  <- vector(length = nbr.loci, mode = "integer")
   
-  likelihood.ALF <- matrix(nrow = nbr.loci, ncol = (nbr.gene.copies + 1))
+  likelihood <- matrix(nrow = nbr.loci, ncol = (nbr.gene.copies + 1))
   
   for (i in 1:nbr.loci) {
-    if (total.counts.ALF[i] == 0){
-      ALF.allele.counts.1[i] <- NA
-      ALF.allele.counts.2[i] <- NA
+    if (total.counts[i] == 0){
+      allele.counts.1[i] <- NA
+      allele.counts.2[i] <- NA
+      haploid.counts[i]  <- NA
+      
+    } else if ( total.counts[i] <= nbr.gene.copies) {
+      allele.counts.1[i] <- reads.allele.1[i]
+      allele.counts.2[i] <- reads.allele.2[i]
+      haploid.counts[i] <- total.counts[i]  
+      
     } else {
-      for (j in 1:(nbr.gene.copies + 1)) {
-        likelihood.ALF[i,j] <- dbinom(x = reads.ALF.allele.1[i], size = total.counts.ALF[i],
-                                      prob = (j - 1) / nbr.gene.copies, log = FALSE)
-      } # end of for i,j
-      ALF.allele.counts.1[i] <- (which(likelihood.ALF[i,] == max(likelihood.ALF[i,])) - 1)
-      ALF.allele.counts.2[i] <- (nbr.gene.copies - ALF.allele.counts.1[i])
-    }# end o if
+      if (reads.allele.1[i] == 0 | reads.allele.1[i] == total.counts[i]){
+        allele.counts.1[i] <- reads.allele.1[i]
+        allele.counts.2[i] <- reads.allele.2[i]
+        haploid.counts[i] <- total.counts[i]  
+        
+      } else {
+        for (j in 1:(nbr.gene.copies + 1)) 
+        {
+          likelihood[i,j] <- dbinom(x = reads.allele.1[i], size = total.counts[i],
+                                    prob = (j - 1) / nbr.gene.copies, log = FALSE)
+        } # end of for i,j
+        
+        allele.counts.1[i] <- (which(likelihood[i,] == max(likelihood[i,])) - 1)
+        allele.counts.2[i] <- (nbr.gene.copies - allele.counts.1[i])
+        haploid.counts[i] <- nbr.gene.copies
+      } # end of inside if
+      
+    } # end of if
+    
   } # end of for i
   
-  refcount.matrix[,k] <- ALF.allele.counts.1/10
-}
+  refcount.matrix[,k] <- allele.counts.1
+  altcount.matrix[,k] <- allele.counts.2
+  haplocount.matrix[,k] <- haploid.counts
+  
+} # end of FOR k
+
+out_list <- list(ref_count = refcount.matrix, 
+                 alt_count = altcount.matrix,
+                 hap_count = haplocount.matrix)
+
+
+dt.aggregated.imputedRefMLCount <- out_list
+dt.aggregated.imputedRefMLFreq <- dt.aggregated.imputedRefMLCount[[1]]/dt.aggregated.imputedRefMLCount[[3]]
+
 
 ###
 ###
@@ -490,7 +509,7 @@ for (k in 1:21){
 ###
 ###
 
-legend.colors.c <- c("#0000FF", "#FF0000", #MN
+legend.colors.aggr <- c("#0000FF", "#FF0000", #MN
                      "#8282FF", "#FF8282", #ND
                      "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
                      "#B78560", "#9E5C00", "#7D3200", #PA
@@ -498,16 +517,16 @@ legend.colors.c <- c("#0000FF", "#FF0000", #MN
                      "#90CE91", "#EFC0DB", "#E9D2DF", "#E4DFE2" #WO
                      )
 
-legend.names.c <- c("MN_BIO1_S1", "MN_BIO4_S1",
-                    "ND_BIO1_S1", "ND_BIO4_S1",
-                    "NW_BIO1_S1", "NW_BIO1_S2", "NW_BIO4_S1", "NW_BIO4_S2", "NW_BIO4_S3",
-                    "PA_BIO1_S1", "PA_BIO4_S1", "PA_BIO4_S2",
-                    "WI_BIO1_S1", "WI_BIO1_S2", "WI_BIO4_S1", "WI_BIO4_S2", "WI_BIO4_S3",
-                    "WO_BIO1_S1", "WO_BIO4_S1", "WO_BIO4_S2", "WO_BIO4_S3"
+legend.names.aggr <- c("MN-B1.1", "MN-B4.1",
+                    "ND-B1.1", "ND-B4.1", 
+                    "NW-B1.1", "NW-B1.2", "NW-B4.1", "NW-B4.2", "NW-B4.3", 
+                    "PA-B1.1", "PA-B4.1", "PA-B4.2", 
+                    "WI-B1.1", "WI-B1.2", "WI-B4.1", "WI-B4.2", "WI-B4.3", 
+                    "WO-B1.1", "WO-B4.1", "WO-B4.2", "WO-B4.3"
                     )
 
 
-W<-scale(t(refcount.matrix), scale=TRUE) #centering
+W<-scale(t(dt.aggregated.imputedRefMLFreq), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
 cov.W<-cov(t(W))
@@ -516,30 +535,32 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-pdf(file = "results/analysis_technical_reps/pve.technical.combined.20000.snps.pdf")
+#pdf(file = "results/analysis_technical_reps/pve.technical.combined.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-dev.off()
+#dev.off()
 
-100*lambda[1]/sum(lambda) #11.16591
-100*lambda[2]/sum(lambda) # 10.09083
+l1 <- 100*lambda[1]/sum(lambda) 
+l2 <- 100*lambda[2]/sum(lambda)
 
 # PCA plot
-pdf(file = "results/analysis_technical_reps/pca.technical.combined.20000.snps.pdf")
+#pdf(file = "results/analysis_technical_reps/pca.technical.combined.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c,
-     xlim = c(-1.1, 0.2), ylim = c(-0.8, 0.3),
-     xlab="PC1 (11.16%)", ylab="PC2 (10.09%)", cex=1.5, pch=19, cex.lab=1.6)
+     xlim = c(-0.4, 0.5), ylim = c(-0.55, 0.55),
+     xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"), 
+     cex=1.5, pch=19, cex.lab=1.6
+     )
 legend("topleft", 
-       legend = legend.names.c, col = legend.colors.c, 
+       legend = legend.names.aggr, col = legend.colors.aggr, 
        pch = legend.pch, bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-dev.off()
+#dev.off()
 
 # Without the outlier population
-W<-scale(t(refcount.matrix[,-c(5,21)]), scale=TRUE) #centering
+W<-scale(t(dt.aggregated.imputedRefMLFreq[,-c(5,21)]), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
 cov.W<-cov(t(W))
@@ -548,27 +569,46 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-pdf(file = "results/analysis_technical_reps/pve.technical.combined.popoutlier.20000.snps.pdf")
+#pdf(file = "results/analysis_technical_reps/pve.technical.combined.popoutlier.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-dev.off()
+#dev.off()
 
-100*lambda[1]/sum(lambda) # 11.62661
-100*lambda[2]/sum(lambda) # 8.740067
+l1 <- 100*lambda[1]/sum(lambda) 
+l2 <- 100*lambda[2]/sum(lambda)
 
 # PCA plot
-pdf(file = "results/analysis_technical_reps/pca.technical.combined.popoutlier.20000.snps.pdf")
+#pdf(file = "results/analysis_technical_reps/pca.technical.combined.popoutlier.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c[-c(5,21)],
-     xlim = c(-1.1, 0.3), ylim = c(-0.7, 0.65),
-     xlab="PC1 (11.63%)", ylab="PC2 (8.74%)", cex=1.5, pch=19, cex.lab=1.6)
+     xlim = c(-0.75, 0.45), ylim = c(-0.55, 0.65),
+     xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"), 
+     cex=1.5, pch=19, cex.lab=1.6)
 legend("topleft", 
-       legend = legend.names.c[-c(5,21)], col = legend.colors.c[-c(5,21)], 
-       pch = legend.pch, bty = "n", cex = 0.6)
+       legend = legend.names.aggr[-c(5,21)], col = legend.colors.aggr[-c(5,21)], 
+       pch = legend.pch[-c(5,21)], bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-dev.off()
+#dev.off()
+
+
+biotype.col <- c("#247F00","#AB1A53",
+                 "#247F00","#AB1A53",
+                 "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
+                 "#247F00","#AB1A53","#AB1A53",
+                 "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
+                 "#247F00","#AB1A53","#AB1A53","#AB1A53")
+
+par(mar=c(5,5,4,1)+.1)
+plot(eig.vec[,1],eig.vec[,2], col=biotype.col[-c(5,21)],
+     xlim = c(-0.75, 0.45), ylim = c(-0.55, 0.65),
+     xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"), 
+     cex=1.5, pch=19, cex.lab=1.6)
+legend("topright", 
+       legend = c("Biotype 1", "Biotype 4"), col = c("#247F00","#AB1A53"), 
+       pch = 19, bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
 
 ###
 ###
@@ -577,38 +617,25 @@ dev.off()
 ###
 
 # NA's count
-dt.raf.20000.c <- refcount.matrix
-colnames(dt.raf.20000.c) <- legend.names.c
-dt.missing.20000.c <- 100*(colSums(is.na(dt.raf.20000.c))/20000)
+colnames(refcount.matrix) <- legend.names.aggr
+dt.missing.aggr <- 100*(colSums(is.na(refcount.matrix))/nbr.loci)
 
-barplot(dt.missing.20000.c)
+barplot(dt.missing.aggr)
 abline(h=30, col="red")
 
 # Mean replicate coverage
-dt.cov.20000.c <- comb.coverage
-mean.cov.20000.c <- apply(dt.cov.20000.c, 2, mean)
-
-mean(mean.cov.20000.c) +c(-1.96, +1.96)*sd(mean.cov.20000.c)/sqrt(21)
+mean.coverage.aggregated <- apply(aggr.coverage, 2, mean)
+mean(mean.coverage.aggregated) +c(-1.96, +1.96)*sd(mean.coverage.aggregated)/sqrt(21)
 
 ## MISSING DATA AS A FUNCTION OF COVERAGE
-plot(dt.missing.20000.c ~ mean.cov.20000.c)
-lines(lowess(dt.missing.20000.c ~ mean.cov.20000.c), col='blue')
+plot(dt.missing.aggr ~mean.coverage.aggregated,
+     xlab="Mean coverage (number of reads)",ylab="% of Missing Data", cex=1.5,
+     col="black", pch=19, cex.lab=1.4, cex.axis=1.2)
+lines(lowess(dt.missing.aggr ~mean.coverage.aggregated, f=0.99), col='blue', lwd=2)
 
-boxplot(comb.coverage, col=ifelse(mean.cov.20000.c < 10, "red", "black"))
-
-quantile(comb.coverage, probs = c(0.12, 0.5, 0.99))
+quantile(comb.coverage, probs = c(0.01, 0.5, 0.99))
 hist(comb.coverage, breaks = 100)
 abline(v= 482, col="red")
-
-quantile(comb.coverage[,3], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,4], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,5], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,6], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,10], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,11], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,12], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,16], probs = c(0.05, 0.5, 0.99))
-quantile(comb.coverage[,21], probs = c(0.05, 0.5, 0.99))
 
 # FUNCTION TO PRODUCE THE PLOTS - LOG and LOGIT SCALE
 plot.mult.densities <- function(table=NULL, par.name=NULL, 
@@ -633,27 +660,4 @@ plot.mult.densities <- function(table=NULL, par.name=NULL,
   }
 }
 
-plot.mult.densities(comb.coverage, col.vect = legend.colors.c, name.vect = legend.names.c)
-
-
-# Coverage ranking
-# SFS
-hist(1-dt.af.20000[,1])
-hist(1-dt.af.20000[,5])
-hist(1-dt.af.20000[,10])
-hist(1-dt.af.20000[,11])
-hist(1-dt.af.20000[,21])
-
-overall.pi <- function(x)
-{
-  p <- x
-  q <- (1 - x)
-  pq <- 2*p*q
-  pi <- sum(pq, na.rm = T)/sum(!is.na(x))
-  return(pi)
-}
-
-pop.pi <- apply(dt.af.20000, MARGIN = 2, overall.pi)
-barplot(pop.pi)
-
-theta <- pop.pi/(1-pop.pi)
+plot.mult.densities(comb.coverage, col.vect = legend.colors.aggr, name.vect = legend.names.aggr)
