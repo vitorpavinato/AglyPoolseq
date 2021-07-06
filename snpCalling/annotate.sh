@@ -42,42 +42,42 @@ if "$scaffolds";
 then
     for i in ${agly_scaffolds};
     do
-        bcftools index -f ${wd}/sub_bcf/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
-        #bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+        #bcftools index -f ${wd}/sub_bcf/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+        bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
     done
 fi
 
 # For the mitochondrion genome
 if "$mitochondrion";
 then
-    bcftools index -f ${wd}/sub_bcf/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
-    #bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+    #bcftools index -f ${wd}/sub_bcf/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
+    bcftools index -f ${wd}/sub_bcf_aggregated/aphidpool.${agly_mitochondrion}.${popSet}.${method}.${maf}.${mac}.${version}.bcf;
 fi
 
 ## Work around in case there are some empty bcfs
 ## Check if subsub_bcf exists
-[ ! -d ${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version} ] && mkdir ${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}
-#[ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version} ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}
+#[ ! -d ${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version} ] && mkdir ${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}
+[ ! -d ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version} ] && mkdir ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}
 
-ls ${wd}/sub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt
-#ls ${wd}/sub_bcf_aggregated/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt
+#ls ${wd}/sub_bcf/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt
+ls ${wd}/sub_bcf_aggregated/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf.csi | awk '{split($0,a,"."); print a[2]}' > ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt
 
-for i in $(cat ${wd}/sub_bcf/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt);
-    do mv ${wd}/sub_bcf/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/;
-done
-
-#for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt);
-#    do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/;
+#for i in $(cat ${wd}/sub_bcf/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt);
+#    do mv ${wd}/sub_bcf/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/;
 #done
 
+for i in $(cat ${wd}/sub_bcf_aggregated/bcfindexed_scaffolds.${popSet}.${method}.${maf}.${mac}.${version}.txt);
+    do mv ${wd}/sub_bcf_aggregated/aphidpool.${i}.${popSet}.${method}.${maf}.${mac}.${version}.bcf* ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/;
+done
+
 echo "concat"
-  bcftools concat \
-  ${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
-  -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-  
   #bcftools concat \
-  #${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  #${wd}/sub_bcf/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
   #-o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+  
+  bcftools concat \
+  ${wd}/sub_bcf_aggregated/subsub_bcf.${popSet}.${method}.${maf}.${mac}.${version}/aphidpool.*.${popSet}.${method}.${maf}.${mac}.${version}.bcf \
+  -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 echo "convert to vcf & annotate"
   bcftools view \
@@ -93,18 +93,18 @@ echo "convert to vcf & annotate"
   ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.vcf
 
 
-#echo "fix header" #this is now fixed in PoolSNP.py
-#  sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#  sed -i '0,/CHROM/{s/AC,Number=1/AC,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#  sed -i '0,/CHROM/{s/AD,Number=1/AD,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#  sed -i '0,/CHROM/{s/FREQ,Number=1/FREQ,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
-#
-#  bcftools view -h ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/tmp.header
-#
-#  bcftools reheader --threads 5 -h ${wd}/tmp.header -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
-#
-#echo "make GDS"
-#  #Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+echo "fix header" #this is now fixed in PoolSNP.py
+  sed -i '0,/CHROM/{s/AF,Number=1/AF,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  sed -i '0,/CHROM/{s/AC,Number=1/AC,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  sed -i '0,/CHROM/{s/AD,Number=1/AD,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  sed -i '0,/CHROM/{s/FREQ,Number=1/FREQ,Number=A/}' ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+
+  bcftools view -h ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/tmp.header
+
+  bcftools reheader --threads 5 -h ${wd}/tmp.header -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
+
+echo "make GDS"
+  Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
 
 echo "bgzip & tabix"
   bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
