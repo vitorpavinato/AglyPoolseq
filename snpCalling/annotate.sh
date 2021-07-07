@@ -104,7 +104,7 @@ echo "fix header" #this is now fixed in PoolSNP.py
   bcftools reheader --threads 5 -h ${wd}/tmp.header -o ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.header.bcf ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.bcf
 
 echo "make GDS"
-  Rscript --vanilla ${wd}/DEST/snpCalling/vcf2gds.R ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
+  Rscript --vanilla ${wd}/DEST-AglyPoolseq/snpCalling/vcf2gds.R ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf
 
 echo "bgzip & tabix"
   bgzip -c ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf > ${wd}/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.ann.vcf.gz
