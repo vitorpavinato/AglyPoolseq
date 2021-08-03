@@ -48,8 +48,8 @@ jobId=gsub(",", "_", job)
   ow <- dcast(o, V1+V2~pop, value.var="V4")
 
 ## get reference
-  ow.ref <- o[pop=="MN_BIO1_S1_140711", c("V1", "V2", "V3"), with=F] # replicated runs
-  #ow.ref <- o[pop=="MN_BIO1_S1", c("V1", "V2", "V3"), with=F]
+  #ow.ref <- o[pop=="MN_BIO1_S1_140711", c("V1", "V2", "V3"), with=F] # replicated runs
+  ow.ref <- o[pop=="MN_BIO1_S1", c("V1", "V2", "V3"), with=F]
 
   setkey(ow, V1, V2)
   setkey(ow.ref, V1, V2)

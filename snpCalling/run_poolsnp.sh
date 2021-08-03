@@ -28,8 +28,8 @@ module load python/3.6
 
 ## working & temp directory
   wd="/fs/scratch/PAS1715/aphidpool"
-  outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs"
-  #outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated"
+  #outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs"
+  outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated"
   popSet=${1}
   method=${2}
   maf=${3}
@@ -119,7 +119,7 @@ module load python/3.6
     echo $method
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 3 \
+    --min-cov 4 \
     --max-cov 0.99 \
     --miss-frac 0.5 \
     --min-count 0 \
@@ -133,7 +133,7 @@ module load python/3.6
 
     cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
-    --min-cov 3 \
+    --min-cov 4 \
     --max-cov 0.99 \
     --min-count ${mac} \
     --min-freq 0.${maf} \
