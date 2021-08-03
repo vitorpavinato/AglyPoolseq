@@ -4,7 +4,7 @@
 #############################################################
 
 ## Vitor Pavinato
-## vitor.pavinato@supagro.fr
+## correapavinato.1@osu.edu
 ## CFAES
 
 setwd("/fs/scratch/PAS1715/aphidpool")
