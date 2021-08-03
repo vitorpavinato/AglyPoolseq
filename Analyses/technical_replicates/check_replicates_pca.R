@@ -7,7 +7,7 @@
 # They were the same library, with same barcode, but the sequencing was splitted in 4-5 days. 
 
 ## Vitor Pavinato
-## vitor.pavinato@supagro.fr
+## correapavinato.1@osu.edu
 ## CFAES
 
 setwd("/fs/scratch/PAS1715/aphidpool")
@@ -18,6 +18,12 @@ ls()
 
 ## Load libraries
 library(poolfstat)
+library(ggpubr)
+library(missMDA)
+library(ade4)
+library(factoextra)
+library(zoo)
+library(FactoMineR)
 packageVersion("poolfstat") 
 source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
@@ -59,7 +65,7 @@ poolnames <- c("MN_BIO1_S1_140711", "MN_BIO1_S1_140722", "MN_BIO1_S1_140725", "M
                "WO_BIO4_S3_140711", "WO_BIO4_S3_140722", "WO_BIO4_S3_140725", "WO_BIO4_S3_140730")
 
 dt.repl <- vcf2pooldata(
-          vcf.file = "vcf/technical_replicates/minmaxcov_3_99/aphidpool.all.PoolSNP.001.5.05Jul2021.vcf",
+          vcf.file = "vcf/technical_replicates/minmaxcov_3_99/aphidpool.all.PoolSNP.05.5.07Jul2021.vcf.gz",
           poolsizes = poolsizes,
           poolnames = poolnames,
           min.cov.per.pool = -1,
@@ -69,9 +75,9 @@ dt.repl <- vcf2pooldata(
           remove.indels = FALSE,
           nlines.per.readblock = 1e+06
           )
-
+dt.repl
 # * * * PoolData Object * * * 
-# * Number of SNPs   =  35049 
+# * Number of SNPs   =  40105 
 # * Number of Pools  =  87 
 
 nbr.gene.copies = 10
@@ -79,7 +85,7 @@ nbr.loci = dt.repl@nsnp
 
 ###
 ###
-### ---- PCA ON ML ALLELE FREQUENCIES ----
+### ---- PCA ON ML ALLELE FREQUENCIES OF TECHNICAL REPLICATES----
 ###
 ###
 
@@ -126,7 +132,6 @@ legend.names <- c("MN-B1.1", "MN-B4.1",
 
 legend.pch <- c(rep(19, 21), c(8, 15, 17, 18, 19))
 
-
 W<-scale(t(dt.repl.imputedRefMLFreq), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
@@ -136,18 +141,19 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-#pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.pdf")
-par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-#dev.off()
 
 l1<- 100*lambda[1]/sum(lambda) 
 l2<- 100*lambda[2]/sum(lambda) 
 
 # PCA plot
-#pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.pdf")
+pdf("results/technical_replicates/minmaxcov_3_99/pca_imputed_allelefreq_check_repl.pdf",         # File name
+    width = 11, height = 8.50, # Width and height in inches
+    bg = "white",          # Background color
+    colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+)
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=run.colors,
      xlim = c(-0.25, 0.2), ylim = c(-0.35, 0.35),
@@ -157,7 +163,7 @@ legend("topleft",
        legend = legend.names, col = legend.colors, 
        pch = legend.pch, bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-#dev.off()
+dev.off()
 
 ## Remove the _AddRun_ from the allele frequency matrix (5th technical replication)
 W<-scale(t(dt.repl.imputedRefMLFreq[,-c(5,30,59)]), scale=TRUE) #centering
@@ -169,18 +175,15 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-#pdf(file = "results/analysis_technical_reps/pve.technical.rep.20000.snps.wtAddRun.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-#dev.off()
 
 l1<- 100*lambda[1]/sum(lambda) 
 l2<- 100*lambda[2]/sum(lambda) 
 
 # PCA plot
-pdf(file = "results/analysis_technical_reps/pca.technical.rep.20000.snps.wtAddRun.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=run.colors[-c(5,30,59)],
      xlim = c(-0.25, 0.2), ylim = c(-0.35, 0.35),
@@ -190,8 +193,12 @@ legend("topleft",
        legend = legend.names[-c(26)], col = legend.colors[-c(26)], 
        pch = legend.pch[-c(26)], bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-#dev.off()
 
+## Savepoint_1
+##-------------
+#save.image("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+############## END THIS PART
 
 ###
 ###
@@ -210,24 +217,34 @@ dt.repl.coverage <- dt.repl@readcoverage
 mean.dt.repl.coverage <- apply(dt.repl.coverage, 2, mean)
 
 # Coverage CI 95%
-mean(mean.dt.repl.coverage) +c(-1.96, +1.96)*sd(mean.dt.repl.coverage)/sqrt(87)
+mean(mean.dt.repl.coverage) +c(-1.96, +1.96)*sd(mean.dt.repl.coverage)/sqrt(87) # 8.293861 10.807788
 
 ## MISSING DATA AS A FUNCTION OF MEAN COVERAGE FROM SNP TOTAL READS
 # IDENTIFY PROBLEMATIC POOLS/REPLICATES
 missing_coverage_data <- data.frame(MISSING=dt.repl.missing, COV=mean.dt.repl.coverage)
 missing_coverage_data[,'STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 60 & missing_coverage_data$COV < 5] <- "orange"
-missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 20 & missing_coverage_data$COV > 15] <- "red"
-missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 60 & missing_coverage_data$COV > 4] <- "red"
+missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 30 & missing_coverage_data$COV < 4] <- "orange"
+missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 30 & missing_coverage_data$COV > 4] <- "red"
+missing_coverage_data$STATUS_COL[missing_coverage_data$MISSING > 20 & missing_coverage_data$COV > 15] <- "purple"
 missing_coverage_data$STATUS_COL[is.na(missing_coverage_data$STATUS_COL)] <- "black"
 
 COL <- adjustcolor(missing_coverage_data$STATUS_COL, alpha.f = 0.5)
 
+pdf("results/technical_replicates/minmaxcov_3_99/missing_read_count_poolfstat.pdf",         # File name
+    width = 11, height = 8.5, # Width and height in inches
+    bg = "white",          # Background color
+    colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+)
+par(mar=c(5,5,4,1)+.1)
 plot(MISSING ~COV,
      xlab="Mean coverage (number of reads)",ylab="% of Missing Data", cex=1.5,
      col=COL, pch=19, cex.lab=1.4, cex.axis=1.2, data=missing_coverage_data)
 lines(lowess(missing_coverage_data$MISSING ~ missing_coverage_data$COV, f=0.99), col='blue', lwd=2)
+abline(v=4, col="black", lty=3)
+abline(h=30, col="black", lty=3)
+dev.off()
+
 
 #####
 ### MEAN COVERAGE PER SCAFFOLD FROM THE READ ALIGNMENTS
@@ -257,8 +274,9 @@ mean_scaffold_coverage_data <- data.frame(MISSING=dt.repl.missing, SCAFFOLD_COV=
 
 mean_scaffold_coverage_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-mean_scaffold_coverage_data$STATUS_COL[mean_scaffold_coverage_data$MISSING > 60 & mean_scaffold_coverage_data$SCAFFOLD_COV < 40] <- "orange"
-mean_scaffold_coverage_data$STATUS_COL[mean_scaffold_coverage_data$MISSING > 25 & mean_scaffold_coverage_data$SCAFFOLD_COV > 45] <- "red"
+mean_scaffold_coverage_data$STATUS_COL[mean_scaffold_coverage_data$MISSING > 30 & mean_scaffold_coverage_data$SCAFFOLD_COV < 25] <- "orange"
+mean_scaffold_coverage_data$STATUS_COL[mean_scaffold_coverage_data$MISSING > 30 & mean_scaffold_coverage_data$SCAFFOLD_COV > 25] <- "red"
+mean_scaffold_coverage_data$STATUS_COL[mean_scaffold_coverage_data$MISSING > 25 & mean_scaffold_coverage_data$SCAFFOLD_COV > 50] <- "purple"
 mean_scaffold_coverage_data$STATUS_COL[is.na(mean_scaffold_coverage_data$STATUS_COL)] <- "black"
 
 COL_SCAFFOLD_COV <- adjustcolor(mean_scaffold_coverage_data$STATUS_COL, alpha.f = 0.5)
@@ -267,7 +285,8 @@ plot(MISSING ~SCAFFOLD_COV,
      xlab="% of Scaffold covered",ylab="% of Missing Data", cex=1.5,
      col=COL_SCAFFOLD_COV, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_scaffold_coverage_data)
 lines(lowess(mean_scaffold_coverage_data$MISSING ~ mean_scaffold_coverage_data$SCAFFOLD_COV, f=0.99), col='blue', lwd=2)
-
+abline(v=25, col="black", lty=3)
+abline(h=30, col="black", lty=3)
 
 #####
 ### MEAN SITE DEPTH FROM THE READ ALIGNMENTS
@@ -290,8 +309,8 @@ mean_site_depth_data <- data.frame(MISSING=dt.repl.missing, SITE_DEPTH=mean_site
 
 mean_site_depth_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-mean_site_depth_data$STATUS_COL[mean_site_depth_data$MISSING > 40 & mean_site_depth_data$SITE_DEPTH < 1] <- "orange"
-mean_site_depth_data$STATUS_COL[mean_site_depth_data$MISSING > 40 & mean_site_depth_data$SITE_DEPTH > 1] <- "red"
+mean_site_depth_data$STATUS_COL[mean_site_depth_data$MISSING > 30 & mean_site_depth_data$SITE_DEPTH < 1] <- "orange"
+mean_site_depth_data$STATUS_COL[mean_site_depth_data$MISSING > 30 & mean_site_depth_data$SITE_DEPTH > 1] <- "red"
 mean_site_depth_data$STATUS_COL[is.na(mean_site_depth_data$STATUS_COL)] <- "black"
 
 COL_SITE_DEPTH <- adjustcolor(mean_site_depth_data$STATUS_COL, alpha.f = 0.5)
@@ -300,6 +319,8 @@ plot(MISSING ~SITE_DEPTH,
      xlab="Mean Site Depth",ylab="% of Missing Data", cex=1.5,
      col=COL_SITE_DEPTH, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_site_depth_data)
 lines(lowess(mean_site_depth_data$MISSING ~ mean_site_depth_data$SITE_DEPTH, f=0.99), col='blue', lwd=2)
+abline(v=1, col="black", lty=3)
+abline(h=30, col="black", lty=3)
 
 #####
 ### MEAN BASE QUALITY FROM THE READ ALIGNMENTS
@@ -322,8 +343,7 @@ mean_baseq_data <- data.frame(MISSING=dt.repl.missing, BASEQ=mean_baseq)
 
 mean_baseq_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-mean_baseq_data$STATUS_COL[mean_baseq_data$MISSING > 40] <- "orange"
-#mean_baseq_data$STATUS_COL[mean_baseq_data$MISSING > 40 & mean_site_depth_data$SITE_DEPTH > 1] <- "red"
+mean_baseq_data$STATUS_COL[mean_baseq_data$MISSING > 30] <- "orange"
 mean_baseq_data$STATUS_COL[is.na(mean_baseq_data$STATUS_COL)] <- "black"
 
 COL_BASEQ <- adjustcolor(mean_baseq_data$STATUS_COL, alpha.f = 0.5)
@@ -332,6 +352,7 @@ plot(MISSING ~BASEQ,
      xlab="Mean BaseQ",ylab="% of Missing Data", cex=1.5,
      col=COL_BASEQ, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_baseq_data)
 lines(lowess(mean_baseq_data$MISSING ~ mean_baseq_data$BASEQ, f=0.99), col='blue', lwd=2)
+abline(h=30, col="black", lty=3)
 
 #####
 ### MEAN BASE MAPQ FROM THE READ ALIGNMENTS
@@ -354,7 +375,7 @@ mean_mapq_data <- data.frame(MISSING=dt.repl.missing, MAPQ=mean_mapq)
 
 mean_mapq_data['STATUS_COL'] <- rep(NA, dt.repl@npools)
 
-mean_mapq_data$STATUS_COL[mean_mapq_data$MISSING > 40] <- "orange"
+mean_mapq_data$STATUS_COL[mean_mapq_data$MISSING > 30] <- "orange"
 mean_mapq_data$STATUS_COL[is.na(mean_mapq_data$STATUS_COL)] <- "black"
 
 COL_MAPQ <- adjustcolor(mean_mapq_data$STATUS_COL, alpha.f = 0.5)
@@ -363,6 +384,45 @@ plot(MISSING ~MAPQ,
      xlab="Mean MAPQ",ylab="% of Missing Data", cex=1.5,
      col=COL_MAPQ, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_mapq_data)
 lines(lowess(mean_mapq_data$MISSING ~ mean_mapq_data$MAPQ, f=0.99), col='blue', lwd=2)
+abline(h=30, col="black", lty=3)
+
+## COMBINED PLOT
+pdf("results/technical_replicates/minmaxcov_3_99/missing_read_mapping_stats.pdf",         # File name
+    width = 8.50, height = 11, # Width and height in inches
+    bg = "white",          # Background color
+    colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+)
+par(mar=c(5,5,4,1)+.1, mfrow=c(2, 2))
+# PLOT 1
+plot(MISSING ~SCAFFOLD_COV,
+     xlab="% of Scaffold covered",ylab="% of Missing Data", cex=1.5,
+     col=COL_SCAFFOLD_COV, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_scaffold_coverage_data)
+lines(lowess(mean_scaffold_coverage_data$MISSING ~ mean_scaffold_coverage_data$SCAFFOLD_COV, f=0.99), col='blue', lwd=2)
+abline(v=25, col="black", lty=3)
+abline(h=30, col="black", lty=3)
+
+# PLOT 2
+plot(MISSING ~SITE_DEPTH,
+     xlab="Mean Site Depth",ylab="% of Missing Data", cex=1.5,
+     col=COL_SITE_DEPTH, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_site_depth_data)
+lines(lowess(mean_site_depth_data$MISSING ~ mean_site_depth_data$SITE_DEPTH, f=0.99), col='blue', lwd=2)
+abline(v=1, col="black", lty=3)
+abline(h=30, col="black", lty=3)
+
+# PLOT 3
+plot(MISSING ~BASEQ,
+     xlab="Mean BaseQ",ylab="% of Missing Data", cex=1.5,
+     col=COL_BASEQ, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_baseq_data)
+lines(lowess(mean_baseq_data$MISSING ~ mean_baseq_data$BASEQ, f=0.99), col='blue', lwd=2)
+abline(h=30, col="black", lty=3)
+
+# PLOT 4
+plot(MISSING ~MAPQ,
+     xlab="Mean MAPQ",ylab="% of Missing Data", cex=1.5,
+     col=COL_MAPQ, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_mapq_data)
+lines(lowess(mean_mapq_data$MISSING ~ mean_mapq_data$MAPQ, f=0.99), col='blue', lwd=2)
+abline(h=30, col="black", lty=3)
+dev.off()
 
 ## CONCLUSION: WHAT WERE THE CAUSES OF MISSING DATA?
 ## LOW SEQUENCE INPUT (for NW_BIO1_S1) AND LOW NUMBER q20 READS
@@ -374,9 +434,15 @@ lines(lowess(mean_mapq_data$MISSING ~ mean_mapq_data$MAPQ, f=0.99), col='blue', 
 ## Pools from PA_BIO1_S1 had a decent mean depth/based per scaffolds, decent of q20 mapping, but lower % of scaffold coverage
 ## which indicated that some  parts were more sequenced than other because probably genome shearing was not good.
 
+## Savepoint_2
+##-------------
+#save.image("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+############## END THIS PART
+
 ###
 ###
-### ---- MAXIMUM LIKELIHOOD ESTIMATION FROM ALLELE COUNTS ----
+### ---- MAXIMUM LIKELIHOOD ESTIMATION FROM AGGREGATED ALLELE COUNTS ----
 ###
 ###
 
@@ -505,27 +571,40 @@ dt.aggregated.imputedRefMLFreq <- dt.aggregated.imputedRefMLCount[[1]]/dt.aggreg
 
 ###
 ###
-### ---- PCA ON ML ALLELE FREQUENCIES ----
+### ---- PCA ON ML ALLELE FREQUENCIES FOR AGGREGATED TECHNICAL REPLICATES READS ----
 ###
 ###
 
 legend.colors.aggr <- c("#0000FF", "#FF0000", #MN
-                     "#8282FF", "#FF8282", #ND
-                     "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
-                     "#B78560", "#9E5C00", "#7D3200", #PA
-                     "#B2B2FF", "#D5D5FF", "#FFB2B2", "#FFD5D5", "#FFF2F2", #WI
-                     "#90CE91", "#EFC0DB", "#E9D2DF", "#E4DFE2" #WO
+                       "#8282FF", "#FF8282", #ND
+                       "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
+                       "#B78560", "#9E5C00", "#7D3200", #PA
+                       "#B2B2FF", "#D5D5FF", "#FFB2B2", "#FFD5D5", "#FFF2F2", #WI
+                       "#90CE91", "#EFC0DB", "#E9D2DF", "#E4DFE2" #WO
                      )
 
 legend.names.aggr <- c("MN-B1.1", "MN-B4.1",
-                    "ND-B1.1", "ND-B4.1", 
-                    "NW-B1.1", "NW-B1.2", "NW-B4.1", "NW-B4.2", "NW-B4.3", 
-                    "PA-B1.1", "PA-B4.1", "PA-B4.2", 
-                    "WI-B1.1", "WI-B1.2", "WI-B4.1", "WI-B4.2", "WI-B4.3", 
-                    "WO-B1.1", "WO-B4.1", "WO-B4.2", "WO-B4.3"
+                       "ND-B1.1", "ND-B4.1", 
+                       "NW-B1.1", "NW-B1.2", "NW-B4.1", "NW-B4.2", "NW-B4.3", 
+                       "PA-B1.1", "PA-B4.1", "PA-B4.2", 
+                       "WI-B1.1", "WI-B1.2", "WI-B4.1", "WI-B4.2", "WI-B4.3", 
+                       "WO-B1.1", "WO-B4.1", "WO-B4.2", "WO-B4.3"
                     )
 
+## EXPORT THE IMPUTED ML ALLELE FREQUENCY MATRIX TO A FILE
+## WITH THE SNP INFORMATION AND POOL NAMES (FOR THE COMPARATIVE PCA ANALYSIS)
+dt.aggregated.imputedRefMLFreq.data <- dt.aggregated.imputedRefMLFreq
+colnames(dt.aggregated.imputedRefMLFreq.data) <- legend.names.aggr
 
+dt.aggregated.imputedRefMLFreq.dataFrame <- data.frame(dt.repl@snp.info, dt.aggregated.imputedRefMLFreq.data)
+
+# Save to a file
+#write.table(dt.aggregated.imputedRefMLFreq.dataFrame,
+#            file="results/technical_replicates/minmaxcov_3_99/imputedML_REFAlleleFrequencies_repl-aggregated_pools.txt", sep = "\t",
+#            quote = F, row.names = F, col.names = T)
+
+
+## PRINCIPAL COMPONENT ANALYSIS
 W<-scale(t(dt.aggregated.imputedRefMLFreq), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
@@ -535,20 +614,17 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-#pdf(file = "results/analysis_technical_reps/pve.technical.combined.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-#dev.off()
 
 l1 <- 100*lambda[1]/sum(lambda) 
 l2 <- 100*lambda[2]/sum(lambda)
 
 # PCA plot
-#pdf(file = "results/analysis_technical_reps/pca.technical.combined.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
-plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c,
+plot(eig.vec[,1],eig.vec[,2], col=legend.colors.aggr,
      xlim = c(-0.4, 0.5), ylim = c(-0.55, 0.55),
      xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"), 
      cex=1.5, pch=19, cex.lab=1.6
@@ -557,9 +633,9 @@ legend("topleft",
        legend = legend.names.aggr, col = legend.colors.aggr, 
        pch = legend.pch, bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-#dev.off()
 
-# Without the outlier population
+
+## Without the outlier population
 W<-scale(t(dt.aggregated.imputedRefMLFreq[,-c(5,21)]), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
@@ -569,30 +645,27 @@ eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
 # PVE
-#pdf(file = "results/analysis_technical_reps/pve.technical.combined.popoutlier.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
-#dev.off()
 
 l1 <- 100*lambda[1]/sum(lambda) 
 l2 <- 100*lambda[2]/sum(lambda)
 
 # PCA plot
-#pdf(file = "results/analysis_technical_reps/pca.technical.combined.popoutlier.20000.snps.pdf")
 par(mar=c(5,5,4,1)+.1)
-plot(eig.vec[,1],eig.vec[,2], col=legend.colors.c[-c(5,21)],
-     xlim = c(-0.75, 0.45), ylim = c(-0.55, 0.65),
+plot(eig.vec[,1],eig.vec[,2], col=legend.colors.aggr[-c(5,21)],
+     #xlim = c(-0.75, 0.45), ylim = c(-0.55, 0.65),
      xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"), 
      cex=1.5, pch=19, cex.lab=1.6)
-legend("topleft", 
+legend("bottomright", 
        legend = legend.names.aggr[-c(5,21)], col = legend.colors.aggr[-c(5,21)], 
        pch = legend.pch[-c(5,21)], bty = "n", cex = 0.6)
 abline(v=0,h=0,col="grey",lty=3)
-#dev.off()
 
 
+## PCA PLOT BY BIOTYPE
 biotype.col <- c("#247F00","#AB1A53",
                  "#247F00","#AB1A53",
                  "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
@@ -600,19 +673,177 @@ biotype.col <- c("#247F00","#AB1A53",
                  "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
                  "#247F00","#AB1A53","#AB1A53","#AB1A53")
 
+pdf("results/technical_replicates/minmaxcov_3_99/pca_imputed_allelefreq_repl_aggregated_biotypecolors.pdf",         # File name
+    width = 11, height = 8.50, # Width and height in inches
+    bg = "white",          # Background color
+    colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+)
 par(mar=c(5,5,4,1)+.1)
 plot(eig.vec[,1],eig.vec[,2], col=biotype.col[-c(5,21)],
-     xlim = c(-0.75, 0.45), ylim = c(-0.55, 0.65),
+     xlim = c(-0.5, 0.75), ylim = c(-0.55, 0.55),
      xlab=paste0("PC1 (", round(l1,2), "%)"), ylab=paste0("PC1 (", round(l2,2), "%)"), 
      cex=1.5, pch=19, cex.lab=1.6)
-legend("topright", 
-       legend = c("Biotype 1", "Biotype 4"), col = c("#247F00","#AB1A53"), 
+text(eig.vec[,1],eig.vec[,2], 
+     legend.names.aggr[-c(5,21)], pos=2 , cex = 0.6)
+legend("bottomright", 
+       legend = c("Avirulent", "Virulent"), col = c("#247F00","#AB1A53"), 
+       pch = 19, bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+dev.off()
+
+## PCA with FactorMineR - EXPERIMENTAL
+
+biotype.sym <- c(15,17,
+                 15,17,
+                 15,15,17,17,17,
+                 15,17,17,
+                 15,15,17,17,17,
+                 15,17,17,17)
+
+# Convert NA cells into loci means (without outlier populations)
+dt.aggregated.imputedRefMLFreq.NAimputed = na.aggregate(t(dt.aggregated.imputedRefMLFreq[,-c(5,21)]))
+
+# PCA
+pca.aggregated <- PCA(dt.aggregated.imputedRefMLFreq.NAimputed, scale.unit = F, graph = F)
+
+barplot(pca.aggregated$eig[,1],main="Eigenvalues",names.arg=1:nrow(pca.aggregated$eig))
+summary(pca.aggregated)
+
+## Run cluster analysis
+
+# 1. Loading and preparing data
+pca.aggregated.ind_coord <- pca.aggregated$ind$coord
+
+cluster_discovery = fviz_nbclust(pca.aggregated.ind_coord, kmeans, method = "gap_stat")
+#ggsave("cluster_discovery.pdf",cluster_discovery,  width =4, height = 4)
+
+# 2. Compute k-means at K=2, K=3 and at K=4
+set.seed(123)
+kmeans_k2 <- kmeans(pca.aggregated.ind_coord, 2, nstart = 20)
+kmeans_k3 <- kmeans(pca.aggregated.ind_coord, 3, nstart = 20)
+kmeans_k4 <- kmeans(pca.aggregated.ind_coord, 4, nstart = 20)
+kmeans_k5 <- kmeans(pca.aggregated.ind_coord, 5, nstart = 20)
+
+# Combine Pool ID with cluster assigment
+data.frame(k2_clusters = kmeans_k2$cluster,
+           k3_clusters = kmeans_k3$cluster,
+           k4_clusters = kmeans_k4$cluster,
+           k5_clusters = kmeans_k5$cluster) %>% mutate(sampleId = legend.names.aggr[-c(5,21)]) -> pca.aggregated_cluster_data
+
+
+###COMBINED PLOTS
+pdf("results/technical_replicates/minmaxcov_3_99/pca_imputed_allelefreq_repl_aggregated_factorminer_clusters.pdf",  
+    width = 11, height = 8.50, # Width and height in inches
+    bg = "white",          # Background color
+    colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+)
+par(mar=c(5,5,4,1)+.1, mfrow=c(2, 2))
+## PLOT PCA COLORED BY BIOTYPE
+plot(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], col=biotype.col[-c(5,21)],
+     xlim = c(-2, 2), ylim = c(-3, 2),
+     xlab=paste0("PC1 (", round(pca.aggregated$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.aggregated$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym[-c(5,21)])
+text(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], 
+     pca.aggregated_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("bottomleft", 
+       legend = c("Avirulent", "Virulent"), col = c("#247F00","#AB1A53"), 
        pch = 19, bty = "n", cex = 1.2)
 abline(v=0,h=0,col="grey",lty=3)
 
+# PLOT PCA COLORED BY K2
+plot(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], col=pca.aggregated_cluster_data$k2_clusters,
+     xlim = c(-2, 2), ylim = c(-3, 2),
+     xlab=paste0("PC1 (", round(pca.aggregated$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.aggregated$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym[-c(5,21)])
+text(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], 
+     pca.aggregated_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("bottomleft", 
+       legend = c("K1", "K2"), col = c(1,2), 
+       pch = 19, bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+
+# PLOT PCA COLORED BY K3
+plot(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], col=pca.aggregated_cluster_data$k3_clusters,
+     xlim = c(-2, 2), ylim = c(-3, 2),
+     xlab=paste0("PC1 (", round(pca.aggregated$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.aggregated$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym[-c(5,21)])
+text(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], 
+     pca.aggregated_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("bottomleft", 
+       legend = c("K1", "K2", "K3"), col = c(1,2,3), 
+       pch = 19, bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+
+# PLOT PCA COLORED BY K4
+plot(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], col=pca.aggregated_cluster_data$k4_clusters,
+     xlim = c(-2, 2), ylim = c(-3, 2),
+     xlab=paste0("PC1 (", round(pca.aggregated$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.aggregated$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym[-c(5,21)])
+text(pca.aggregated$svd$U[,1], pca.aggregated$svd$U[,2], 
+     pca.aggregated_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("bottomleft", 
+       legend = c("K1", "K2", "K3", "K4"), col = c(1,2,3,4), 
+       pch = 19, bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+dev.off()
+
+## Savepoint_3
+##-------------
+#save.image("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+############## END THIS PART
+
+#####
+### PCA with prcomp - EXPERIMENTAL
+## First try to impute missing data
+#dt.aggregated.imputedRefMLFreq_nafilled <- imputePCA(dt.aggregated.imputedRefMLFreq[,-c(5,21)], method="EM",ncp=1, seed=4401)
+#
+## PCA
+#biotypes.pr <- prcomp(t(dt.aggregated.imputedRefMLFreq_nafilled$fittedX), center = TRUE, scale = TRUE)
+#summary(biotypes.pr)
+#
+#screeplot(biotypes.pr, type = "l", npcs = 15, main = "Screeplot of the first 10 PCs")
+#abline(h = 1, col="red", lty=5)
+#legend("topright", legend=c("Eigenvalue = 1"),
+#       col=c("red"), lty=5, cex=0.6)
+#
+#cumpro <- cumsum(biotypes.pr$sdev^2 / sum(biotypes.pr$sdev^2))
+#plot(cumpro[0:15], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+#abline(v = 2, col="blue", lty=5)
+#abline(h = 1, col="blue", lty=5)
+#legend("topleft", legend=c("Cut-off @ PC6"),
+#       col=c("blue"), lty=5, cex=0.6)
+#
+#plot(biotypes.pr$x[,1], 
+#     biotypes.pr$x[,2], 
+#     xlab="PC1 (81.6%)", ylab = "PC2 (18.3%)", main = "PC1 / PC2 - plot")
+#
+#biotype.vec <- c("B1","B4","B1","B4","B1","B1","B4","B4","B4","B1",
+#                 "B4","B4","B1","B1","B4","B4","B4","B1","B4","B4",
+#                 "B4")
+## final plot
+#fviz_pca_ind(biotypes.pr, geom.ind = "point", pointshape = 21, 
+#             pointsize = 2, 
+#             fill.ind = biotype.vec[-c(5,21)], 
+#             col.ind = "black", 
+#             palette = "jco", 
+#             addEllipses = TRUE,
+#             label = "var",
+#             col.var = "black",
+#             repel = TRUE,
+#             legend.title = "Biotypes") +
+#  ggtitle("2D PCA-plot from 30 feature dataset") +
+#  theme(plot.title = element_text(hjust = 0.5))
+#####
+
+
 ###
 ###
-### ---- % OF MISSING DATA AND CORRELATION WITH REPLICATE COVERAGE----
+### ---- % OF MISSING DATA AND CORRELATION WITH REPLICATE-AGGREGATED COVERAGE----
 ###
 ###
 
@@ -633,9 +864,9 @@ plot(dt.missing.aggr ~mean.coverage.aggregated,
      col="black", pch=19, cex.lab=1.4, cex.axis=1.2)
 lines(lowess(dt.missing.aggr ~mean.coverage.aggregated, f=0.99), col='blue', lwd=2)
 
-quantile(comb.coverage, probs = c(0.01, 0.5, 0.99))
-hist(comb.coverage, breaks = 100)
-abline(v= 482, col="red")
+quantile(aggr.coverage, probs = c(0.025, 0.5, 0.975))
+hist(aggr.coverage, breaks = 100)
+abline(v= 212, col="red")
 
 # FUNCTION TO PRODUCE THE PLOTS - LOG and LOGIT SCALE
 plot.mult.densities <- function(table=NULL, par.name=NULL, 
@@ -660,4 +891,54 @@ plot.mult.densities <- function(table=NULL, par.name=NULL,
   }
 }
 
-plot.mult.densities(comb.coverage, col.vect = legend.colors.aggr, name.vect = legend.names.aggr)
+plot.mult.densities(aggr.coverage, col.vect = legend.colors.aggr, name.vect = legend.names.aggr)
+
+## Savepoint_4
+##-------------
+#save.image("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+############## END THIS PART
+
+###
+###
+### ---- SNP INFORMATION: CHRM, POS, MEAN_COV, MIN/MAX_COV, % MISSING DATA ----
+###
+###
+
+# copy of read coverage
+copy_aggr.coverage <- aggr.coverage
+copy_aggr.coverage[copy_aggr.coverage==0] <- NA
+
+# SNP COVERAGE
+snp_mean_cov <- apply(copy_aggr.coverage, 1, function(x) mean(x, na.rm = T))
+snp_min_cov <- apply(copy_aggr.coverage, 1, function(x) min(x, na.rm = T))
+snp_max_cov <- apply(copy_aggr.coverage, 1, function(x) max(x, na.rm = T))
+
+# SNP REFERENCE FREQUENCY
+snp_mean_refMLFreq <- apply(dt.aggregated.imputedRefMLFreq, 1, function(x) mean(x, na.rm = T))
+snp_min_refMLFreq <- apply(dt.aggregated.imputedRefMLFreq, 1, function(x) min(x, na.rm = T))
+snp_max_refMLFreq <- apply(dt.aggregated.imputedRefMLFreq, 1, function(x) max(x, na.rm = T))
+
+# SNP % MISSING DATA
+snp_mean_missing <- apply(dt.aggregated.imputedRefMLFreq, 1, function(x) sum(is.na(x))/21)*100
+
+snp_info_techaggregated <- data.frame(dt.repl@snp.info, 
+                                      MEAN_COV=snp_mean_cov, MIN_COV=snp_min_cov, MAX_COV=snp_max_cov, 
+                                      MEAN_REFFREQ=snp_mean_refMLFreq, MIN_REFFREQ=snp_min_refMLFreq, MAX_REFFREQ=snp_max_refMLFreq,
+                                      MISSING=snp_mean_missing)
+
+# Save to a file all the information
+write.table(snp_info_techaggregated,
+            file="results/technical_replicates/minmaxcov_3_99/snpinfo_replicates_aggregated_data.txt", sep = "\t",
+            quote = F, row.names = F, col.names = T)
+
+# Save to a file only the combined chromosome and SNP position
+write.table(paste0(snp_info_techaggregated$Chromosome, "_", snp_info_techaggregated$Position),
+            file="results/technical_replicates/minmaxcov_3_99/snpinfo_replicates_aggregated_names.txt", sep = "\t",
+            quote = F, row.names = F, col.names = F)
+
+## Savepoint_5
+##-------------
+#save.image("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/technical_replicates/minmaxcov_3_99/check.replicates.pca.workspace27Jul21.RData")
+############## END THIS PART

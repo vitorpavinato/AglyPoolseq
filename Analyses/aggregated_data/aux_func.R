@@ -103,6 +103,39 @@ meanLocusHE <- function(x)
   return(sum(r, na.rm = T)/(l-1))
 }
 
+#' BI-COLOUR CHROMOSOMES COLOR
+#' 
+#' From a list of chromosomes values, it creates a vector of 
+#' alternating colors for each chromosome
+#' @param list A list of chromosome names
+#' @param vector A list of two elements of colors
+#' @return A vector of colores of the same size as the list of chromosomes
+#' @export
+#' 
+colorChromosomes <- function(x, colors=c("black", "grey"))
+{
+  chrm.splitted <- strsplit(x, split = "_")
+  chrm.splitted <- as.numeric(do.call(rbind.data.frame, chrm.splitted)[,2])
+  
+  chrm.splitted.counts <- table(chrm.splitted)
+  
+  chrm.colors=NULL
+  for (i in seq_along(chrm.splitted.counts))
+  {
+    if((i %% 2) == 0) 
+    {
+      #print(paste(i,"is Even"))
+      c = rep(colors[1],chrm.splitted.counts[i])
+    } else {
+      #print(paste(i,"is Odd"))
+      c = rep(colors[2],chrm.splitted.counts[i])
+    }
+    chrm.colors <- c(chrm.colors, c)
+  }
+  
+  return(chrm.colors)
+}
+
 #' CALCULATE MULTIPLE CORRELATION STATISTICS BETWEEN ELEMENTS IN A LIST OF MATRIX
 #' 
 #' Compute correlation, mean squared error, R squared and bias
@@ -132,6 +165,52 @@ calculate.multiple.correlations <- function(list)
   res <- data.frame(cor=cor, mes=mes, rsquared=rsquared, bias=bias)
   return(res)
 }
+
+#' CALCULATE ALLELE FREQUENCY CORRELATION WITHIN A WINDOW
+#' 
+#' Calculate allele frequencies correlation between two populations
+#' of SNPs within a window
+#' @param dataFrame A dataframe with 'CHROM', 'POS', 'AF_1', 'AF_2' as mandatory fields.
+#' @param step The sliding window increment step size.
+#' @param windowSize The size of each window.
+#' @param method One of "pearson" (default), "kendall", or "spearman": can be abbreviated.
+
+alleleRefFreqCorSlidingWindow <- function(dataFrame, step=1000, windowSize=10000, method="pearson")
+{
+  if (max(dataFrame[,"POS"]) > windowSize)
+  {
+    w_cor = NULL
+    numOfChunks = (max(dataFrame[,"POS"])-windowSize)/step
+    stepStarts  = seq(from=1, to=round(numOfChunks*step), by=step)
+    for (i in 1:length(stepStarts))
+    {
+      idx = (dataFrame[,"POS"] >= stepStarts[i]) & (dataFrame[,"POS"] < stepStarts[i] + windowSize)
+      window_cor = cor(dataFrame[idx,"AF_1"], dataFrame[idx,"AF_2"], method=method)
+      if (!is.nan(window_cor))
+      {
+        w_cor[i] = window_cor  
+      } else {
+        w_cor[i] = NA
+      }
+      
+    }
+    
+    idx = (dataFrame[,"POS"]>=(round(numOfChunks*step))) & (dataFrame[,"POS"] <=round(numOfChunks*step)+windowSize)
+    window_cor = cor(dataFrame[idx,"AF_1"], dataFrame[idx,"AF_2"], method=method)
+    w_cor = c(w_cor,window_cor) 
+    stepStarts = c(stepStarts, max(stepStarts)+step)
+    output= data.frame(CHROM=dataFrame[1,"CHROM"], Step=stepStarts, windowCor=w_cor)
+    
+  } else {
+    stepStarts = 1
+    w_cor = cor(dataFrame[idx,"AF_1"], dataFrame[idx,"AF_2"], method=method)
+    output= data.frame(CHROM=dataFrame[1,"CHROM"], Step=stepStarts,  windowCor=w_cor)
+  }
+  
+  return(output)
+}
+
+
 
 #' PLOT OMEGA AFTER SVD
 #' 
