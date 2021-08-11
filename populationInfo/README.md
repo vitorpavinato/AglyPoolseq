@@ -1,19 +1,5 @@
 # Population information & basic figures
 
-## Description
->  This directory contains scripts to generate meta-data file for the DEST dataset. It first pulls together the meta-data files for the drosRTEC, drosEU, and dgn datasets from their respective supplemental data files. Also pulls in ghcnd data.
-
-## File structure set up
-
-## Make meta-data file ###
-  > ~~ijob -c1 -p standard -A berglandlab~~
-  > RUN: `makeJointSampleInfo.R`
-  > Outputs `DEST/populationInfo/samps.csv`
-
-## some basic summary statistics
-
-## Make figures
-  ## Map figure
-  > RUN: `sbatch makeNiceMap.sh`
-
-  python2.7 makeNiceMap.py input.txt > output.txt` <br/>
+### Description
+This directory contains the information of each sequenced pool: (a) one table with the technical replicates information, and (b) another table with the aggregated pools information.
+It also contain the cost matrices used in the mantel test with the framework of the causal modelling;

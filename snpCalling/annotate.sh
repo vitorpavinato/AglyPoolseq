@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 #SBATCH -J annotate_vcf # A single job name for the array
-##SBATCH --ntasks-per-node=10 # one core
 #SBATCH -N 1 # on one node
 #SBATCH -c 5
 #SBATCH -t 06:00:00 ### 6 hours

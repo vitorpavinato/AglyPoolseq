@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #SBATCH -J split_and_run # A single job name for the array
-##SBATCH --ntasks-per-node=1 # one core
 #SBATCH -c 3
 #SBATCH -N 1 # on one node
 #SBATCH -t 3:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
@@ -8,15 +7,6 @@
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/split_and_run.%A_%a.err # Standard error
 #SBATCH --account PAS1715
-
-### run as: sbatch --array=1-$( wc -l ${wd}/poolSNP_jobs.csv | cut -f1 -d' ' ) ${wd}/DEST/snpCalling/run_poolsnp.sh
-### sacct -j
-###### sbatch --array=100 ${wd}/DEST/snpCalling/run_poolsnp.sh 001 10
-###### sacct -j 13135642
-###### ls -l ${outdir}/*.vcf.gz > /scratch/aob2x/failedJobs
-####sacct -j 12813152 | head
-#### sbatch --array=$( cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,15838767,15852539" | cut -f1 ) ${wd}/DEST/snpCalling/run_poolsnp.sh
-#### cat /scratch/aob2x/dest/poolSNP_jobs.csv | awk '{print NR"\t"$0}' | grep "2R,21912590,21926361" | cut -f1
 
 ## Load modules
 module load htslib
@@ -97,8 +87,7 @@ module load python/3.6
   export -f subsection
 
   echo "subset"
-  # syncPath1=/project/berglandlab/DEST/dest_mapped/GA/GA.masked.sync.gz; syncPath2=/project/berglandlab/DEST/dest_mapped/pipeline_output/UK_Mar_14_12/UK_Mar_14_12.masked.sync.gz
-
+  
   if [[ "${method}" == "SNAPE" ]]; then
     echo "SNAPE" ${method}
     parallel -j 1 subsection ::: $( ls ${syncPath1} ${syncPath2} | grep "SNAPE" | grep "monomorphic" ) ::: ${job} ::: ${tmpdir}
@@ -109,7 +98,6 @@ module load python/3.6
 
 ### paste function
   echo "paste"
-  #find ${tmpdir} -size  0 -print -delete
   Rscript --no-save --no-restore ${wd}/DEST-AglyPoolseq/snpCalling/paste.R ${job} ${tmpdir} ${method}
 
 ### run through PoolSNP
@@ -146,13 +134,6 @@ module load python/3.6
 
   cat ${tmpdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf | vcf-sort | bgzip -c > ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
   tabix -p vcf ${outdir}/${jobid}.${popSet}.${method}.${maf}.${mac}.${version}.vcf.gz
-
-  #cp ${tmpdir}/allpops* ${outdir}/.
-
-  #echo "vcf -> bcf "
-  #bcftools view -Ou ${tmpdir}/${jobid}.vcf.gz > ${outdir}/${jobid}.bcf
-
-  #rm -fr ${tmpdir}
 
 ### done
   echo "done"
