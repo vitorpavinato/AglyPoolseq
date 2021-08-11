@@ -52,12 +52,12 @@ pd <- import('pandas')
 poolsizes <- rep(10,21)
 
 # Pool's names
-poolnames <- c("MN-B1.1", "MN-B4.1",
-               "ND-B1.1", "ND-B4.1", 
-               "NW-B1.1", "NW-B1.2", "NW-B4.1", "NW-B4.2", "NW-B4.3", 
-               "PA-B1.1", "PA-B4.1", "PA-B4.2", 
-               "WI-B1.1", "WI-B1.2", "WI-B4.1", "WI-B4.2", "WI-B4.3", 
-               "WO-B1.1", "WO-B4.1", "WO-B4.2", "WO-B4.3")
+poolnames <- c("MN-Av.1", "MN-V.1",
+               "ND-Av.1", "ND-V.1", 
+               "NW-Av.1", "NW-Av.2", "NW-V.1", "NW-V.2", "NW-V.3", 
+               "PA-Av.1", "PA-V.1", "PA-V.2", 
+               "WI-Av.1", "WI-Av.2", "WI-V.1", "WI-V.2", "WI-V.3", 
+               "WO-Av.1", "WO-V.1", "WO-V.2", "WO-V.3")
 
 # Pool's colors - for PCA
 biotype.col <- c("#247F00","#AB1A53",
@@ -375,6 +375,9 @@ for (s in seq_along(unique(intralocus_he_adp_signfst$Chromosome)))
   lines(lowess(n$he_b4 ~ n$Position, f=0.10), col="#AB1A53", lwd=2)
   abline(h=mean(meanHE_pools), lty=3, col="black", lwd=1)
 }
+# Add legend on the last plot
+legend("topleft", legend = c("Combined", "Avirulent", "Virulent", expression(paste("Average ", italic(H)[E], ))), 
+       lty = c(2,1,1,3), lwd=c(2,2,2,1), col=c("darkgray", "#247F00", "#AB1A53", "black"), bty="n")
 dev.off()
 
 # Multi AVERAGE PER-SAMPLE DEPTH OF BASES plots for all significant scaffolds
@@ -397,6 +400,9 @@ for (s in seq_along(unique(intralocus_he_adp_signfst$Chromosome)))
   lines(lowess(n$adp_b4 ~ n$Position, f=0.10), col="#AB1A53", lwd=2)
   abline(h=4, lty=3, col="black", lwd=1)
 }
+# Add legend on the last plot
+legend("topleft", legend = c("Combined", "Avirulent", "Virulent", "Min read cov"), 
+       lty = c(2,1,1,3), lwd=c(2,2,2,1), col=c("darkgray", "#247F00", "#AB1A53", "black"), bty="n")
 dev.off()
 
 ### ALLELE FREQUENCY CORRELATION ACROSS THE SIGNIFICAN SCAFFOLDS
@@ -758,7 +764,7 @@ plt$xlim(c(-0.5,1725))
 plt$xlabel("Geographical distances (Km)")
 plt$ylabel("Pairwise FST")
 plt$legend(title="Cost matrix", fontsize=9, 
-           labels=c("Same Biotype pools", "B1 vs B4 pools"),
+           labels=c("Same Biotype pools", "Avirulent vs Virulent"),
            loc='upper right')
 plt$tight_layout()
 plt$savefig("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pMantel_test_cost1_pools_Seaborn-lmplot.pdf")
@@ -772,7 +778,7 @@ plt$xlim(c(-0.5,1725))
 plt$xlabel("Geographical distances (Km)")
 plt$ylabel("Pairwise FST")
 plt$legend(title="Cost matrix", fontsize=9, 
-           labels=c("B1 pools", "B4 pools", "B1 vs B4 pools"),
+           labels=c("Avirulent", "Virulent", "Avirulent vs Virulent"),
            loc='upper right')
 plt$tight_layout()
 plt$savefig("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pMantel_test_cost2_pools_Seaborn-lmplot.pdf")
@@ -892,7 +898,7 @@ plt$xlim(c(-0.5,1725))
 plt$xlabel("Geographical distances (Km)")
 plt$ylabel("Pairwise FST")
 plt$legend(title="Cost matrix", fontsize=9, 
-           labels=c("Same Biotype pools", "B1 vs B4 pools"),
+           labels=c("Same Biotype pools", "Avirulent vs Virulent"),
            loc='upper right')
 plt$tight_layout()
 plt$savefig("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pMantel_test_cost1_biotypes_Seaborn-lmplot.pdf")
@@ -906,7 +912,7 @@ plt$xlim(c(-0.5,1725))
 plt$xlabel("Geographical distances (Km)")
 plt$ylabel("Pairwise FST")
 plt$legend(title="Cost matrix", fontsize=9, 
-           labels=c("B1 pools", "B4 pools", "B1 vs B4 pools"),
+           labels=c("Avirulent", "Virulent", "Avirulent vs Virulent"),
            loc='upper right')
 plt$tight_layout()
 plt$savefig("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pMantel_test_cost2_biotypes_Seaborn-lmplot.pdf")

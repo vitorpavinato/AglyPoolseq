@@ -244,12 +244,12 @@ plot(pca.dt.1.dataset1$svd$U[,1], pca.dt.1.dataset1$svd$U[,2], col=biotype.col,
      xlim = c(-2.5, 2), ylim = c(-3, 2), main="K=1",
      xlab=paste0("PC1 (", round(pca.dt.1.dataset1$eig[1,2],2), "%)"), 
      ylab=paste0("PC1 (", round(pca.dt.1.dataset1$eig[2,2],2), "%)"), 
-     cex=1.7, pch=19)
+     cex=1.7, pch=biotype.sym)
 text(pca.dt.1.dataset1$svd$U[,1], pca.dt.1.dataset1$svd$U[,2], 
      pca.dt.1.dataset1_cluster_data$sampleId, pos=2 , cex = 0.6)
 legend("bottomleft", 
        legend = c("Avirulent", "Virulent"), col = c("#247F00","#AB1A53"), 
-       pch = 19, bty = "n", cex = 1.2)
+       pch = c(15,17), bty = "n", cex = 1.2)
 abline(v=0,h=0,col="grey",lty=3)
 
 # PLOT PCA COLORED BY K2
@@ -356,12 +356,12 @@ plot(pca.dt.1.dataset2$svd$U[,1], pca.dt.1.dataset2$svd$U[,2], col=biotype.col[-
      xlim = c(-2.5, 2), ylim = c(-3, 2), main="K=1",
      xlab=paste0("PC1 (", round(pca.dt.1.dataset2$eig[1,2],2), "%)"), 
      ylab=paste0("PC1 (", round(pca.dt.1.dataset2$eig[2,2],2), "%)"), 
-     cex=1.7, pch=19)
+     cex=1.7, pch=biotype.sym[-c(5,21)])
 text(pca.dt.1.dataset2$svd$U[,1], pca.dt.1.dataset2$svd$U[,2], 
      pca.dt.1.dataset2_cluster_data$sampleId, pos=2 , cex = 0.6)
 legend("bottomleft", 
        legend = c("Avirulent", "Virulent"), col = c("#247F00","#AB1A53"), 
-       pch = 19, bty = "n", cex = 1.2)
+       pch = c(15,17), bty = "n", cex = 1.2)
 abline(v=0,h=0,col="grey",lty=3)
 
 # PLOT PCA COLORED BY K2
@@ -467,12 +467,12 @@ plot(pca.dt.1.dataset3$svd$U[,1], pca.dt.1.dataset3$svd$U[,2], col=biotype.col[-
      xlim = c(-2.5, 2), ylim = c(-2.5, 1.2), main="K=1",
      xlab=paste0("PC1 (", round(pca.dt.1.dataset3$eig[1,2],2), "%)"), 
      ylab=paste0("PC1 (", round(pca.dt.1.dataset3$eig[2,2],2), "%)"), 
-     cex=1.7, pch=19, cex.lab=1.6, cex.axis=1.4)
+     cex=1.7, pch=biotype.sym[-c(biotype.pools2remove)], cex.lab=1.6, cex.axis=1.4)
 text(pca.dt.1.dataset3$svd$U[,1], pca.dt.1.dataset3$svd$U[,2], 
      pca.dt.1.dataset3_cluster_data$sampleId, pos=2 , cex = 0.6)
 legend("bottomleft", 
        legend = c("Avirulent", "Virulent"), col = c("#247F00","#AB1A53"), 
-       pch = 19, bty = "n", cex = 1.2)
+       pch = c(15,17), bty = "n", cex = 1.2)
 abline(v=0,h=0,col="grey",lty=3)
 
 # PLOT PCA COLORED BY K2
