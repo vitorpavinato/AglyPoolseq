@@ -1,6 +1,6 @@
-# Dataset used for the analysis
+# Dataset used in the analysis
 
-### Variant calling files produced by the mapping + variant calling pipeline and used for the analysis
+### Variant calling files produced by the mapping + variant calling pipeline and used in the different analysis steps
 
 🗂️ The datasets were produced by running the mapping pipeline with different minimun and maximum read coverage and by running the variant calling pipeline with different _BAM_ (from each pipeline run). This was done because each instance of the mapping pipeline started with different sequencing coverage.
 
@@ -16,10 +16,10 @@ These vcf files and the associated `R scripts` will become available with the ma
 
 #### Why so many datasets? What did each dataset informe about?
 
-- **aphidpool.all.PoolSNP.05.5.07Jul2021.vcf.gz:** this dataset was used to check if there were some issues with the sequencing. We checked if each sequencing of technical replicates clustered together in the PCA of allele frequencies;
-- **aphidpool.PoolSeq.PoolSNP.0.20.paramTest.ann.vcf.gz:** this collection of  `vcf` files contains a sample of annotated SNPs that were used to check the best combination of MAC/MAF for SNP filtering. We checked the relationship between MAC/MAF and the number of SNPs after filtering, the percentage of missing data, and the proportion of non-synonimous to synonimous mutations ($`p_{N}/p_{S}`$).
+- **aphidpool.all.PoolSNP.05.5.07Jul2021.vcf.gz:** this dataset was used to quality control (QC) the sequenced reads. We checked if each sequencing of technical replicates clustered together in the PCA of allele frequencies;
+- **aphidpool.PoolSeq.PoolSNP.0.20.paramTest.ann.vcf.gz:** this collection of  `vcf` files contains a sample of annotated SNPs that were used to QC the best combination of MAC/MAF for SNP filtering. We checked the relationship between MAC/MAF and the number of SNPs after filtering, the percentage of missing data, and the proportion of non-synonimous to synonimous mutations p<sub>&N;</sub> / p<sub>&S;</sub>.
 - **aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.gz:** this dataset was used to check what was the real minor allele frequency associated with the defined MAF. In theory, MAC and MAF are independent, but for our dataset with MAC=5 the lowest MAF was  > 0.001;
-- **aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.vcf.gz:** this dataset was used for the population genomics analysis - $`F_{\mathrm{ST}}`$ scan; from this dataset two sets were obtained 1) with all samples and SNPs; and 2) a subset containing the best 12 samples (one each biotype/locality) and SNPs with proportion of missing data (across samples) < 25%.
+- **aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.vcf.gz:** this dataset was used for the population genomics analysis - _e.g_ F<sub>&_ST_;</sub>  scan; from this dataset two sets were obtained 1) with all samples and SNPs; and 2) a subset containing the best 12 samples (one each biotype/locality) and SNPs with proportion of missing data (across samples) < 25%.
 
 
 
