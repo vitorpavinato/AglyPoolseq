@@ -1,6 +1,6 @@
 # Dataset used for the analysis
 
-### The dataset were produced by running the mapping pipeline with different minimun and maximum read coverage and by running the variant calling pipeline with different _BAM_ (from each pipeline run). This was done because each instance of the mapping pipeline started with different sequencing coverage.
+### 🗂️ The datasets were produced by running the mapping pipeline with different minimun and maximum read coverage and by running the variant calling pipeline with different _BAM_ (from each pipeline run). This was done because each instance of the mapping pipeline started with different sequencing coverage.
 
 
 |                                  VCF file                                               |            Source            |  # of Samples   |   Min_cov  | Max_cov  |  MAF    |  MAC                         | Missing franction | # of SNP variants |  Associated Script               |
