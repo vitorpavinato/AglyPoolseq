@@ -26,15 +26,7 @@ ls()
 library(data.table)
 library(SeqArray)
 
-#### PoolSNPs - Poolfstat Analysis Dataset:
-#### Dataset 2: 24-Jun-2021; Min_cov=4; Max_cov=0.99; MAF=0.05; MAC=5; 21 pools; miss_fraction=0.50
-#### vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.vcf.gz
 
-###
-###
-### ---- PART 1: UPLOAD AND FILTER SNP FILE ----
-###
-###
 
 ### open GDS file
 genofile <- seqOpen("vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.ann.gds")
