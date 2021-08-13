@@ -1,5 +1,5 @@
 ## Agly-Poolseq
-This repository was forked from [alanbergland/DEST](https://github.com/alanbergland/DEST). It contain modified scripts for mapping and quality control that were used on [DEST](https://www.biorxiv.org/content/10.1101/2021.02.01.428994v3) dataset (Drosophila over Space and Time). The pipeline and Dockerfile were modified to work with Aphis glycines genome.
+This repository was forked from [alanbergland/DEST](https://github.com/alanbergland/DEST). It contain modified scripts for mapping and quality control that were used on [DEST](https://www.biorxiv.org/content/10.1101/2021.02.01.428994v3) dataset (Drosophila over Space and Time). The pipeline and Dockerfile were modified to work with _Aphis glycines_ [genome](https://academic.oup.com/g3journal/article/10/3/899/6026189).
 
 ### Metadata
   > `populationInfo\`: Has supplemental data from field populations.
