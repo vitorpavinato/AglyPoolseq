@@ -30,6 +30,6 @@ echo $poolsize
 
 ## Run Popoolation summary statistics for each pool
 echo "running poopolation summary statistics"
-sh ${wd}/DEST-AglyPoolseq/Analyses/aggregated_data/popoolation_summStats.sh ${inputDir} ${outputDir} ${poolname} ${poolsize}
+sh ${wd}/DEST-AglyPoolseq/analyses/aggregated_data/popoolation_summStats.sh ${inputDir} ${outputDir} ${poolname} ${poolsize}
 
 echo "done"
