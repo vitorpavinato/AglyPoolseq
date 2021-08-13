@@ -26,7 +26,7 @@ These vcf files and the associated `R scripts` will become available with the ma
 #### Why so many datasets? What did each dataset informe about?
 
 - **aphidpool.all.PoolSNP.05.5.07Jul2021.vcf.gz:** this dataset was used to quality control (QC) the sequenced reads. We checked if each sequencing of technical replicates clustered together in the PCA of allele frequencies;
-- **aphidpool.PoolSeq.PoolSNP.0.20.paramTest.ann.vcf.gz:** this collection of  `vcf` files contains a sample of annotated SNPs that were used to QC the best combination of MAC/MAF for SNP filtering. We checked the relationship between MAC/MAF and the number of SNPs after filtering, the percentage of missing data, and the proportion of non-synonimous to synonimous mutations p<sub>_N_</sub> / p<sub>_S_</sub>.
+- **aphidpool.PoolSeq.PoolSNP.0..`x`.paramTest.ann.vcf.gz:** this collection of  `vcf` files contains a sample of annotated SNPs that were used to QC the best combination of MAC/MAF for SNP filtering. We checked the relationship between MAC/MAF and the number of SNPs after filtering, the percentage of missing data, and the proportion of non-synonimous to synonimous mutations p<sub>_N_</sub> / p<sub>_S_</sub>.
 - **aphidpool.PoolSeq.PoolSNP.001.5.22Jun2021.vcf.gz:** this dataset was used to check what was the real minor allele frequency associated with the defined MAF. In theory, MAC and MAF are independent, but for our dataset with MAC=5 the lowest MAF was  > 0.001;
 - **aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.vcf.gz:** this dataset was used for the population genomics analyses - _e.g_ F<sub>_ST_</sub>  scan; from this dataset two sets were obtained 1) with all samples and SNPs; and 2) a subset containing the best 12 samples (one each biotype/locality) and SNPs with proportion of missing data (across samples) < 25%.
 
@@ -43,7 +43,7 @@ Dataset: `aphidpool.all.PoolSNP.05.5.07Jul2021.vcf.gz`
 7. Correlation between aggregated read coverage % missing data and aggregated coverage;
 
 ##### Script `exploratory_macmaf_pnps_missing.R`; folder `aggregated_data`:
-Dataset: `aphidpool.PoolSeq.PoolSNP.0.x.paramTest.ann.vcf.gz` x from 0 to 0.2
+Dataset: `aphidpool.PoolSeq.PoolSNP.0.x.paramTest.ann.vcf.gz` x from 5 to 100
 1. Missing data as a function of MAC and MAF;
 2. p<sub>_N_</sub> / p<sub>_S_</sub> as a function of MAC and MAF;
 3. Identify problematic samples to remove based on % Missing and p<sub>_N_</sub> / p<sub>_S_</sub>;
