@@ -71,15 +71,15 @@ wait
 check_exit_status "windowSummerStats" $?
 
 ### RUN VARIANCE AT POSITION FOR PI W_theta AND TAJIMA'S D
-echo "runing exons pi"
+echo "running exons pi"
 perl $POPOOLATIONPATH/Variance-at-position.pl --fastq-type 'sanger' --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --pool-size ${POOLSIZE} --min-coverage 4 --min-count 1  --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.pi --measure pi --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.pi --min-covered-fraction 0 --dissable-corrections
 wait
 
-echo "runing exons theta"
+echo "running exons theta"
 perl $POPOOLATIONPATH/Variance-at-position.pl --fastq-type 'sanger' --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --pool-size ${POOLSIZE} --min-coverage 4 --min-count 1  --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.theta --measure theta --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.theta --min-covered-fraction 0 --dissable-corrections
 wait
 
-echo "runing exons Tajima's D"
+echo "running exons Tajima's D"
 perl $POPOOLATIONPATH/Variance-at-position.pl --fastq-type 'sanger' --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --pool-size ${POOLSIZE} --min-coverage 4 --min-count 1  --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.TjD --measure D --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.TjD --min-covered-fraction 0 --dissable-corrections
 wait
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #SBATCH -J run_popoolations
-#SBATCH -c 1
+#SBATCH -c 2
 #SBATCH -N 1 # on one node
-#SBATCH -t 00:40:00 
-#SBATCH --mem 4G
+#SBATCH -t 02:00:00 
+#SBATCH --mem 8G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/run_popoolation.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/run_popoolation.%A_%a.err # Standard error
 #SBATCH --account PAS1715
