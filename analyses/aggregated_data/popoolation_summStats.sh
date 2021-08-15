@@ -25,7 +25,7 @@ GTF_EXONS=/fs/scratch/PAS1715/aphidpool/ref/raw/A_glycines_b4_r2.1_exons.gtf
 REF=/fs/scratch/PAS1715/aphidpool/ref/raw/A_glycines_b4_r2.1.fasta
 
 ### BED FILE OF RETAINED SNPS
-BED_SNPs=/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/popoolation_sumstats/snps_ordered4mpileup_filtering.001.1.13Ago2021.bed
+BED_SNPs=/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/popoolation_sumstats/snps_ordered4mpileup_filtering.001.2.13Ago2021.bed
 
 ### INPUT/OUTPUT
 INPUTDIR=${1}
@@ -50,22 +50,22 @@ check_exit_status "mpileup" $?
 
 ## RUN POPOOLATION SYN-NONSYN AT POSITION
 echo "running syn-nonsyn at position"
-perl $POPOOLATIONPATH/syn-nonsyn/Syn-nonsyn-at-position.pl --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --fastq-type 'sanger' --measure pi --gtf $GTF_CDSs  --codon-table $CODON_TABLE --nonsyn-length-table $NSL_TABLE --output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.out --snp-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.snp.out --region-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.region.out --pool-size ${POOLSIZE} --min-count 1 --min-coverage 4 --dissable-corrections
+perl $POPOOLATIONPATH/syn-nonsyn/Syn-nonsyn-at-position.pl --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --fastq-type 'sanger' --measure pi --gtf $GTF_CDSs --codon-table $CODON_TABLE --nonsyn-length-table $NSL_TABLE --output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.out --snp-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.snp.out --region-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.region.out --pool-size ${POOLSIZE} --min-count 2 --min-coverage 4 --max-coverage 50 --min-qual 25 
 wait
 
 check_exit_status "syn_nonsyn" $?
 
 ### RUN VARIANCE SLIDING FOR PI W_theta AND TAJIMA'S D
 echo "running sliding window pi"
-perl $POPOOLATIONPATH/Variance-sliding.pl --fastq-type 'sanger' --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.pi --measure pi --window-size 10000 --step-size 2000 --min-count 1 --min-coverage 4 --pool-size ${POOLSIZE} --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-sliding.pl --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.pi --measure pi --pool-size ${POOLSIZE} --fastq-type 'sanger' --min-count 2 --min-coverage 4 --max-coverage 50 --min-covered-fraction 0 --min-qual 25 --window-size 5000 --step-size 5000
 wait
 
 echo "running sliding window theta"
-perl $POPOOLATIONPATH/Variance-sliding.pl --fastq-type 'sanger' --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.theta --measure theta --window-size 10000 --step-size 2000 --min-count 1 --min-coverage 4 --pool-size ${POOLSIZE} --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-sliding.pl --fastq-type 'sanger' --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.theta --measure theta --window-size 10000 --step-size 10000 --min-count 1 --min-coverage 4 --pool-size ${POOLSIZE} --min-covered-fraction 0 --dissable-corrections
 wait
 
 echo "running sliding window TajimaD"
-perl $POPOOLATIONPATH/Variance-sliding.pl --fastq-type 'sanger' --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.TjD --measure D --window-size 10000 --step-size 2000 --min-count 1 --min-coverage 4 --pool-size ${POOLSIZE} --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-sliding.pl --fastq-type 'sanger' --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.TjD --measure D --window-size 10000 --step-size 10000 --min-count 1 --min-coverage 4 --pool-size ${POOLSIZE} --min-covered-fraction 0 --dissable-corrections
 wait
 
 check_exit_status "windowSummerStats" $?
