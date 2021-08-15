@@ -50,7 +50,7 @@ check_exit_status "mpileup" $?
 
 ## RUN POPOOLATION SYN-NONSYN AT POSITION
 echo "running syn-nonsyn at position"
-perl $POPOOLATIONPATH/syn-nonsyn/Syn-nonsyn-at-position.pl --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --fastq-type 'sanger' --measure pi --gtf $GTF_CDSs --codon-table $CODON_TABLE --nonsyn-length-table $NSL_TABLE --output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.out --snp-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.snp.out --region-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.region.out --pool-size ${POOLSIZE} --min-count 2 --min-coverage 4 --max-coverage 50 --min-qual 25 
+perl $POPOOLATIONPATH/syn-nonsyn/Syn-nonsyn-at-position.pl --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --gtf $GTF_CDSs --codon-table $CODON_TABLE --nonsyn-length-table $NSL_TABLE --output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.out --snp-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.snp.out --region-output ${OUTPUTPATH}/${POOLNAME}.SynNonsyn.region.out --measure pi --pool-size ${POOLSIZE} --fastq-type 'sanger' --min-count 2 --min-coverage 4 --max-coverage 50 --min-qual 25
 wait
 
 check_exit_status "syn_nonsyn" $?
@@ -61,26 +61,26 @@ perl $POPOOLATIONPATH/Variance-sliding.pl --input ${OUTPUTPATH}/${POOLNAME}.filt
 wait
 
 echo "running sliding window theta"
-perl $POPOOLATIONPATH/Variance-sliding.pl --fastq-type 'sanger' --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.theta --measure theta --window-size 10000 --step-size 10000 --min-count 1 --min-coverage 4 --pool-size ${POOLSIZE} --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-sliding.pl --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.pi --measure theta --pool-size ${POOLSIZE} --fastq-type 'sanger' --min-count 2 --min-coverage 4 --max-coverage 50 --min-covered-fraction 0 --min-qual 25 --window-size 5000 --step-size 5000
 wait
 
 echo "running sliding window TajimaD"
-perl $POPOOLATIONPATH/Variance-sliding.pl --fastq-type 'sanger' --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.TjD --measure D --window-size 10000 --step-size 10000 --min-count 1 --min-coverage 4 --pool-size ${POOLSIZE} --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-sliding.pl --input ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --output ${OUTPUTPATH}/${POOLNAME}.window.pi --measure D --pool-size ${POOLSIZE} --fastq-type 'sanger' --min-count 2 --min-coverage 4 --max-coverage 50 --min-covered-fraction 0 --min-qual 25 --window-size 5000 --step-size 5000
 wait
 
 check_exit_status "windowSummerStats" $?
 
 ### RUN VARIANCE AT POSITION FOR PI W_theta AND TAJIMA'S D
 echo "running exons pi"
-perl $POPOOLATIONPATH/Variance-at-position.pl --fastq-type 'sanger' --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --pool-size ${POOLSIZE} --min-coverage 4 --min-count 1  --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.pi --measure pi --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.pi --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-at-position.pl --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.pi --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.pi --measure pi --pool-size ${POOLSIZE} --fastq-type 'sanger' --min-count 2 --min-coverage 4 --max-coverage 50 --min-covered-fraction 0 --min-qual 25
 wait
 
 echo "running exons theta"
-perl $POPOOLATIONPATH/Variance-at-position.pl --fastq-type 'sanger' --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --pool-size ${POOLSIZE} --min-coverage 4 --min-count 1  --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.theta --measure theta --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.theta --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-at-position.pl --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.pi --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.pi --measure theta --pool-size ${POOLSIZE} --fastq-type 'sanger' --min-count 2 --min-coverage 4 --max-coverage 50 --min-covered-fraction 0 --min-qual 25
 wait
 
 echo "running exons Tajima's D"
-perl $POPOOLATIONPATH/Variance-at-position.pl --fastq-type 'sanger' --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --pool-size ${POOLSIZE} --min-coverage 4 --min-count 1  --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.TjD --measure D --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.TjD --min-covered-fraction 0 --dissable-corrections
+perl $POPOOLATIONPATH/Variance-at-position.pl --pileup ${OUTPUTPATH}/${POOLNAME}.filtered.mpileup --gtf $GTF_EXONS --output ${OUTPUTPATH}/${POOLNAME}.exons.pi --snp-output ${OUTPUTPATH}/${POOLNAME}.snp.output.exons.pi --measure D --pool-size ${POOLSIZE} --fastq-type 'sanger' --min-count 2 --min-coverage 4 --max-coverage 50 --min-covered-fraction 0 --min-qual 25
 wait
 
 check_exit_status "geneSummerStats" $?
