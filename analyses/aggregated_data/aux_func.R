@@ -83,24 +83,27 @@ imputedRefMLCount <- function(x)
   
 }# end of function definition
 
-## COMPUTE HE FROM INPUTED AF
+## COMPUTE GENOME-WIDE MEAN HE FOR EACH SAMPLE
 meanHE <- function(x)
 {
   l <- sum(!is.na(x))
   return(1 - (sum(((x^2) + ((1-x)^2)), na.rm = T)/l))
 }
 
+## COMPUTE GENOME-WIDE MEAN THETA FOR EACH SAMPLE
 thetaHE <- function(x)
 {
   l <- sum(!is.na(x))
   return((x/(1-x))/l)
 }
 
+## THIS IS THE LOCUS HE ACROSS SAMPLES
 meanLocusHE <- function(x)
 {
-  r = 1 - ((x^2) + ((1-x)^2))
-  l = sum(!is.na(r))
-  return(sum(r, na.rm = T)/(l-1))
+  r <- mean(x, na.rm = T)
+  a <- 1-r
+  h <- 1 - ((r^2) + (a^2))
+  return(h)
 }
 
 #' BI-COLOUR CHROMOSOMES COLOR

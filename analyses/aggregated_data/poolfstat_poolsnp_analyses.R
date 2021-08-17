@@ -35,7 +35,7 @@ library(PopGenReport)
 #library(viridis)
 
 # Import auxiliary R functions  
-source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
+source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ### SETUP PYTHON INTEGRATION
 library(reticulate) # To use python code within R
@@ -322,24 +322,38 @@ for (s in seq_along(unique(intralocus_fst_sign$Chromosome)))
 }
 dev.off()
 
+###
+###
+##### --- DIVERSTITY AND COVERAGE STATS FOR EACH SNP FOR SIGNIFICANT SCAFFOLDS ---
+###
+### 
+
+### MAYBE MOVE TO ANOTHER SCRIPT WITH THE DIVERSITY STATS
+
 ### AVERAGE EXPECTED HETEROZYGOZITY OF EACH POOL FOR EACH SIGNIFICANT SCAFFOLD
 ## WITH THE LINE PLOT I WANT TO ANSWER THESE QUESTIONS:
 ## IS THERE LESS DIVERSITY CLOSE TO FST OULIERS LOCI?
 ## IS THERE DIFFERENCES BETWEEN AVERAGE HE VALUES FOR EACH BIOTYPE?
 
-# GENOME-WIDE HE
-meanHE_pools  <- apply(dt.1.imputedRefMLFreq, 2, meanHE)
+## GENOME-WIDE MEAN HE FOR EACH POOL
+meanHE_pools  <- apply(dt.1.imputedRefMLFreq, 2, meanHE) # 2 indicates columns: pools
 names(meanHE_pools) <- dt.1@poolnames
 
+# AVERAGE ACROSS BIOTYPES
 meanHE_B1_pools <- mean(meanHE_pools[-c(2,4,7,8,9,11,12,15,16,17,19,20,21)])
 meanHE_B4_pools <- mean(meanHE_pools[c(2,4,7,8,9,11,12,15,16,17,19,20,21)])
 
-# LOCUS HE
-locus_meanHE_pools       <- apply(dt.1.imputedRefMLFreq, 1, meanLocusHE)
+## LOCUS-HE ACROSS POOLS
+# OVERALL
+locus_meanHE_pools       <- apply(dt.1.imputedRefMLFreq, 1, meanLocusHE) # 1 indicates rows: locus
+
+# ACROSS POOLS/BIOTYPES
 locus_meanHE_B1_pools    <- apply(dt.1.imputedRefMLFreq[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, meanLocusHE)
 locus_meanHE_B4_pools    <- apply(dt.1.imputedRefMLFreq[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, meanLocusHE)
 
-# AVERAGE PER-SAMPLE DEPTH OF BASES
+# NOTE: FOR THE MOMENT USE THIS, BUT IDEALLY CALCULATE MEAN LOCUS-HE ACROSS WINDOWS WITH BIOTYPES
+
+## AVERAGE PER-SAMPLE DEPTH OF BASES
 dt.1.read_coverage_data <- dt.1@readcoverage
 dt.1.read_coverage_data[ dt.1.read_coverage_data==0 ] <- NA
 
@@ -355,7 +369,7 @@ intralocus_he_adp     <- data.frame(dt.1@snp.info,
 intralocus_he_adp_signfst <- intralocus_he_adp[intralocus_he_adp$Chromosome %in% unique(high.multilocus.fst.ordered$CHRM), ]
 #table(intralocus_he_adp_signfst$Chromosome)
 
-# Multi HE plots for all significant scaffolds
+### Multi LOCUS-HE plots for all significant scaffolds
 pdf("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/significant_intralocus_fst_he_scaffolds.pdf",         # File name
     width = 8.5, height = 11, # Width and height in inches
     bg = "white",          # Background color
@@ -369,6 +383,7 @@ for (s in seq_along(unique(intralocus_he_adp_signfst$Chromosome)))
   
   plot(n$he_b1 ~ n$Position, type="n", 
        xlab="Position (in bp)",ylab=expression(paste(italic(H)[E])), main=chr_name,
+       ylim=c(0,0.6),
        col="black",pch=20, cex.lab=1.4, cex.axis=1.2)
   lines(lowess(n$he_pools ~ n$Position, f=0.10), col="darkgray", lwd=2, lty=2)
   lines(lowess(n$he_b1 ~ n$Position, f=0.10), col="#247F00", lwd=2)
@@ -376,11 +391,11 @@ for (s in seq_along(unique(intralocus_he_adp_signfst$Chromosome)))
   abline(h=mean(meanHE_pools), lty=3, col="black", lwd=1)
 }
 # Add legend on the last plot
-legend("topleft", legend = c("Combined", "Avirulent", "Virulent", expression(paste("Average ", italic(H)[E], ))), 
+legend("bottomleft", legend = c("Combined", "Avirulent", "Virulent", expression(paste("Average ", italic(H)[E], ))), 
        lty = c(2,1,1,3), lwd=c(2,2,2,1), col=c("darkgray", "#247F00", "#AB1A53", "black"), bty="n")
 dev.off()
 
-# Multi AVERAGE PER-SAMPLE DEPTH OF BASES plots for all significant scaffolds
+### Multi AVERAGE PER-SAMPLE DEPTH OF BASES plots for all significant scaffolds
 pdf("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/significant_intralocus_fst_adp_scaffolds.pdf", # File name
     width = 8.5, height = 11,                                                                                # Width and height in inches
     bg = "white",                                                                                            # Background color
@@ -427,7 +442,7 @@ intralocus_RefFREQ_signfst_window_cor <- do.call(rbind, lapply(listOf_signfstSca
                                                                alleleRefFreqCorSlidingWindow, 
                                                                step=100, windowSize=10000))
 
-# Multi ALLELE FREQUENCY CORRELATIONS ALONG CHROM plots for all significant scaffolds
+### Multi ALLELE FREQUENCY CORRELATIONS ALONG CHROM plots for all significant scaffolds
 pdf("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/significant_intralocus_fst_RefFREQcor_scaffolds.pdf", # File name
     width = 8.5, height = 11,                                                                                       # Width and height in inches
     bg = "white",                                                                                                   # Background color
