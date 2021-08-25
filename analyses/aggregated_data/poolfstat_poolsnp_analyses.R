@@ -345,11 +345,11 @@ meanHE_B4_pools <- mean(meanHE_pools[c(2,4,7,8,9,11,12,15,16,17,19,20,21)])
 
 ## LOCUS-HE ACROSS POOLS
 # OVERALL
-locus_meanHE_pools       <- apply(dt.1.imputedRefMLFreq, 1, meanLocusHE) # 1 indicates rows: locus
+locus_meanHE_pools       <- apply(dt.1.imputedRefMLFreq, 1, locusHE) # 1 indicates rows: locus
 
 # ACROSS POOLS/BIOTYPES
-locus_meanHE_B1_pools    <- apply(dt.1.imputedRefMLFreq[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, meanLocusHE)
-locus_meanHE_B4_pools    <- apply(dt.1.imputedRefMLFreq[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, meanLocusHE)
+locus_meanHE_B1_pools    <- apply(dt.1.imputedRefMLFreq[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, locusHE)
+locus_meanHE_B4_pools    <- apply(dt.1.imputedRefMLFreq[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, locusHE)
 
 # NOTE: FOR THE MOMENT USE THIS, BUT IDEALLY CALCULATE MEAN LOCUS-HE ACROSS WINDOWS WITH BIOTYPES
 
