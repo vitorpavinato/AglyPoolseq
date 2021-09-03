@@ -261,12 +261,12 @@ high.multilocus.fst <- data.frame(CHRM=dt.1.fst.scan$sliding.windows.fst$Chr[whi
                                   POS=dt.1.fst.scan$sliding.windows.fst$Position[which(dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)], 
                                   FST= dt.1.fst.scan$sliding.windows.fst$MultiLocusFst[which(dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)])
 
-# Save to a file
-#write.table(high.multilocus.fst, file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/multilocus.fst.higher025.txt",
-#            quote = F, col.names = F, row.names = F)
-
 # Order by scaffold and position
 high.multilocus.fst.ordered <- high.multilocus.fst[order(high.multilocus.fst$CHRM, high.multilocus.fst$POS), ]
+
+# Save to a file
+#write.table(high.multilocus.fst.ordered, file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/signf_multilocus_fst_values.txt",
+#            quote = F, col.names = T, row.names = F)
 
 # Create a BED file -like table
 high.multilocus.fst.ordered.bed <- data.frame(CHROM=high.multilocus.fst.ordered$CHRM,
@@ -321,6 +321,10 @@ for (s in seq_along(unique(intralocus_fst_sign$Chromosome)))
          lty=c(2,2,2), col=c("lightgreen", "blue", "red"), lwd=2)
 }
 dev.off()
+
+# EXPORT ALL INTRA-LOCUS FST VALUES
+#write.table(intralocus_fst, file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/intralocus_fst_data.txt",
+#            quote = F, col.names = T, row.names = F)
 
 ###
 ###

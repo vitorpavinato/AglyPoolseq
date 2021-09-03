@@ -89,11 +89,11 @@ imputedRefMLCount <- function(x)
   
 }# end of function definition
 
-## COMPUTE GENOME-WIDE MEAN HE FOR EACH SAMPLE
+## COMPUTE SAMPLE TOTAL HE - SAMPLE H_T
 meanHE <- function(x)
 {
-  l <- sum(!is.na(x))
-  return(1 - (sum(((x^2) + ((1-x)^2)), na.rm = T)/l))
+  m = mean(x, na.rm = T)
+  return(2*m*(1 - m))
 }
 
 ## COMPUTE GENOME-WIDE MEAN THETA FOR EACH SAMPLE
@@ -103,53 +103,107 @@ thetaHE <- function(x)
   return((x/(1-x))/l)
 }
 
-## COMPUTE HETEROZYGOSITY ACROSS SAMPLES
+## COMPUTE OVERALL HETEROZYGOSITY ACROSS SAMPLES - TOTAL HETEROZYGOSITY H_T
 #'
-#' Given the matrix with the ML estimated referece allele frequency
-#' for each sample and loci, it computs the locus HE across samples
-#' @param x The the ML allele frequency matrix
-#' @return a vector with locus HE estimates
+#' For each SNP, it computes the heterozygosity across samples (vector)
+#' @param x A vector with reference allele frequency of each sample
+#' @return A scalar 
 #' @export
 
-locusHE <- function(x)
+totalHE <- function(x)
 {
-  r <- mean(x, na.rm = T)
-  a <- 1-r
-  h <- 1 - ((r^2) + (a^2))
-  return(h)
+  p <- mean(as.numeric(x), na.rm = T)
+  return(2*p*(1 - p))
 }
 
-## COMPUTE WITHIN SAMPLE LOCUS GENETIC DIVERSITY - PI OR WITHIN HE
+## COMPUTE AVERAGE WITHIN SAMPLE LOCUS GENETIC DIVERSITY (h_0)
 #'
-#' It calculates the within population pi (aka HE) for each locus given its imputed
-#' reference allele frequencie.
+#' For each SNP, It calculates the within locus pi
+#' @param x A vector with reference allele frequency of each sample
+#' @param Nindiv The the number of individuals in the pools
+#' @return DataFrame with 1 - F_0 (within locus Pi) and F_0
+#' @export
+
+avgWithinLocusPi <- function(x, Nindv = 5)
+{
+  M = Nindv
+  r = length(x[!is.na(x)])
+  X = sum(x^2, na.rm = T) + sum((1-x)^2, na.rm = T)
+  F_0 = ((2 * M * X) - r)/(((2*M)-1) * r)
+  
+  res = data.frame(pi_within = (1 - F_0), F_0 = F_0)
+  return(res)  
+    
+}
+
+## COMPUTE AVERAGE BETWEEN SAMPLE LOCUS GENETIC DIVERSITY (H_B OR H_1)
+#'
+#' For each SNP, It calculates the between locus pi
+#' @param x A vector with reference allele frequency of each sample
+#' @param Nindiv The the number of individuals in the pool
+#' @return DataFrame with 1 - F_1 (between locus Pi) and F_1
+#' @export
+
+avgBetweenLocusPi <- function(x, Nindv = 5)
+{
+  M = Nindv
+  r = length(x[!is.na(x)])
+  X = sum(x^2, na.rm = T) + sum((1-x)^2, na.rm = T)
+  Y = sum(x, na.rm = T)^2 + sum(1-x, na.rm = T)^2
+  F_1 = (Y - X)/(r * (r - 1))
+  
+  res = data.frame(pi_between = (1 - F_1), F_1 = F_1)
+  return(res)  
+  
+}
+
+## COMPUTE GENETIC DIVERSITY 
+#' from Smadja et al 2012
+#' Compute for all SNPs in the SNP matrix: 
+#' within-sample heterozygosity (h_0),
+#' between-sample heterozygosity (H_B or H_1),
+#' HE across samples (H_T), 
+#' the FST
+#' @param x a matrix with all ML reference allele frequencies for all samples/loci
+#' @return a list
+#' @export
+
+geneticDiversity <- function(x, Nindv=5)
+{
+  snpInfo = x[, c(1:4)]
+  x = x[, -c(1:4)]
+  
+  t_0 <- do.call(rbind, apply(x, 1, function(x) avgWithinLocusPi(x, Nindv = Nindv)))
+  t_1 <- do.call(rbind, apply(x, 1, function(x) avgBetweenLocusPi(x, Nindv = Nindv)))
+  h_t <- apply(x, 1, function(x) totalHE(x))
+  
+  beta = (t_0$F_0 - t_1$F_1)/(1 - t_1$F_1)
+  
+  return(list(snpInfo = snpInfo,
+              F_0 = t_0$F_0,
+              F_1 = t_1$F_1,
+              pi_within = t_0$pi_within,
+              pi_between = t_1$pi_between,
+              H_T = h_t,
+              fst = beta
+              ))
+  
+}
+
+## COMPUTE WITHIN-SAMPLE GENETIC DIVERSITY (pi_within)
+#'
+#' It calculates the within population pi for each locus 
 #' @param x The scalar or vector containing the ML imputed reference allele frequencie
 #' @param pool_size The 2x the number of individuals in each pool
-#' (it corresponds to the number of sampled chromosomes)
-#' @return The scalar or vector of within HE
+#' @return The scalar or vector of pi_within
 #' @export
 
 withinLocusPi <- function(x, pool_size = 10)
 {
-    r = x
-    a = 1-x
-    pi <- (pool_size/(pool_size - 1)) * (r * a * 2)
-    return(pi)
-}
-
-## COMPUTE LOCUS HETEROZYGOSITY BETWEEN SAMPLES - H1
-#'
-#' Given the average across samples of the within sample locus genetic diversity
-#' and the locus-specific F_ST, it outputs the heterozygosity between samples
-#' @param x The scalar or vector containing average across samples of the within
-#' sample locus genetic diversity
-#' @param locus_fst The scalar or vector of intra-locus F_ST
-#' @return The scalar or vector of H1
-#' @export
-
-locusH1 <- function(x, f_st = 0.001)
-{
-    return(x/(1 - (f_st)))
+  r = x
+  a = 1-x
+  pi <- (pool_size/(pool_size - 1)) * (r * a * 2)
+  return(pi)
 }
 
 ## COMPUTE F_ST
