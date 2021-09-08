@@ -44,7 +44,7 @@ poolnames <- c("MN-Av.1", "MN-V.1",
 
 ###
 ###
-### --- LOAD THE DATASETS
+### --- LOAD THE DATASETS ---
 ###
 ###
 
@@ -68,7 +68,7 @@ class(poolfstat_intralocusFst.dataFrame$Position) # numeric?
 
 ###
 ###
-### --- CALCULATE SUMMARY STATISTICS
+### --- CALCULATE SUMMARY STATISTICS ---
 ###
 ###
 
@@ -356,7 +356,7 @@ ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/avg_pi_within_s
 
 ###
 ###
-### --- GENETICS DIVERSITY AND FST
+### --- GENETICS DIVERSITY AND FST ---
 ###
 ###
 
@@ -414,7 +414,57 @@ summary_statistics_table.b4$Position <- as.integer(summary_statistics_table.b4$P
 
 ###
 ###
-### --- SNP ANNOTATION
+### --- CORRELATION BETWEEN FST ESTIMATES ---
+###
+###
+
+### CHECK IF POOLFSTAT WEIR & COCKERHAM's FST (1984) CORRELATES 
+### WITH COCKERHAM & WEIR BETA (1993) (From the average between and within locus pi)
+
+fst_data4plot <- data.frame(x=summary_statistics_table$POOLFSTAT_FST,
+                            y=summary_statistics_table$WC_Beta) 
+
+
+fst.cor <- cor(fst_data4plot$x, fst_data4plot$y, use = "pairwise.complete.obs")
+# 0.9071797
+
+par(mar=c(5,5,4,1)+.1)
+breaks.plot <- c(54.598185, 7.389056, 1)
+fst.plot   <- ggplot(fst_data4plot, aes(x,y))
+fst.plot <- fst.plot + 
+            stat_bin2d(bins=100, na.rm = T, show.legend=T) + 
+            scale_fill_gradientn(colours=viridis::viridis(32), trans="log", name="counts"
+                                 ,
+                                 breaks = round(breaks.plot),labels = round(breaks.plot),
+            ) +
+            xlab(expression(paste("Weir & Cockerham's", " ", italic(F)[ST]))) +
+            ylab(expression(paste("Cockeram & Weir's", " ", italic(beta))))+
+            xlim(-0.2,0.6) +
+            ylim(-0.2,0.6) +
+            geom_abline(intercept = 0, slope = 1, color = "black",  linetype="dashed") +
+            annotate(geom="text", x=-0.16, y=0.6, size= 5, label=expression(paste(italic(r), " = ", "0.907"))) + 
+            theme_bw() + theme(panel.border = element_rect(colour = "black", fill=NA), 
+                               panel.grid.major = element_blank(),
+                               panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+                               legend.position = "right", axis.text = element_text(size = 14),
+                               axis.title=element_text(size=16))
+fst.plot
+
+# CORRELATION PLOT
+ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/correlation_among_fsts_estimates.pdf",
+       fst.plot,
+       device="pdf",
+       width=7.6,
+       height=6.6)
+
+#save_checkpoint_4
+#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+
+
+###
+###
+### --- SNP ANNOTATION ---
 ###
 ###
 
@@ -457,7 +507,7 @@ setdiff(paste0(summary_statistics_table$Chromosome, "_", summary_statistics_tabl
 
 ###
 ###
-### --- COMBINED SNP SUMMARY STATISTICS WITH SNP ANNOTATION
+### --- COMBINED SNP SUMMARY STATISTICS WITH SNP ANNOTATION ---
 ###
 ###
 
@@ -466,13 +516,13 @@ summary_statistics_annotation_table <- data.frame(final_annotation, summary_stat
 summary_statistics_annotation_table.b1 <- data.frame(final_annotation, summary_statistics_table.b1[,-c(1:4)])
 summary_statistics_annotation_table.b4 <- data.frame(final_annotation, summary_statistics_table.b4[,-c(1:4)])
 
-#save_checkpoint_4
+#save_checkpoint_5
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
 #load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
 
 ###
 ###
-### --- GENE pi_N and pi_S
+### --- GENE pi_N and pi_S ---
 ###
 ###
 
@@ -713,7 +763,7 @@ p9 <- p9 + geom_boxplot(width=0.1, color="black", alpha=0.2) +
            stat_compare_means(na.rm = TRUE)
 p9
 
-## COMBINE PLOTS 3 AND 4
+## COMBINE PLOTS 6, 7, 8, 9
 par(mfrow=c(1, 2))
 evolution_plot <- ggarrange(p6,p7,p8, p9,
                           #labels = c("A", "B", "C", "D"),
@@ -728,7 +778,7 @@ ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/piSwithin_piNpi
        width=11,
        height=8.5)
 
-
+#save_checkpoint_6
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
 #load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
 
@@ -741,7 +791,7 @@ ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/piSwithin_piNpi
 
 ###
 ###
-### --- EXPORT TABLES
+### --- EXPORT TABLES ---
 ###
 ###
 
@@ -777,9 +827,9 @@ combined_summary_statistics_annotation_table <- cbind(summary_statistics_annotat
 head(combined_summary_statistics_annotation_table)
 
 # Save to a file
-write.table(combined_summary_statistics_annotation_table,
-            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_summary_statistics_annotation_table", sep = "\t",
-            quote = F, row.names = F, col.names = TRUE)
+#write.table(combined_summary_statistics_annotation_table,
+#            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_summary_statistics_annotation_table", sep = "\t",
+#            quote = F, row.names = F, col.names = TRUE)
 
 ### GENIC GENETIC DIVERSITY AND ADAPTIVE CONSTRAINS
 dim(gene_piN_piS) # 433  11
@@ -808,13 +858,425 @@ combined_gene_piN_piS <- cbind(gene_piN_piS[,c(1:3)],
 head(combined_gene_piN_piS)
 
 # Save to a file
-write.table(combined_gene_piN_piS,
-            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_gene_piN_piS", sep = "\t",
-            quote = F, row.names = F, col.names = TRUE)
-  
-### NEXT
-## GENETIC LOAD: 
+#write.table(combined_gene_piN_piS,
+#            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_gene_piN_piS", sep = "\t",
+#            quote = F, row.names = F, col.names = TRUE)
 
-# Potential Load: total number of mutations of impact class i in pool j / total number of genic mutations in population k
+#save_checkpoint_7
+#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+
+
+###
+###
+### --- GENETIC LOAD ---
+###
+### 
+
+### KEEP ONLY SNPS WITH FUNCTION == protein_coding
+
+# ANNOTATE SNP SUMMARY STATISTICS TABLE
+summary_statistics_annotation_table.codingsnps <- summary_statistics_annotation_table[which(summary_statistics_annotation_table$FUNCTION == "protein_coding"), ]
+
+head(summary_statistics_annotation_table.codingsnps)
+
+
+# REFERENCE ALLELE FREQUENCY TABLE
+dt.1.imputedRefMLFreq.dataFrame.codingsnps <- dt.1.imputedRefMLFreq.dataFrame[which(summary_statistics_annotation_table$FUNCTION == "protein_coding"), ]
+dt.1.imputedRefMLFreq.dataFrame.codingsnps$Position <- as.integer(dt.1.imputedRefMLFreq.dataFrame.codingsnps$Position)
+
+head(dt.1.imputedRefMLFreq.dataFrame.codingsnps)
+
+# Sanity check if the snps are in the same order in both datasets
+dim(summary_statistics_annotation_table.codingsnps) # 151322     22
+dim(dt.1.imputedRefMLFreq.dataFrame.codingsnps) # 151322     25
+
+sum(paste0(summary_statistics_annotation_table.codingsnps$CHROM,"_", summary_statistics_annotation_table.codingsnps$POS) == 
+      paste0(dt.1.imputedRefMLFreq.dataFrame.codingsnps$Chromosome,"_", dt.1.imputedRefMLFreq.dataFrame.codingsnps$Position))
+
+## CALCULATE POTENTIAL LOAD
+## Potential Load: total number of mutations of impact class i in pool j / total number of genic mutations in population k
+
+# FIRST DEFINE A MAF THRESHOULD TO DEFINE IF THE ALTERNATIVE ALLELE IS PRESENT IN THE POOL
+maf_potential = 0.05
+
+# Then assign 1 for MAF >= maf_potential, 0 otherwise
+potential_load <- apply(dt.1.imputedRefMLFreq.dataFrame.codingsnps[,-c(1:4)], 2, function(x) ifelse(1-x >= maf_potential, 1, 0))
+
+# Combine with the SNP ANNOTATION IMPACT COLUMN
+potential_load <- data.frame(IMPACT= summary_statistics_annotation_table.codingsnps$IMPACT,
+                             potential_load)
+
+low_potential_load <- apply(potential_load[, -c(1)], 2, function(x) sum(x[potential_load$IMPACT == "LOW"], na.rm = T)/sum(!is.na(x)))
+moderate_potential_load <- apply(potential_load[, -c(1)], 2, function(x) sum(x[potential_load$IMPACT == "MODERATE"], na.rm = T)/sum(!is.na(x)))
+high_potential_load <- apply(potential_load[, -c(1)], 2, function(x) sum(x[potential_load$IMPACT == "HIGH"], na.rm = T)/sum(!is.na(x)))
+modifier_potential_load <- apply(potential_load[, -c(1)], 2, function(x) sum(x[potential_load$IMPACT == "MODIFIER"], na.rm = T)/sum(!is.na(x)))
+
+potential_load_pool <- data.frame(pool=names(low_potential_load),
+                                  biotype=do.call(rbind, strsplit(names(low_potential_load), split = '.', fixed = T))[,2],
+                                  LOW=low_potential_load,
+                                  MODERATE=moderate_potential_load,
+                                  HIGH=high_potential_load,
+                                  NOLOAD=modifier_potential_load)
+
+potential_load_table <- potential_load_pool %>%
+  group_by(biotype) %>%
+  summarise(
+    # GLOBAL
+    n=n(),
+    # LOW
+    low.mean = mean(LOW),
+    low.sd=sd(LOW),
+    low.se =sd(LOW)/sqrt(sum(n())),
+    # MODERATE
+    moderate.mean = mean(MODERATE),
+    moderate.sd=sd(MODERATE),
+    moderate.se =sd(MODERATE)/sqrt(sum(n())),
+    # HIGH
+    high.mean = mean(HIGH),
+    high.sd=sd(HIGH),
+    high.se =sd(HIGH)/sqrt(sum(n())),
+    # HIGH
+    noload.mean = mean(NOLOAD),
+    noload.sd=sd(NOLOAD),
+    noload.se =sd(NOLOAD)/sqrt(sum(n()))
+  )
+
+potential_load4plot <- data.frame(mean=c(potential_load_table$low.mean, potential_load_table$moderate.mean, potential_load_table$high.mean, potential_load_table$noload.mean),
+                                  sd=c(potential_load_table$low.sd, potential_load_table$moderate.sd, potential_load_table$high.sd, potential_load_table$noload.sd),
+                                  se=c(potential_load_table$low.se, potential_load_table$moderate.se, potential_load_table$high.se, potential_load_table$noload.se),
+                                  BIOTYPE=c(potential_load_table$biotype, potential_load_table$biotype, potential_load_table$biotype, potential_load_table$biotype),
+                                  IMPACT=c(rep("A", 2), rep("B", 2), rep("C", 2), rep("D", 2))
+                                  )
+
+# Prepare the error bar to place in the barplot 
+limits_potential_load <- aes(ymax = mean + sd,
+                             ymin = mean - sd)
+
+
+# Potential load plot
+p10 <- ggplot(data = potential_load4plot, aes(x = BIOTYPE, y = mean, fill=IMPACT))
+p10 <- p10 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+             geom_errorbar(limits_potential_load, position = position_dodge(0.9), width = 0.25) + 
+             labs(x = NULL, y = "Potential Load") + 
+             ylim(0, 0.75) + 
+             scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+             scale_fill_manual(values = c("#fee090", "#fdae61", "#f46d43","#4575b4"),
+                               name   = "Impact",
+                               breaks = c("A", "B", "C", "D"),
+                               labels = c("Low", "Moderate", "High", "Modifier")
+                               ) + 
+             theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                                axis.line = element_line(colour = "black"),
+                                axis.text = element_text(size = 14),
+                                axis.title=element_text(size=20),
+                                axis.text.x = element_text(angle = 0))
+p10
+
+## CALCULATE REALIZED LOAD
 # Realized Load: total number of homozygous mutations of impact class i in pools j / 2 x total number of sites of impact class i in pools j
+
+# FIRST DEFINE A MAF THRESHOULD TO DEFINE IF THE ALTERNATIVE ALLELE IS PRESENT IN THE POOL
+maf_homozygosity = 0.75
+
+# Then assign 1 for MAF >= maf_potential, 0 otherwise
+realized_load <- apply(dt.1.imputedRefMLFreq.dataFrame.codingsnps[,-c(1:4)], 2, function(x) ifelse(1-x >= maf_homozygosity, 1, 0))
+
+# Combine with the SNP ANNOTATION IMPACT COLUMN
+realized_load <- data.frame(IMPACT= summary_statistics_annotation_table.codingsnps$IMPACT,
+                            realized_load)
+
+low_realized_load <- apply(realized_load[, -c(1)], 2, function(x) sum(x[realized_load$IMPACT == "LOW"], na.rm = T)/sum(!is.na(x)))
+moderate_realized_load <- apply(realized_load[, -c(1)], 2, function(x) sum(x[realized_load$IMPACT == "MODERATE"], na.rm = T)/sum(!is.na(x)))
+high_realized_load <- apply(realized_load[, -c(1)], 2, function(x) sum(x[realized_load$IMPACT == "HIGH"], na.rm = T)/sum(!is.na(x)))
+modifier_realized_load <- apply(realized_load[, -c(1)], 2, function(x) sum(x[realized_load$IMPACT == "MODIFIER"], na.rm = T)/sum(!is.na(x)))
+
+realized_load_pool <- data.frame(pool=names(low_realized_load),
+                                  biotype=do.call(rbind, strsplit(names(low_realized_load), split = '.', fixed = T))[,2],
+                                  LOW=low_realized_load,
+                                  MODERATE=moderate_realized_load,
+                                  HIGH=high_realized_load,
+                                  NOLOAD=modifier_realized_load)
+
+realized_load_table <- realized_load_pool %>%
+  group_by(biotype) %>%
+  summarise(
+    # GLOBAL
+    n=n(),
+    # LOW
+    low.mean = mean(LOW),
+    low.sd=sd(LOW),
+    low.se =sd(LOW)/sqrt(sum(n())),
+    # MODERATE
+    moderate.mean = mean(MODERATE),
+    moderate.sd=sd(MODERATE),
+    moderate.se =sd(MODERATE)/sqrt(sum(n())),
+    # HIGH
+    high.mean = mean(HIGH),
+    high.sd=sd(HIGH),
+    high.se =sd(HIGH)/sqrt(sum(n())),
+    # HIGH
+    noload.mean = mean(NOLOAD),
+    noload.sd=sd(NOLOAD),
+    noload.se =sd(NOLOAD)/sqrt(sum(n()))
+  )
+
+realized_load4plot <- data.frame(mean=c(realized_load_table$low.mean, realized_load_table$moderate.mean, realized_load_table$high.mean, realized_load_table$noload.mean),
+                                  sd=c(realized_load_table$low.sd, realized_load_table$moderate.sd, realized_load_table$high.sd, realized_load_table$noload.sd),
+                                  se=c(realized_load_table$low.se, realized_load_table$moderate.se, realized_load_table$high.se, realized_load_table$noload.se),
+                                  BIOTYPE=c(realized_load_table$biotype, realized_load_table$biotype, realized_load_table$biotype, realized_load_table$biotype),
+                                  IMPACT=c(rep("A", 2), rep("B", 2), rep("C", 2), rep("D", 2))
+)
+
+# Prepare the error bar to place in the barplot 
+limits_realized_load <- aes(ymax = mean + sd,
+                             ymin = mean - sd)
+
+
+# realized load plot
+p11 <- ggplot(data = realized_load4plot, aes(x = BIOTYPE, y = mean, fill=IMPACT))
+p11 <- p11 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+       geom_errorbar(limits_realized_load, position = position_dodge(0.9), width = 0.25) + 
+       labs(x = NULL, y = "Realized Load") + 
+       ylim(0, 0.75) + 
+       scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+       scale_fill_manual(values = c("#fee090", "#fdae61", "#f46d43","#4575b4"),
+                         name   = "Impact",
+                         breaks = c("A", "B", "C", "D"),
+                         labels = c("Low", "Moderate", "High", "Modifier")
+       ) + 
+       theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                          axis.line = element_line(colour = "black"),
+                          axis.text = element_text(size = 14),
+                          axis.title=element_text(size=20),
+                          axis.text.x = element_text(angle = 0))
+p11
+
+## COMBINE PLOTS 10 AND 11
+par(mfrow=c(1, 2))
+load_plot <- ggarrange(p10,p11,
+                       #labels = c("A", "B", "C", "D"),
+                       font.label = list(size = 24, face = "bold"),
+                       nrow=1, ncol=2, legend = "bottom", common.legend = T)
+
+load_plot
+
+ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/genetic_load_biotypes.pdf",
+       load_plot,
+       device="pdf",
+       width=15,
+       height=8.5)
+
+#save_checkpoint_8
+#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+
+###
+###
+### --- PROPORTION OF SYNONYMOUS AND NONSYNONYMOUS MUTATIONS ACROSS GENOME ---
+###
+### 
+
+### DATA FOR THIS ANALYSIS WAS OBTAINED WITH:
+### DEST-AglyPoolseq/utils/PNPS4VCF.py
+### This script only considers missense_variants as nonsynonymous mutations and synonymous_variants as synonymous mutations,
+### and counts only if the genotype in vcf file is 0/1 (polymorphic?)
+
+
+pnps.data <- read.table(file = "results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.ann.vcf.pnps.gz", 
+                        header = T, na.strings = NA)
+
+### FOR ALL SCAFFOLDS
+# Remove genomewide estimates
+scaffolds.pnps <- pnps.data %>%
+  filter(Chrom !="genomewide") %>%
+  mutate(scaffolds.pnps, 
+         BIOTYPES=do.call(rbind, strsplit(scaffolds.pnps$POP, 
+                                          split = '_', fixed = T))[,2])
+
+## POOLS: Calculate the mean, sd, se pnps for each pool for all scaffolds
+mean.scaffolds.pnps <- scaffolds.pnps %>%
+  group_by(POP) %>%
+  summarise(
+    n=n(),
+    pnps.m = mean(pNpS, na.rm = T),
+    pnps.sd=sd(pNpS, na.rm = T),
+    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
+  )
+
+# Add a column with the biotype 
+mean.scaffolds.pnps <- mutate(mean.scaffolds.pnps, 
+                              BIOTYPES=do.call(rbind, strsplit(mean.scaffolds.pnps$POP,  split = '_', fixed = T))[,2],
+                              POOLNAMES = poolnames)
+
+# Prepare the error bar to place in the barplot 
+limits_pnps <- aes(ymax = pnps.m + pnps.se,
+                   ymin = pnps.m - pnps.se)
+
+
+# pnps plot
+p12 <- ggplot(data = mean.scaffolds.pnps, aes(x = POOLNAMES, y = pnps.m, fill=BIOTYPES))
+p12 <- p12 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+              geom_errorbar(limits_pnps, position = position_dodge(0.9), width = 0.25) + 
+              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
+              ylim(0, 2) + 
+              #scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+              scale_fill_manual(values = c("#247F00","#AB1A53"),
+                                name   = "Biotypes",
+                                breaks = c("BIO1", "BIO4"),
+                                labels = c(expression("Avirulent"), "Virulent")) + 
+              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                                 axis.line = element_line(colour = "black"),
+                                 axis.text = element_text(size = 14),
+                                 axis.title=element_text(size=20),
+                                 axis.text.x = element_text(angle = 90))
+p12
+
+## BIOTYPES: Calculate the mean, sd, se pnps for each pool for BIOTYPES
+mean.scaffolds.pnps.biotypes <- scaffolds.pnps %>%
+  group_by(BIOTYPES) %>%
+  summarise(
+    n=n(),
+    pnps.m = mean(pNpS, na.rm = T),
+    pnps.sd=sd(pNpS, na.rm = T),
+    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
+  )
+
+# Prepare the error bar to place in the barplot 
+limits_pnps.biotypes <- aes(ymax = pnps.m + pnps.se,
+                            ymin = pnps.m - pnps.se)
+
+
+# pnps plot
+p13 <- ggplot(data = mean.scaffolds.pnps.biotypes, aes(x = BIOTYPES, y = pnps.m))
+p13 <- p13 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+              geom_errorbar(limits_pnps.biotypes, position = position_dodge(0.9), width = 0.25) + 
+              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
+              ylim(0, 2) + 
+              scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+              #scale_fill_manual(values = c("#247F00","#AB1A53"),
+              #                  name   = "Biotypes",
+              #                  breaks = c("BIO1", "BIO4"),
+              #                  labels = c(expression("Avirulent"), "Virulent")) + 
+              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                                 axis.line = element_line(colour = "black"),
+                                 axis.text = element_text(size = 14),
+                                 axis.title=element_text(size=20),
+                                 axis.text.x = element_text(angle = 0))
+p13
+
+### FOR SIGNIFICANT SCAFFOLDS
+
+significant_scaffolds <- read.table(file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/signf_multilocus_fst.bed", 
+                                    header = F, sep = "\t")
+
+significant_scaffolds <- unique(significant_scaffolds[,1])
+
+# Remove genomewide estimates AND keep only significant scaffolds
+sign.scaffolds.pnps <- pnps.data %>%
+  filter(Chrom !="genomewide") %>%
+  filter(Chrom %in% significant_scaffolds) %>%
+  mutate(sign.scaffolds.pnps, 
+         BIOTYPES=do.call(rbind, strsplit(sign.scaffolds.pnps$POP, 
+                                          split = '_', fixed = T))[,2])
+
+## POOLS: Calculate the mean, sd, se pnps for each pool for SIGNIFICANT scaffolds
+mean.sign.scaffolds.pnps <- sign.scaffolds.pnps %>%
+  group_by(POP) %>%
+  summarise(
+    n=n(),
+    pnps.m = mean(pNpS, na.rm = T),
+    pnps.sd=sd(pNpS, na.rm = T),
+    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
+  )
+
+# Add a column with the biotype 
+mean.sign.scaffolds.pnps <- mutate(mean.sign.scaffolds.pnps, 
+                                   BIOTYPES=do.call(rbind, strsplit(mean.sign.scaffolds.pnps$POP,  split = '_', fixed = T))[,2],
+                                   POOLNAMES = poolnames)
+
+# Prepare the error bar to place in the barplot 
+limits_sign.pnps <- aes(ymax = pnps.m + pnps.se,
+                       ymin = pnps.m - pnps.se)
+
+
+# pnps plot
+p14 <- ggplot(data = mean.sign.scaffolds.pnps, aes(x = POOLNAMES, y = pnps.m, fill=BIOTYPES))
+p14 <- p14 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+              geom_errorbar(limits_sign.pnps , position = position_dodge(0.9), width = 0.25) + 
+              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
+              ylim(0, 2) + 
+              #scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+              scale_fill_manual(values = c("#247F00","#AB1A53"),
+                                name   = "Biotypes",
+                                breaks = c("BIO1", "BIO4"),
+                                labels = c(expression("Avirulent"), "Virulent")) + 
+              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                                 axis.line = element_line(colour = "black"),
+                                 axis.text = element_text(size = 14),
+                                 axis.title=element_text(size=20),
+                                 axis.text.x = element_text(angle = 90))
+p14
+
+## BIOTYPES: Calculate the mean, sd, se pnps for each pool for BIOTYPES
+mean.sign.scaffolds.pnps.biotypes <- sign.scaffolds.pnps %>%
+  group_by(BIOTYPES) %>%
+  summarise(
+    n=n(),
+    pnps.m = mean(pNpS, na.rm = T),
+    pnps.sd=sd(pNpS, na.rm = T),
+    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
+  )
+
+# Prepare the error bar to place in the barplot 
+limits_sign_pnps.biotypes <- aes(ymax = pnps.m + pnps.se,
+                                 ymin = pnps.m - pnps.se)
+
+
+# pnps plot
+p15 <- ggplot(data = mean.sign.scaffolds.pnps.biotypes, aes(x = BIOTYPES, y = pnps.m))
+p15 <- p15 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+              geom_errorbar(limits_sign_pnps.biotypes, position = position_dodge(0.9), width = 0.25) + 
+              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
+              ylim(0, 2) + 
+              scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+              #scale_fill_manual(values = c("#247F00","#AB1A53"),
+              #                  name   = "Biotypes",
+              #                  breaks = c("BIO1", "BIO4"),
+              #                  labels = c(expression("Avirulent"), "Virulent")) + 
+              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                                 axis.line = element_line(colour = "black"),
+                                 axis.text = element_text(size = 14),
+                                 axis.title=element_text(size=20),
+                                 axis.text.x = element_text(angle = 0))
+p15
+
+par(mfrow=c(3, 1))
+pnps_plot <- ggarrange(ggarrange(p12,p13,
+                             labels = "A",
+                             common.legend = T,
+                             legend = "bottom",
+                             font.label = list(size = 24, face = "bold"),
+                             nrow=2),
+                   ggarrange(p14, p15,
+                             labels = "B",
+                             common.legend = T,
+                             legend = "bottom",
+                             font.label = list(size = 24, face = "bold"),
+                             nrow=2),
+                   common.legend = T,
+                   legend = "bottom"
+                   )
+
+pnps_plot
+
+ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/pnps_biotypes.pdf",
+       pnps_plot,
+       device="pdf",
+       width=15,
+       height=11)
+
+#save_checkpoint_9
+#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
 
