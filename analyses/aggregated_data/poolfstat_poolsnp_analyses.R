@@ -13,16 +13,16 @@
 ###
 ###
 
-# Recover R-renv environment
+### Recover R-renv environment
 setwd("/fs/scratch/PAS1715/aphidpool")
 renv::restore()
 #renv::snapshot()
 
-# Remove last features
+### Remove last features
 rm(list=ls())
 ls()
 
-# Load R libraries
+### Load R libraries
 library(poolfstat)
 #packageVersion("poolfstat") 
 library(tidyverse)
@@ -34,14 +34,14 @@ library(PopGenReport)
 #library(ggplot2)
 #library(viridis)
 
-# Import auxiliary R functions  
+### Import auxiliary R functions  
 source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ### SETUP PYTHON INTEGRATION
 library(reticulate) # To use python code within R
 use_python("~/.conda/envs/local_py3/bin/python")
 
-# Import Python packages
+### Import Python packages
 # Python installation: anaconda python3
 sns <- import('seaborn')
 plt <- import('matplotlib.pyplot')
@@ -115,7 +115,6 @@ snps_ordered.bed <- data.frame(CHROM=snps_ordered$Chromosome,
 #write.table(snps_ordered.bed,
 #            file="results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/snps_ordered.bed", sep = "\t",
 #            quote = F, row.names = F, col.names = F)
-
 ############## END THIS PART
 
 ###
@@ -277,24 +276,6 @@ high.multilocus.fst.ordered.bed <- data.frame(CHROM=high.multilocus.fst.ordered$
 #            file="results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/signf_multilocus_fst.bed", sep = "\t",
 #            quote = F, row.names = F, col.names = F)
 
-### SANITY CHECK HOW MISSING DATA AFFECTED THE NUMBER OF CALCULATED INTRA-LOCUS FSTS
-# CHECK THE NUMBER OF SNPS WITHOUT NaN RESULTS
-sum(!is.na(dt.1.fst.scan$snp.FST)) #19842
-sum(!is.na(dt.1.fst.scan$sliding.windows.fst$MultiLocusFst)) #18207
-
-### CHECK THE NUMBER OF SNPS WITH NO MISSING DATA
-# Data set with all 21 pools
-no.missing.all <- dt.1.imputedRefMLFreq[complete.cases(dt.1.imputedRefMLFreq), ]
-dim(no.missing.all) #19842    21
-
-# Data set with 19 pools
-#no.missing.reduced <- reduced.dt.1.imputedRefMLFreq[complete.cases(reduced.dt.1.imputedRefMLFreq), ]
-#dim(no.missing.reduced) #33313    19
-
-#Data set with 16 pools (no PA samples)
-no.missing.reduced.2 <- dt.1.imputedRefMLFreq[complete.cases(dt.1.imputedRefMLFreq[,-c(5,10:12,21)]) , ]
-dim(no.missing.reduced.2) #82534    21
-
 ### MANHATTAN PLOT OF SIGNIFICANT MULTILOCUS FST SCAFFOLDS
 
 # Isolate the significant scaffolds
@@ -326,38 +307,61 @@ dev.off()
 #write.table(intralocus_fst, file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/intralocus_fst_data.txt",
 #            quote = F, col.names = T, row.names = F)
 
-###
-###
-##### --- DIVERSTITY AND COVERAGE STATS FOR EACH SNP FOR SIGNIFICANT SCAFFOLDS ---
-###
-### 
+### SANITY CHECK HOW MISSING DATA AFFECTED THE NUMBER OF CALCULATED INTRA-LOCUS FSTS
+# CHECK THE NUMBER OF SNPS WITHOUT NaN RESULTS
+sum(!is.na(dt.1.fst.scan$snp.FST)) #19842
+sum(!is.na(dt.1.fst.scan$sliding.windows.fst$MultiLocusFst)) #18207
 
-### MAYBE MOVE TO ANOTHER SCRIPT WITH THE DIVERSITY STATS
+### CHECK THE NUMBER OF SNPS WITH NO MISSING DATA
+# Data set with all 21 pools
+no.missing.all <- dt.1.imputedRefMLFreq[complete.cases(dt.1.imputedRefMLFreq), ]
+dim(no.missing.all) #19842    21
 
-### AVERAGE EXPECTED HETEROZYGOZITY OF EACH POOL FOR EACH SIGNIFICANT SCAFFOLD
-## WITH THE LINE PLOT I WANT TO ANSWER THESE QUESTIONS:
-## IS THERE LESS DIVERSITY CLOSE TO FST OULIERS LOCI?
-## IS THERE DIFFERENCES BETWEEN AVERAGE HE VALUES FOR EACH BIOTYPE?
+# Data set with 19 pools
+#no.missing.reduced <- reduced.dt.1.imputedRefMLFreq[complete.cases(reduced.dt.1.imputedRefMLFreq), ]
+#dim(no.missing.reduced) #33313    19
+
+#Data set with 16 pools (no PA samples) # IDEAL SCENARIO
+no.missing.reduced.2 <- dt.1.imputedRefMLFreq[complete.cases(dt.1.imputedRefMLFreq[,-c(5,10:12,21)]) , ]
+dim(no.missing.reduced.2) #82534    21
+
+## Savepoint_2
+##-------------
+#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
+#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
+############## END THIS PART
+
+###
+###
+### ---- EXPORT DATA TO BAYPASS ----
+###
+###
+
+## pooldata2genobaypass
+#pooldata2genobaypass(pooldata = dt.1,
+#                     writing.dir = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/",
+#                     prefix = "aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.complete50")
+#
+############## END THIS PART
+
+###
+###
+### ---- DIVERSTITY AND COVERAGE STATS FOR EACH SNP FOR SIGNIFICANT SCAFFOLDS ----
+###
+###
+
+### OVERALL HETEROZYGOSITY ACROSS SAMPLES - TOTAL HETEROZYGOSITY H_T
 
 ## GENOME-WIDE MEAN HE FOR EACH POOL
-meanHE_pools  <- apply(dt.1.imputedRefMLFreq, 2, meanHE) # 2 indicates columns: pools
-names(meanHE_pools) <- dt.1@poolnames
-
-# AVERAGE ACROSS BIOTYPES
-meanHE_B1_pools <- mean(meanHE_pools[-c(2,4,7,8,9,11,12,15,16,17,19,20,21)])
-meanHE_B4_pools <- mean(meanHE_pools[c(2,4,7,8,9,11,12,15,16,17,19,20,21)])
-
-## LOCUS-HE ACROSS POOLS
 # OVERALL
-locus_meanHE_pools       <- apply(dt.1.imputedRefMLFreq, 1, locusHE) # 1 indicates rows: locus
+locus_totalhe_pools       <- apply(dt.1.imputedRefMLFreq, 1, totalHE) # 1 indicates rows: locus
 
 # ACROSS POOLS/BIOTYPES
-locus_meanHE_B1_pools    <- apply(dt.1.imputedRefMLFreq[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, locusHE)
-locus_meanHE_B4_pools    <- apply(dt.1.imputedRefMLFreq[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, locusHE)
-
+locus_totalhe_B1_pools    <- apply(dt.1.imputedRefMLFreq[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, totalHE)
+locus_totalhe_B4_pools    <- apply(dt.1.imputedRefMLFreq[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, totalHE)
 # NOTE: FOR THE MOMENT USE THIS, BUT IDEALLY CALCULATE MEAN LOCUS-HE ACROSS WINDOWS WITH BIOTYPES
 
-## AVERAGE PER-SAMPLE DEPTH OF BASES
+### AVERAGE PER-SAMPLE DEPTH OF BASES
 dt.1.read_coverage_data <- dt.1@readcoverage
 dt.1.read_coverage_data[ dt.1.read_coverage_data==0 ] <- NA
 
@@ -367,13 +371,13 @@ locus_ADP_B4_pools <- apply(dt.1.read_coverage_data[, c(2,4,7,8,9,11,12,15,16,17
 
 # Preapare dataFrame with significant FST scan scaffolds, intra-locus HEs and mean DEPTH
 intralocus_he_adp     <- data.frame(dt.1@snp.info, 
-                                    he_pools=locus_meanHE_pools, he_b1=locus_meanHE_B1_pools, he_b4=locus_meanHE_B4_pools,
+                                    he_pools=locus_totalhe_pools, he_b1=locus_totalhe_B1_pools, he_b4=locus_totalhe_B4_pools,
                                     adp_pools=locus_ADP_pools, adp_b1=locus_ADP_B1_pools, adp_b4=locus_ADP_B4_pools)
 
 intralocus_he_adp_signfst <- intralocus_he_adp[intralocus_he_adp$Chromosome %in% unique(high.multilocus.fst.ordered$CHRM), ]
 #table(intralocus_he_adp_signfst$Chromosome)
 
-### Multi LOCUS-HE plots for all significant scaffolds
+### PLOT Multi LOCUS-HE plots for all significant scaffolds
 pdf("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/significant_intralocus_fst_he_scaffolds.pdf",         # File name
     width = 8.5, height = 11, # Width and height in inches
     bg = "white",          # Background color
@@ -392,14 +396,14 @@ for (s in seq_along(unique(intralocus_he_adp_signfst$Chromosome)))
   lines(lowess(n$he_pools ~ n$Position, f=0.10), col="darkgray", lwd=2, lty=2)
   lines(lowess(n$he_b1 ~ n$Position, f=0.10), col="#247F00", lwd=2)
   lines(lowess(n$he_b4 ~ n$Position, f=0.10), col="#AB1A53", lwd=2)
-  abline(h=mean(meanHE_pools), lty=3, col="black", lwd=1)
+  abline(h=mean(locus_totalhe_pools), lty=3, col="black", lwd=1)
 }
 # Add legend on the last plot
 legend("bottomleft", legend = c("Combined", "Avirulent", "Virulent", expression(paste("Average ", italic(H)[E], ))), 
        lty = c(2,1,1,3), lwd=c(2,2,2,1), col=c("darkgray", "#247F00", "#AB1A53", "black"), bty="n")
 dev.off()
 
-### Multi AVERAGE PER-SAMPLE DEPTH OF BASES plots for all significant scaffolds
+### PLOT Multi AVERAGE PER-SAMPLE DEPTH OF BASES plots for all significant scaffolds
 pdf("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/significant_intralocus_fst_adp_scaffolds.pdf", # File name
     width = 8.5, height = 11,                                                                                # Width and height in inches
     bg = "white",                                                                                            # Background color
@@ -429,6 +433,7 @@ dev.off()
 ## THEY ARE POSITIVELY CORRELATED ACROSS THE SIGNIFICAN SCAFFOLDS? OR
 ## THE AF IS NEGATIVELY CORRELATION (AF GOES IN OPPOSITE DIRECTIONS)?
 
+### BIOTYPE-AVERAGES reference allele frequency from the references allele frequencies 
 locus_RefFREQ_B1_pools <- apply(dt.1.imputedRefMLFreq.data[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) mean(x, na.rm = T))
 locus_RefFREQ_B4_pools <- apply(dt.1.imputedRefMLFreq.data[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) mean(x, na.rm = T))
 
@@ -465,13 +470,26 @@ for (s in seq_along(unique(intralocus_RefFREQ_signfst_window_cor$CHROM)))
 }
 dev.off()
 
-#### EXPORT DATA TO BAYPASS
-## pooldata2genobaypass
-#pooldata2genobaypass(pooldata = dt.1,
-#                     writing.dir = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/",
-#                     prefix = "aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.complete50")
-#
+### BIOTYPE-AVERAGES allele frequencies from the ML reference allele counts pooled by biotype
+# BIOTYPE 1
+ref_count_b1 <- apply(dt.1.imputedRefMLCount$ref_count[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) sum(x, na.rm = T))
+read_count_b1 <- apply(dt.1.imputedRefMLCount$hap_count[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) sum(x, na.rm = T))
 
+ref_allele_freq_b1 <- ref_count_b1/read_count_b1
+
+# BIOTYPE 4
+ref_count_b4 <- apply(dt.1.imputedRefMLCount$ref_count[,c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) sum(x, na.rm = T))
+read_count_b4 <- apply(dt.1.imputedRefMLCount$hap_count[,c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) sum(x, na.rm = T))
+
+ref_allele_freq_b4 <- ref_count_b4/read_count_b4
+
+biotypes_ref_allele_freq  <- data.frame(CHROM = dt.1@snp.info[,1], POS = dt.1@snp.info[,2],
+                                         biotype_1 = ref_allele_freq_b1, biotype_4 = ref_allele_freq_b4)
+
+#max(abs(biotypes_ref_allele_freq$biotype_1 - biotypes_ref_allele_freq$biotype_4))
+#biotypes_ref_allele_freq[which(abs(biotypes_ref_allele_freq$biotype_1 - biotypes_ref_allele_freq$biotype_4) > 0.5), ]
+
+### EXPORT ADDITIONAL SNP INFORMATION
 # SNP COVERAGE
 locus_min_cov_pools <- apply(dt.1.read_coverage_data, 1, function(x) min(x, na.rm = T))
 locus_max_cov_pools <- apply(dt.1.read_coverage_data, 1, function(x) max(x, na.rm = T))
@@ -495,15 +513,10 @@ write.table(paste0(snp_info_aggregated_pools$Chromosome, "_", snp_info_aggregate
             file="results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/snpinfo_aggregated_names_pools.txt", sep = "\t",
             quote = F, row.names = F, col.names = F)
 
-## Savepoint_2
-##-------------
-#save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
-#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
-############## END THIS PART
 
 ###
 ###
-### ---- COMPUTE GLOBAL AND PAIRWISE FST ----
+### ---- COMPUTE GLOBAL AND PAIRWISE FST WITH ALL POOLS ----
 ###
 ###
 
@@ -528,6 +541,9 @@ dt.1.fst$mean.fst+c(-1.96,1.96)*dt.1.fst$se.fst
 
 ### COMPUTE PAIRWISE FST
 dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE)
+#dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE, output.snp.values = T) 
+# to have SNP-specific FST for all pairwise comparisons
+# it can be used to average across biotypes and get the fst tracks
 
 # with blockjackniff
 dt.1.pfst <- compute.pairwiseFST(dt.1, nsnp.per.bjack.block = 100, verbose=FALSE)
@@ -966,6 +982,13 @@ summary(lm3_bio_cost_2)
 #load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
 ############## END THIS PART
 
+
+
+
+
+
+
+### REMOVE
 ##########################################################################
 ###THIS PART NEEDS TO BE UPDATED WITH NEW SCRIPT ORGANIZATION AND ANALYZES
 ##########################################################################

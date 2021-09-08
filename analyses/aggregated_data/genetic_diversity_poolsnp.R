@@ -894,7 +894,7 @@ dim(dt.1.imputedRefMLFreq.dataFrame.codingsnps) # 151322     25
 sum(paste0(summary_statistics_annotation_table.codingsnps$CHROM,"_", summary_statistics_annotation_table.codingsnps$POS) == 
       paste0(dt.1.imputedRefMLFreq.dataFrame.codingsnps$Chromosome,"_", dt.1.imputedRefMLFreq.dataFrame.codingsnps$Position))
 
-## CALCULATE POTENTIAL LOAD
+### CALCULATE POTENTIAL LOAD
 ## Potential Load: total number of mutations of impact class i in pool j / total number of genic mutations in population k
 
 # FIRST DEFINE A MAF THRESHOULD TO DEFINE IF THE ALTERNATIVE ALLELE IS PRESENT IN THE POOL
@@ -973,7 +973,7 @@ p10 <- p10 +  geom_bar(stat = "identity", position = position_dodge(0.9), orient
                                 axis.text.x = element_text(angle = 0))
 p10
 
-## CALCULATE REALIZED LOAD
+### CALCULATE REALIZED LOAD
 # Realized Load: total number of homozygous mutations of impact class i in pools j / 2 x total number of sites of impact class i in pools j
 
 # FIRST DEFINE A MAF THRESHOULD TO DEFINE IF THE ALTERNATIVE ALLELE IS PRESENT IN THE POOL
