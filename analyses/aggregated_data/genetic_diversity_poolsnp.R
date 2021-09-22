@@ -13,24 +13,25 @@
 ###
 ###
 
-# Recover R-renv environment
+### Recover R-renv environment
 setwd("/fs/scratch/PAS1715/aphidpool")
 renv::restore()
 #renv::snapshot()
 
-# Remove last features
+### Remove last features
 rm(list=ls())
 ls()
 
-# Load R libraries
+### Load R libraries
 library(tidyverse)
 library(gridExtra)
 library(scales)
 library(ggpubr)
 library(ggplot2)
 library(ggsignif)
+library(xtable)
 
-# Import auxiliary R functions  
+### Import auxiliary R functions  
 source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ALPHA=0.75
@@ -57,7 +58,7 @@ dim(dt.1.imputedRefMLFreq.dataFrame) # 262866     25
 class(dt.1.imputedRefMLFreq.dataFrame$Chromosome) # character
 class(dt.1.imputedRefMLFreq.dataFrame$Position) # numeric?
 
-### LOAD POOLFSTAT CALCULATED LOCUS-SPECIFIC FSTs - ONLY TO COMPARE WITH H_1 AND h_0 ESTIMATES
+### LOAD POOLFSTAT CALCULATED LOCUS-SPECIFIC FSTs
 poolfstat_intralocusFst = 'results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/intralocus_fst_data.txt'
 poolfstat_intralocusFst.dataFrame <- read.table(file=poolfstat_intralocusFst, sep = ' ', header = TRUE)
 dim(poolfstat_intralocusFst.dataFrame) # 262866      5
@@ -89,7 +90,7 @@ total_he <- apply(dt.1.imputedRefMLFreq.dataFrame[,-c(1:4)], 1, totalHE) # 1 ind
 length(total_he) # 262866
 sum(!is.na(total_he)) # 262866
 
-## FOR ALL LOCI - ACROSS ALL POOLS WITHIN BIOTYPES
+### FOR ALL LOCI - ACROSS ALL POOLS WITHIN BIOTYPES
 
 # Subset the allele frequency matrix for each biotype
 dt.1.imputedRefMLFreq.dataFrame.b1 <- dt.1.imputedRefMLFreq.dataFrame[,-c(6,8,11:13,15,16,19:21,23:25)]
@@ -118,22 +119,25 @@ total_he_b1[which(perc_indMissing_snp_b1 > 50)] <- NA
 
 length(total_he_b1) # 262866
 sum(!is.na(total_he_b1)) # 255592
-# 2.767189% of the SNPS has >50% missing data
+((262866-255592)/262866)*100 # 2.767189% of the SNPS has >50% missing data
 
 # Biotype 4
 total_he_b4[which(perc_indMissing_snp_b4 > 50)] <- NA
 
 length(total_he_b4) # 262866
 sum(!is.na(total_he_b4)) # 253743
-# 3.47059% of the SNPS has >50% missing data
+((262866-253743)/262866)*100 # 3.47059% of the SNPS has >50% missing data
 
 average_total_he <- data.frame(pools  =colnames(cbind(total_he, total_he_b1, total_he_b4)),
                               average=colMeans(cbind(total_he, total_he_b1, total_he_b4), na.rm = T),
                               sd     =apply(cbind(total_he, total_he_b1, total_he_b4), 2, function(x) sd(x, na.rm = TRUE)),
                               se     =apply(cbind(total_he, total_he_b1, total_he_b4), 2, function(x) sd(x, na.rm = TRUE)/sum(!is.na(x))))
-                              
 
-## BARPLOT WITH AVERAGE VALUES
+### EXPORT AS A LATEX TABLE                              
+#print(xtable(average_total_he, type = "latex"), file = "results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/average_total_he_table.tex")
+
+
+### BARPLOT WITH AVERAGE VALUES
 # Prepare the error bar to place in the barplot 
 limits_total_he <- aes(ymax = average + sd,
                         ymin = average - sd)
@@ -151,7 +155,7 @@ p1 <- p1 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientat
                                axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 p1
 
-## BOXPLOT ALL VALUES
+### BOXPLOT ALL VALUES
 #total_he_data4plot <- data.frame(pool_id   = c(rep("a", length(total_he)),
 #                                                rep("b", length(total_he_b1)),
 #                                                rep("c", length(total_he_b4))),
@@ -177,10 +181,10 @@ p1
 ### COMPUTE THE WITHIN-SAMPLE HETEROZYGOSITY AS PI WHITHIN SAMPLE
 ###--------------------------------------------------------------
 
-## CALCULATE THE WITHIN-SAMPLE HETEROZYGOSITY FOR EACH SAMPLE
+### CALCULATE THE WITHIN-SAMPLE HETEROZYGOSITY FOR EACH SAMPLE
 pi_within_snp_sample <- apply(dt.1.imputedRefMLFreq.dataFrame[,-c(1:4)], 2, withinLocusPi)
 
-# CALCULATE THE AVERAGES, SD AND SE 
+### CALCULATE THE AVERAGES, SD AND SE 
 average_pi_within_samples <- data.frame(pools  =poolnames,
                                         biotypes = ifelse(as.numeric(do.call(rbind, strsplit(colnames(pi_within_snp_sample), "", fixed=TRUE))[,5]) == 1, "Avirulent", "Virulent" ),
                                         average=colMeans(pi_within_snp_sample, na.rm = T),
@@ -188,7 +192,10 @@ average_pi_within_samples <- data.frame(pools  =poolnames,
                                         se     =apply(pi_within_snp_sample, 2, function(x) sd(x, na.rm = TRUE)/sum(!is.na(x)))
                                         ) 
 
-## NON-PARAMETRIC TEST FOR DIFFERENCES ON THE WITHIN-SAMPLE HETEROZYGOSISTY BETWEEN SAMPLES
+### EXPORT AS A LATEX TABLE                              
+#print(xtable(average_pi_within_samples, type = "latex"), file = "results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/average_pi_within-samples_table.tex")
+
+### NON-PARAMETRIC TEST FOR DIFFERENCES ON THE WITHIN-SAMPLE HETEROZYGOSISTY BETWEEN SAMPLES
 ## kruskal.test
 # FROM A MATRIX TO A LIST OF VECTORS CONTAINING WITHIN-SAMPLE HETEROZYGOSITIES
 pi_within_snp_sample.list <- split(pi_within_snp_sample, rep(1:ncol(pi_within_snp_sample), each = nrow(pi_within_snp_sample)))
@@ -200,7 +207,7 @@ pi_within_snp_sample.list.filteredna <- Map(na.omit, pi_within_snp_sample.list)
 kruskal.test(pi_within_snp_sample.list.filteredna)
 # Kruskal-Wallis chi-squared = 45842, df = 20, p-value < 2.2e-16
 
-## NON-PARAMETRIC PAIRWISE TEST WITHIN STATES
+### NON-PARAMETRIC PAIRWISE TEST WITHIN STATES
 ## wilcox.test
 # MN
 wilcox.test(x=pi_within_snp_sample[,1],
@@ -232,7 +239,7 @@ wilcox.test(x=pi_within_snp_sample[,18],
             y=rowMeans(cbind(pi_within_snp_sample[,19], pi_within_snp_sample[,20], pi_within_snp_sample[,21]), na.rm = T))
 #W = 2.6046e+10, p-value < 2.2e-16
 
-## BARPLOT
+### BARPLOT
 limits_pi_within_samples <- aes(ymax = average + sd,
                                 ymin = average - sd)
 
@@ -254,12 +261,12 @@ p3
           
 ### CALCULATE THE AVERAGE WITHIN-SAMPLE HETEROZYGOSITY ACROSS SAMPLES
 
-## FOR ALL LOCI - ACROSS ALL POOLS
+### FOR ALL LOCI - ACROSS ALL POOLS
 average_pi_within_snp_sample <- apply(pi_within_snp_sample, 1, function(x) mean(x, na.rm = T))
 length(average_pi_within_snp_sample) # 262866
 sum(!is.na(average_pi_within_snp_sample)) #262866
 
-## FOR ALL LOCI - ACROSS ALL POOLS WITHIN BIOTYPES
+### FOR ALL LOCI - ACROSS ALL POOLS WITHIN BIOTYPES
 average_pi_within_snp_sample_b1 <- apply(pi_within_snp_sample[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) mean(x, na.rm = T))
 average_pi_within_snp_sample_b4 <- apply(pi_within_snp_sample[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, function(x) mean(x, na.rm = T))
 
@@ -274,7 +281,7 @@ average_pi_within_snp_sample_b4[which(perc_indMissing_snp_b4 > 50)] <- NA
 length(average_pi_within_snp_sample_b4) # 262866
 sum(!is.na(average_pi_within_snp_sample_b4)) # 253743
 
-## PAIRWISE TEST WITHIN STATES BETWEEN BIOTYPES
+### PAIRWISE TEST WITHIN STATES BETWEEN BIOTYPES
 wilcox.test(x=average_pi_within_snp_sample_b1,
             y=average_pi_within_snp_sample_b4,  na.action="na.omit")
 #W = 3.2571e+10, p-value = 0.006107
@@ -293,8 +300,10 @@ average_pi_within_snp_sample_table <- data.frame(pools  =colnames(cbind(average_
                                                  sd     =apply(cbind(average_pi_within_snp_sample, average_pi_within_snp_sample_b1, average_pi_within_snp_sample_b4), 2, function(x) sd(x, na.rm = TRUE)),
                                                  se     =apply(cbind(average_pi_within_snp_sample, average_pi_within_snp_sample_b1, average_pi_within_snp_sample_b4), 2, function(x) sd(x, na.rm = TRUE)/sum(!is.na(x)))
                                                  )        
+### EXPORT AS A LATEX TABLE                              
+#print(xtable(average_pi_within_snp_sample_table, type = "latex"), file = "results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/average_pi_within-snp-samples_table.tex")
 
-## BARPLOT WITH AVERAGE VALUES
+### BARPLOT WITH AVERAGE VALUES
 # Prepare the error bar to place in the barplot 
 limits_pi_within_snp_samples <- aes(ymax = average + sd,
                                     ymin = average - sd)
@@ -331,7 +340,7 @@ p4
 #                              axis.title=element_text(size=20))
 #p5
 
-## COMBINE PLOTS 3 AND 4
+### COMBINE PLOTS 3 AND 4
 par(mfrow=c(1, 2))
 avg_pi_within_combined_plot <- ggarrange(ggarrange(p3,
                                          labels = "A",
@@ -360,14 +369,14 @@ ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/avg_pi_within_s
 ###
 ###
 
-## FOR ALL LOCI - ACROSS ALL POOLS
+### FOR ALL LOCI - ACROSS ALL POOLS
 genetic_diversity <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame, Nindv = 5) 
 
-## Average for biotype samples
+### Average for biotype samples
 genetic_diversity.b1 <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame.b1, Nindv = 5) 
 genetic_diversity.b4 <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame.b4, Nindv = 5) 
 
-## CONSERVATIVE APPROACH: IMPUTE NA IN LOCUS WITH > 50% MISSING DATA 
+### CONSERVATIVE APPROACH: IMPUTE NA IN LOCUS WITH > 50% MISSING DATA 
 
 # FOR BIOTYPE 1
 genetic_diversity.b1$pi_within[which(perc_indMissing_snp_b1 > 50)] <- NA
@@ -379,7 +388,7 @@ genetic_diversity.b1$fst[which(perc_indMissing_snp_b1 > 50)] <- NA
 length(genetic_diversity.b1$pi_within) # 262866
 sum(!is.na(genetic_diversity.b1$pi_within)) #255592
 
-# FOR BIOTYPE 1
+# FOR BIOTYPE 4
 genetic_diversity.b4$pi_within[which(perc_indMissing_snp_b4 > 50)] <- NA
 genetic_diversity.b4$pi_between[which(perc_indMissing_snp_b4 > 50)] <- NA
 genetic_diversity.b4$H_T[which(perc_indMissing_snp_b4 > 50)] <- NA
@@ -426,7 +435,7 @@ fst_data4plot <- data.frame(x=summary_statistics_table$POOLFSTAT_FST,
 
 
 fst.cor <- cor(fst_data4plot$x, fst_data4plot$y, use = "pairwise.complete.obs")
-# 0.9071797
+print(fst.cor)# 0.9071797
 
 par(mar=c(5,5,4,1)+.1)
 breaks.plot <- c(54.598185, 7.389056, 1)
@@ -554,17 +563,21 @@ gene_piN_piS <- ss_ns_mutations %>%
 
 dim(gene_piN_piS) # 7473    7
 
+# Make a copy to export the table with all genes (not only the filtered)
+# ADDED 17/SEPT/21
+gene_piN_piS_copy <- gene_piN_piS
+
 # Remove genes with < 2 nonsynonymous AND < 4 synonymous mutations
 gene_piN_piS <- gene_piN_piS[which(gene_piN_piS$nNS >=2 & gene_piN_piS$nSS >= 4), ]
-dim(gene_piN_piS) # 433  10
+dim(gene_piN_piS) # 433 7 
 
 # Remove genes with piN within AND piS within equals to NA
 gene_piN_piS <- gene_piN_piS[!(is.na(gene_piN_piS$piNwi) & is.na(gene_piN_piS$piSwi)), ]
-dim(gene_piN_piS) # 433  10
+dim(gene_piN_piS) # 433  7
 
 # Remove genes with piN between AND piS between equals to NA
 gene_piN_piS <- gene_piN_piS[!(is.na(gene_piN_piS$piNbt) & is.na(gene_piN_piS$piSbt)), ]
-dim(gene_piN_piS) # # 433  10
+dim(gene_piN_piS) # # 433  7
 
 # Add NA to piS within = 0
 gene_piN_piS[which(gene_piN_piS$piSwi == 0), 'piSwi'] <- NA
@@ -795,7 +808,7 @@ ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/piSwithin_piNpi
 ###
 ###
 
-### GENOME-WIDE SNP ANNOTATION AND GENETIC DIVERSITY
+### COMBINED GENOME-WIDE SNP ANNOTATION AND GENETIC DIVERSITY
 dim(summary_statistics_annotation_table) #262866     22
 dim(summary_statistics_annotation_table.b1) #262866     22
 dim(summary_statistics_annotation_table.b4) #262866     22
@@ -828,10 +841,10 @@ head(combined_summary_statistics_annotation_table)
 
 # Save to a file
 #write.table(combined_summary_statistics_annotation_table,
-#            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_summary_statistics_annotation_table", sep = "\t",
+#            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_summary_statistics_annotation_table.txt", sep = "\t",
 #            quote = F, row.names = F, col.names = TRUE)
 
-### GENIC GENETIC DIVERSITY AND ADAPTIVE CONSTRAINS
+### COMBINED GENIC GENETIC DIVERSITY AND ADAPTIVE CONSTRAINS
 dim(gene_piN_piS) # 433  11
 dim(gene_piN_piS.b1) # 433  11
 dim(gene_piN_piS.b4) # 433  11
@@ -859,8 +872,43 @@ head(combined_gene_piN_piS)
 
 # Save to a file
 #write.table(combined_gene_piN_piS,
-#            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_gene_piN_piS", sep = "\t",
+#            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_gene_piN_piS.txt", sep = "\t",
 #            quote = F, row.names = F, col.names = TRUE)
+
+
+### GLOBAL GENIC GENETIC DIVERSITY AND ADAPTIVE CONSTRAINS FOR ALL POSSIBLE GENES
+##### REPETE ABOVE TO EXPORT THE FULL/NULL TABLE (COMMENT AFTER EXPORT TABLE)
+# ADDED 17/SEPT/21
+# THE PART THAT KEEP GENES WITH # OF SS > 4 & NS > 2 WAS REMOVED
+# Remove genes with piN within AND piS within equals to NA
+gene_piN_piS_copy <- gene_piN_piS_copy[!(is.na(gene_piN_piS_copy$piNwi) & is.na(gene_piN_piS_copy$piSwi)), ]
+dim(gene_piN_piS_copy) # 7473    7
+
+# Remove genes with piN between AND piS between equals to NA
+gene_piN_piS_copy <- gene_piN_piS_copy[!(is.na(gene_piN_piS_copy$piNbt) & is.na(gene_piN_piS_copy$piSbt)), ]
+dim(gene_piN_piS_copy) # 7473    7
+
+# Add NA to piS within = 0
+gene_piN_piS_copy[which(gene_piN_piS_copy$piSwi == 0), 'piSwi'] <- NA
+
+# CALCULATE piN/piS within 
+gene_piN_piS_copy <- mutate(gene_piN_piS_copy, piNpiSwi = piNwi/piSwi)
+
+# Add NA to piS between = 0
+gene_piN_piS_copy[which(gene_piN_piS_copy$piSbt == 0), 'piSbt'] <- NA
+
+### CALCULATE piN/piS between 
+gene_piN_piS_copy <- mutate(gene_piN_piS_copy, piNpiSbt = piNbt/piSbt)
+
+## CALCULATE NI and alpha
+gene_piN_piS_copy <- mutate(gene_piN_piS_copy, NI = piNpiSbt/piNpiSwi, alpha = (1 - NI))
+dim(gene_piN_piS_copy) #  7473   11
+
+# Save to a file
+#write.table(gene_piN_piS_copy,
+#            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/global_gene_piN_piS.txt", sep = "\t",
+#            quote = F, row.names = F, col.names = TRUE)
+#####
 
 #save_checkpoint_7
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
@@ -1089,7 +1137,9 @@ pnps.data <- read.table(file = "results/aggregated_data/minmaxcov_4_99/diversity
 ### FOR ALL SCAFFOLDS
 # Remove genomewide estimates
 scaffolds.pnps <- pnps.data %>%
-  filter(Chrom !="genomewide") %>%
+  filter(Chrom !="genomewide") 
+
+scaffolds.pnps <- scaffolds.pnps %>%
   mutate(scaffolds.pnps, 
          BIOTYPES=do.call(rbind, strsplit(scaffolds.pnps$POP, 
                                           split = '_', fixed = T))[,2])
@@ -1165,118 +1215,117 @@ p13 <- p13 +  geom_bar(stat = "identity", position = position_dodge(0.9), orient
                                  axis.text.x = element_text(angle = 0))
 p13
 
-### FOR SIGNIFICANT SCAFFOLDS
-
-significant_scaffolds <- read.table(file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/signf_multilocus_fst.bed", 
-                                    header = F, sep = "\t")
-
-significant_scaffolds <- unique(significant_scaffolds[,1])
-
-# Remove genomewide estimates AND keep only significant scaffolds
-sign.scaffolds.pnps <- pnps.data %>%
-  filter(Chrom !="genomewide") %>%
-  filter(Chrom %in% significant_scaffolds) %>%
-  mutate(sign.scaffolds.pnps, 
-         BIOTYPES=do.call(rbind, strsplit(sign.scaffolds.pnps$POP, 
-                                          split = '_', fixed = T))[,2])
-
-## POOLS: Calculate the mean, sd, se pnps for each pool for SIGNIFICANT scaffolds
-mean.sign.scaffolds.pnps <- sign.scaffolds.pnps %>%
-  group_by(POP) %>%
-  summarise(
-    n=n(),
-    pnps.m = mean(pNpS, na.rm = T),
-    pnps.sd=sd(pNpS, na.rm = T),
-    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
-  )
-
-# Add a column with the biotype 
-mean.sign.scaffolds.pnps <- mutate(mean.sign.scaffolds.pnps, 
-                                   BIOTYPES=do.call(rbind, strsplit(mean.sign.scaffolds.pnps$POP,  split = '_', fixed = T))[,2],
-                                   POOLNAMES = poolnames)
-
-# Prepare the error bar to place in the barplot 
-limits_sign.pnps <- aes(ymax = pnps.m + pnps.se,
-                       ymin = pnps.m - pnps.se)
-
-
-# pnps plot
-p14 <- ggplot(data = mean.sign.scaffolds.pnps, aes(x = POOLNAMES, y = pnps.m, fill=BIOTYPES))
-p14 <- p14 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
-              geom_errorbar(limits_sign.pnps , position = position_dodge(0.9), width = 0.25) + 
-              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
-              ylim(0, 2) + 
-              #scale_x_discrete(labels = c("Avirulent", "Virulent")) +
-              scale_fill_manual(values = c("#247F00","#AB1A53"),
-                                name   = "Biotypes",
-                                breaks = c("BIO1", "BIO4"),
-                                labels = c(expression("Avirulent"), "Virulent")) + 
-              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
-                                 axis.line = element_line(colour = "black"),
-                                 axis.text = element_text(size = 14),
-                                 axis.title=element_text(size=20),
-                                 axis.text.x = element_text(angle = 90))
-p14
-
-## BIOTYPES: Calculate the mean, sd, se pnps for each pool for BIOTYPES
-mean.sign.scaffolds.pnps.biotypes <- sign.scaffolds.pnps %>%
-  group_by(BIOTYPES) %>%
-  summarise(
-    n=n(),
-    pnps.m = mean(pNpS, na.rm = T),
-    pnps.sd=sd(pNpS, na.rm = T),
-    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
-  )
-
-# Prepare the error bar to place in the barplot 
-limits_sign_pnps.biotypes <- aes(ymax = pnps.m + pnps.se,
-                                 ymin = pnps.m - pnps.se)
-
-
-# pnps plot
-p15 <- ggplot(data = mean.sign.scaffolds.pnps.biotypes, aes(x = BIOTYPES, y = pnps.m))
-p15 <- p15 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
-              geom_errorbar(limits_sign_pnps.biotypes, position = position_dodge(0.9), width = 0.25) + 
-              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
-              ylim(0, 2) + 
-              scale_x_discrete(labels = c("Avirulent", "Virulent")) +
-              #scale_fill_manual(values = c("#247F00","#AB1A53"),
-              #                  name   = "Biotypes",
-              #                  breaks = c("BIO1", "BIO4"),
-              #                  labels = c(expression("Avirulent"), "Virulent")) + 
-              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
-                                 axis.line = element_line(colour = "black"),
-                                 axis.text = element_text(size = 14),
-                                 axis.title=element_text(size=20),
-                                 axis.text.x = element_text(angle = 0))
-p15
-
 par(mfrow=c(3, 1))
-pnps_plot <- ggarrange(ggarrange(p12,p13,
-                             labels = "A",
-                             common.legend = T,
-                             legend = "bottom",
-                             font.label = list(size = 24, face = "bold"),
-                             nrow=2),
-                   ggarrange(p14, p15,
-                             labels = "B",
-                             common.legend = T,
-                             legend = "bottom",
-                             font.label = list(size = 24, face = "bold"),
-                             nrow=2),
-                   common.legend = T,
-                   legend = "bottom"
-                   )
+pnps_plot <- ggarrange(ggarrange(p13,p12,
+                                 labels = c("A", "B"),
+                                 common.legend = T,
+                                 legend = "bottom",
+                                 font.label = list(size = 24, face = "bold"),
+                                 nrow=2),
+                       common.legend = T,
+                       legend = "bottom"
+)
 
 pnps_plot
 
 ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/pnps_biotypes.pdf",
        pnps_plot,
        device="pdf",
-       width=15,
-       height=11)
+       width=4.6,
+       height=6.7)
 
 #save_checkpoint_9
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
 #load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/diversity.poolsnp.workspace27Ago21.RData")
+
+### FOR SIGNIFICANT SCAFFOLDS
+#significant_scaffolds <- read.table(file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/signf_multilocus_fst.bed", 
+#                                    header = F, sep = "\t")
+#
+#significant_scaffolds <- unique(significant_scaffolds[,1])
+#
+## Remove genomewide estimates AND keep only significant scaffolds
+#sign.scaffolds.pnps <- pnps.data %>%
+#  filter(Chrom !="genomewide") 
+#
+#sign.scaffolds.pnps <- sign.scaffolds.pnps %>%
+#  filter(Chrom %in% significant_scaffolds) 
+#
+#sign.scaffolds.pnps <- sign.scaffolds.pnps %>%
+#  mutate(sign.scaffolds.pnps, 
+#         BIOTYPES=do.call(rbind, strsplit(sign.scaffolds.pnps$POP, 
+#                                          split = '_', fixed = T))[,2])
+#
+### POOLS: Calculate the mean, sd, se pnps for each pool for SIGNIFICANT scaffolds
+#mean.sign.scaffolds.pnps <- sign.scaffolds.pnps %>%
+#  group_by(POP) %>%
+#  summarise(
+#    n=n(),
+#    pnps.m = mean(pNpS, na.rm = T),
+#    pnps.sd=sd(pNpS, na.rm = T),
+#    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
+#  )
+#
+## Add a column with the biotype 
+#mean.sign.scaffolds.pnps <- mutate(mean.sign.scaffolds.pnps, 
+#                                   BIOTYPES=do.call(rbind, strsplit(mean.sign.scaffolds.pnps$POP,  split = '_', fixed = T))[,2],
+#                                   POOLNAMES = poolnames)
+#
+## Prepare the error bar to place in the barplot 
+#limits_sign.pnps <- aes(ymax = pnps.m + pnps.se,
+#                       ymin = pnps.m - pnps.se)
+#
+#
+## pnps plot
+#p14 <- ggplot(data = mean.sign.scaffolds.pnps, aes(x = POOLNAMES, y = pnps.m, fill=BIOTYPES))
+#p14 <- p14 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+#              geom_errorbar(limits_sign.pnps , position = position_dodge(0.9), width = 0.25) + 
+#              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
+#              ylim(0, 2) + 
+#              #scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+#              scale_fill_manual(values = c("#247F00","#AB1A53"),
+#                                name   = "Biotypes",
+#                                breaks = c("BIO1", "BIO4"),
+#                                labels = c(expression("Avirulent"), "Virulent")) + 
+#              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+#                                 axis.line = element_line(colour = "black"),
+#                                 axis.text = element_text(size = 14),
+#                                 axis.title=element_text(size=20),
+#                                 axis.text.x = element_text(angle = 90))
+#p14
+#
+### BIOTYPES: Calculate the mean, sd, se pnps for each pool for BIOTYPES
+#mean.sign.scaffolds.pnps.biotypes <- sign.scaffolds.pnps %>%
+#  group_by(BIOTYPES) %>%
+#  summarise(
+#    n=n(),
+#    pnps.m = mean(pNpS, na.rm = T),
+#    pnps.sd=sd(pNpS, na.rm = T),
+#    pnps.se =sd(pNpS, na.rm = T)/sqrt(sum(n()))
+#  )
+#
+## Prepare the error bar to place in the barplot 
+#limits_sign_pnps.biotypes <- aes(ymax = pnps.m + pnps.se,
+#                                 ymin = pnps.m - pnps.se)
+#
+#
+## pnps plot
+#p15 <- ggplot(data = mean.sign.scaffolds.pnps.biotypes, aes(x = BIOTYPES, y = pnps.m))
+#p15 <- p15 +  geom_bar(stat = "identity", position = position_dodge(0.9), orientation = 90) +
+#              geom_errorbar(limits_sign_pnps.biotypes, position = position_dodge(0.9), width = 0.25) + 
+#              labs(x = NULL, y = expression(italic(p)[N]/italic(p)[S])) + 
+#              ylim(0, 2) + 
+#              scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+#              #scale_fill_manual(values = c("#247F00","#AB1A53"),
+#              #                  name   = "Biotypes",
+#              #                  breaks = c("BIO1", "BIO4"),
+#              #                  labels = c(expression("Avirulent"), "Virulent")) + 
+#              theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+#                                 axis.line = element_line(colour = "black"),
+#                                 axis.text = element_text(size = 14),
+#                                 axis.title=element_text(size=20),
+#                                 axis.text.x = element_text(angle = 0))
+#p15
+
+
 

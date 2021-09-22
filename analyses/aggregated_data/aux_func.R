@@ -11,9 +11,9 @@
 #' COMPUTE MAXIMUM LIKELIHOOD IMPUTED SAMPLE ALLELE COUNT
 #'
 #' This function outputs the reference allele count with
-#' a maximum likelihood imputation appraoch.
-#' @param x The the poolseq data(pooldata)
-#' @return a matrix of allele frequency counts for each pool in x
+#' a maximum likelihood imputation approach.
+#' @param x The the poolseq data from poolfstat (class pooldata)
+#' @return a vector of reference allele counts for each pool in x
 #' @export
 
 imputedRefMLCount <- function(x)
@@ -88,13 +88,6 @@ imputedRefMLCount <- function(x)
   return(out_list)
   
 }# end of function definition
-
-## COMPUTE SAMPLE TOTAL HE - SAMPLE H_T
-meanHE <- function(x)
-{
-  m = mean(x, na.rm = T)
-  return(2*m*(1 - m))
-}
 
 ## COMPUTE GENOME-WIDE MEAN THETA FOR EACH SAMPLE
 thetaHE <- function(x)

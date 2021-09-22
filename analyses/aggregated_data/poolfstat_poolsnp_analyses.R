@@ -1,5 +1,5 @@
 ##########################################################
-#                  POOLFSTAT package                     # 
+#              POOLSNP-POOLFSTAT Analyses                # 
 #         AF, HE, Theta, pF_ST, gF_ST and genome scan    #
 ##########################################################
 
@@ -48,10 +48,10 @@ plt <- import('matplotlib.pyplot')
 pd <- import('pandas')
 
 ### POOL'S INFORMATION
-# Pool's size
+# Sample's size
 poolsizes <- rep(10,21)
 
-# Pool's names
+# Sample's names
 poolnames <- c("MN-Av.1", "MN-V.1",
                "ND-Av.1", "ND-V.1", 
                "NW-Av.1", "NW-Av.2", "NW-V.1", "NW-V.2", "NW-V.3", 
@@ -59,7 +59,7 @@ poolnames <- c("MN-Av.1", "MN-V.1",
                "WI-Av.1", "WI-Av.2", "WI-V.1", "WI-V.2", "WI-V.3", 
                "WO-Av.1", "WO-V.1", "WO-V.2", "WO-V.3")
 
-# Pool's colors - for PCA
+# Sample's colors - for PCA
 biotype.col <- c("#247F00","#AB1A53",
                  "#247F00","#AB1A53",
                  "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
@@ -119,7 +119,7 @@ snps_ordered.bed <- data.frame(CHROM=snps_ordered$Chromosome,
 
 ###
 ###
-### ---- MAXIMUM LIKELIHOOD ESTIMATION FROM ALLELE COUNTS ----
+### ---- MAXIMUM LIKELIHOOD ESTIMATION OF THE ALLELE COUNTS ----
 ###
 ###
 
@@ -204,7 +204,7 @@ hist(dt.1.missing.snps, breaks = 10)
 
 ###
 ###
-### ---- COMPUTE MULTILOCUS FST FOR THE GENOME SCAN ----
+### ---- RUN MULTILOCUS-FST GENOME SCAN ----
 ###
 ###
 
@@ -346,17 +346,17 @@ dim(no.missing.reduced.2) #82534    21
 
 ###
 ###
-### ---- DIVERSTITY AND COVERAGE STATS FOR EACH SNP FOR SIGNIFICANT SCAFFOLDS ----
+### ---- DIVERSTITY AND COVERAGE STATS FOR EACH SNP ASSOCIATED WITH SIGNIFICANT SCAFFOLDS ----
 ###
 ###
 
 ### OVERALL HETEROZYGOSITY ACROSS SAMPLES - TOTAL HETEROZYGOSITY H_T
 
-## GENOME-WIDE MEAN HE FOR EACH POOL
+## GENOME-WIDE MEAN HE FOR EACH SAMPLE
 # OVERALL
 locus_totalhe_pools       <- apply(dt.1.imputedRefMLFreq, 1, totalHE) # 1 indicates rows: locus
 
-# ACROSS POOLS/BIOTYPES
+# ACROSS SAMPLES/BIOTYPES
 locus_totalhe_B1_pools    <- apply(dt.1.imputedRefMLFreq[,-c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, totalHE)
 locus_totalhe_B4_pools    <- apply(dt.1.imputedRefMLFreq[, c(2,4,7,8,9,11,12,15,16,17,19,20,21)], 1, totalHE)
 # NOTE: FOR THE MOMENT USE THIS, BUT IDEALLY CALCULATE MEAN LOCUS-HE ACROSS WINDOWS WITH BIOTYPES
@@ -584,7 +584,7 @@ sns$clustermap(pfst_pandas_df,
 plt$savefig("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pFST_pools_Seaborn-heatmap.pdf")
 
   
-### ONE POOL OF EACH BIOTYPE / LOCALITY
+### ONE SAMPLE OF EACH BIOTYPE / LOCALITY
 ### SUBSET THE POOLFSTAT OBJECT TO KEEP ONLY ONE BIOTYPE/LOCALITY
 ### USE THE POOL WITH LOW % OF MISSING DATA IF MORE THAN ONE BIOTYPE POOL / LOCALITY
 ### Dataset 2: 24-Jun-2021; Min_cov=4; Max_cov=0.99; MAF=0.05; MAC=5; 21 pools; miss_fraction=0.50
@@ -719,14 +719,14 @@ plt$savefig("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pFST_bioty
 ###
 ###
 
-### ALL 21 POOLS
-### Dataset 2: 24-Jun-2021; Min_cov=4; Max_cov=0.99; MAF=0.05; MAC=5; 21 pools; miss_fraction=0.50
+### ALL 21 SAMPLES
+### Dataset 2: 24-Jun-2021; Min_cov=4; Max_cov=0.99; MAF=0.05; MAC=5; 21 samples; miss_fraction=0.50
 ### vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.vcf.gz
 
 ## CAUSAL MODEL: 
 ## Partial Mentel Test: pFST vs geographic distance | cost matrix (same vs different biotypes)
 ## Partial Mentel Test: pFST vs geographic distance | cost matrix (biotype 1 vs biotype 4 vs different biotypes)
-## FOR ALL POOLS
+## FOR ALL SAMPLES
 
 # Matrix of linearized pFST
 pfst_lin_matrix <- dt.1.pfst@PairwiseFSTmatrix
@@ -843,9 +843,9 @@ lm3_cost_2 <- lm(mantel_test_table_pools$lin_pFST[which(mantel_test_table_pools$
 summary(lm3_cost_2)
 
 
-### ONE POOL OF EACH BIOTYPE / LOCALITY
+### ONE SAMPLE OF EACH BIOTYPE / LOCALITY
 ### SUBSET THE POOLFSTAT OBJECT TO KEEP ONLY ONE BIOTYPE/LOCALITY (ALREADY DONE ABOVE)
-### USE THE POOL WITH LOW % OF MISSING DATA IF MORE THAN ONE BIOTYPE POOL / LOCALITY
+### USE THE SAMPLE WITH LOW % OF MISSING DATA IF MORE THAN ONE BIOTYPE SAMPLE / LOCALITY
 ### Dataset 2: 24-Jun-2021; Min_cov=4; Max_cov=0.99; MAF=0.05; MAC=5; 21 pools; miss_fraction=0.50
 ### vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.vcf.gz
 ### REMOVE SNPS WITH > 25% OF MISSING DATA AFTER POOL REMOVAL
@@ -981,225 +981,3 @@ summary(lm3_bio_cost_2)
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
 #load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
 ############## END THIS PART
-
-
-
-
-
-
-
-### REMOVE
-##########################################################################
-###THIS PART NEEDS TO BE UPDATED WITH NEW SCRIPT ORGANIZATION AND ANALYZES
-##########################################################################
-
-## IF need remove high missing samples, re-do below with the dataset from above, like:
-#Data set 2: Min_cov=4; Max_cov=0.99; [start MAF=0.05 (from above); final MAF=0.05]; MAC=5; 19 pools; [start miss_fraction=0.50; final miss_fraction=0.30]
-
-#### REDUCED DATASET
-### Data set 2: Min_cov=4; Max_cov=0.99; [start MAF=0.05 (from above); final MAF=0.05]; MAC=5; 19 pools; [start miss_fraction=0.50; final miss_fraction=0.30]
-####
-#
-## REMOVE 2 SAMPLES IDENTIFIED WITH > 30% MISSING DATA - KEEP PA POOLS; REMOVE 1 NW-BIO1, 1 WO-BIO4
-## REMOVE SNPS WITH > 30% AFTER THE REMOVAL OF THE SAMPLES
-## SUBSET READ COUNT DATA
-### PERFORM ALL THE ANALYSES
-#
-#keep.pools <- c(1:4,6:20)
-#nbr.pools.reduced <- dim(reduced.dt.1.imputedRefMLFreq)[2]
-#
-### REMOVE SNPS WITH > 30% AFTER THE REMOVAL OF THE SAMPLES
-#length(dt.1.missing.snps.reduced)
-#min(dt.1.missing.snps.reduced)
-#max(dt.1.missing.snps.reduced)
-#
-#keep.snps <- which(dt.1.missing.snps.reduced <= 30)
-#length(keep.snps) #254107
-#
-## How many were removed?
-#length(dt.1.missing.snps.reduced) - length(keep.snps)
-#
-## CHECK MISSING % AFTER SNP REMOVAL
-#reduced.dt.1.imputedRefMLFreq.filtered03 <- reduced.dt.1.imputedRefMLFreq[keep.snps, ] 
-#dt.1.missing.snps.reduced.filtered03 <- (apply(reduced.dt.1.imputedRefMLFreq.filtered03, 1, function(x) sum(is.na(x)))/nbr.pools.reduced)*100
-#
-#length(dt.1.missing.snps.reduced.filtered03)
-#min(dt.1.missing.snps.reduced.filtered03)
-#max(dt.1.missing.snps.reduced.filtered03)
-#
-## SAVE TO COMPARE WITH BAYPASS ESTIMATES
-##save(reduced.dt.1.imputedRefMLFreq.filtered03, file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/reduced.dt.1.imputedRefMLFreq.filtered03.RData")
-#
-### SUBSET READ COUNT DATA
-#s.dt.1 <- pooldata.subset(
-#                          pooldata=dt.1,
-#                          pool.index = keep.pools,
-#                          snp.index = keep.snps,
-#                          min.cov.per.pool = -1,
-#                          max.cov.per.pool = 1e+06,
-#                          min.maf = -1,
-#                          cov.qthres.per.pool = c(0, 1),
-#                          return.snp.idx = FALSE,
-#                          verbose = TRUE
-#)
-#
-#s.dt.1
-## * * * PoolData Object * * * 
-## * Number of SNPs   =  254107 
-## * Number of Pools  =  19
-## Number of scaffolds:
-#length(unique(sort(s.dt.1@snp.info$Chromosome))) #685
-#
-#### POPULATION GENOMICS ANALYSES
-### COMPUTE THE GLOBAL FST
-#s.dt.1.fst <- computeFST(s.dt.1, method = "Anova", nsnp.per.bjack.block = 10, verbose=FALSE)
-#
-## genome-wide estimate
-#s.dt.1.fst$FST 
-## 0.005548407
-#
-## mean Block-Jackknife estimation
-#s.dt.1.fst$mean.fst 
-## 0.005536966
-#
-## CI
-#s.dt.1.fst$mean.fst+c(-1.96,1.96)*s.dt.1.fst$se.fst
-## 0.004055994 0.007017939
-#
-### FST GENOME SCAN
-#s.dt.1.fst.scan <- computeFST(s.dt.1,sliding.window.size=10)
-#
-#chrm.splitted.s <- strsplit(s.dt.1.fst.scan$sliding.windows.fst$Chr, split = "_")
-#chrm.splitted.s <- as.numeric(do.call(rbind.data.frame, chrm.splitted.s)[,2])
-#
-#chrm.splitted.counts.s <- table(chrm.splitted.s)
-#
-#chrm.colors.s=NULL
-#for (i in seq_along(chrm.splitted.counts.s))
-#{
-#  if((i %% 2) == 0) 
-#  {
-#    #print(paste(i,"is Even"))
-#    c = rep("black",chrm.splitted.counts.s[i])
-#  } else {
-#    #print(paste(i,"is Odd"))
-#    c = rep("grey",chrm.splitted.counts.s[i])
-#  }
-#  
-#  chrm.colors.s <- c(chrm.colors.s, c)
-#}
-#
-## Manhattan plot
-#par(mar=c(5,5,4,1)+.1)
-#plot(s.dt.1.fst.scan$sliding.windows.fst$CumulatedPosition/1e6,
-#     s.dt.1.fst.scan$sliding.windows.fst$MultiLocusFst,
-#     xlab="Cumulated Position (in Mb)",ylab="Muli-locus Fst",
-#     col=chrm.colors.s,pch=20, cex.lab=1.4, cex.axis=1.2)
-#abline(h=s.dt.1.fst.scan$FST,lty=2, col="lightgreen", lwd=3)
-#
-## TOP Multilocus FST
-#high.multi.fst.reduced <- data.frame(CHRM=s.dt.1.fst.scan$sliding.windows.fst$Chr[which(s.dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)], 
-#                                     POS=s.dt.1.fst.scan$sliding.windows.fst$Position[which(s.dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)], 
-#                                     FST= s.dt.1.fst.scan$sliding.windows.fst$MultiLocusFst[which(s.dt.1.fst.scan$sliding.windows.fst$MultiLocusFst > 0.25)])
-#
-#write.table(high.multi.fst, file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/higher025.multilocus.fst.reduced.txt",
-#            quote = F, col.names = F, row.names = F)
-#
-#high.multi.fst.reduced.ordered <- high.multi.fst.reduced[order(high.multi.fst.reduced$CHRM, 
-#                                                               high.multi.fst.reduced$POS), ]
-#
-#high.multi.fst.reduced.ordered.bed <- data.frame(CHROM=high.multi.fst.reduced.ordered$CHRM,
-#                                                 Start=high.multi.fst.reduced.ordered$POS-1,
-#                                                 Ends=high.multi.fst.reduced.ordered$POS)
-#write.table(high.high.multi.fst.reduced.ordered.bed,
-#            file="results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/higher025.multilocus.fst.reduced.bed", sep = "\t",
-#            quote = F, row.names = F, col.names = F)
-#
-### CHECK NUMBER OF SNPS WITH NaN RESULTS
-#sum(!is.na(s.dt.1.fst.scan$snp.FST)) #42566
-#sum(!is.na(s.dt.1.fst.scan$sliding.windows.fst$MultiLocusFst)) #25832
-#
-##Data set with 19 pools
-#dim(no.missing.reduced) #42608    19
-#
-### COMPUTE PAIRWISE FST
-#s.dt.1.pfst <- compute.pairwiseFST(s.dt.1,verbose=FALSE)
-#heatmap(s.dt.1.pfst)
-## SAVE TO COMPARE WITH BAYPASS OMEGA MATRIX
-##save(s.dt.1.pfst, file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/s.dt.1.pfst.RData")
-#
-#s.dt.1.pfst <- compute.pairwiseFST(s.dt.1,nsnp.per.bjack.block = 100, verbose=FALSE)
-#plot(s.dt.1.pfst, cex=0.4)
-#
-### COMPUTE THE F-STATISTICS 
-#s.dt.1.fstats<-compute.fstats(s.dt.1, nsnp.per.bjack.block = 100, verbose=FALSE)
-#s.dt.1.fstats@heterozygosities
-#
-### COMPUTE THETA FROM F-STATS HE 
-#barplot(s.dt.1.fstats@heterozygosities[,1]/(1-s.dt.1.fstats@heterozygosities[,1]))
-#
-### POOL MEAN HE
-#s.pool.meanHE <- apply(reduced.dt.1.imputedRefMLFreq.filtered03, 2, meanHE)
-#names(s.pool.meanHE) <- s.dt.1@poolnames
-#barplot(s.pool.meanHE)
-#
-#biotype.vec.s <- c("B1","B4","B1","B4","B1","B4","B4","B4","B1",
-#                  "B4","B4","B1","B1","B4","B4","B4","B1","B4","B4")
-#
-#boxplot(s.pool.meanHE ~ biotype.vec.s, 
-#       xlab="",ylab="Mean Heterozygosity",
-#       col=chrm.colors,pch=20, cex.lab=1.4, cex.axis=1.2)
-#
-### POOL THETA
-#s.pool.theta <- thetaHE(s.pool.meanHE)
-#barplot(s.pool.theta)
-##
-#boxplot(s.pool.theta ~ biotype.vec.s,
-#        xlab="",ylab=expression(paste("Mean ", theta)),
-#        col=chrm.colors,pch=20, cex.lab=1.4, cex.axis=1.2)
-#
-### MEAN LOCUS HE
-#s.locus.meanHE <- apply(reduced.dt.1.imputedRefMLFreq.filtered03, 1, meanLocusHE)
-#
-### PLOT INTRA-LOCUS FST AS A FUNCTION OF LOCUS MEAN HE
-#plot(s.locus.meanHE, s.dt.1.fst.scan$snp.FST,
-#     xlab=expression(paste("Locus ", H[E])), ylab=expression(paste("Locus ", F[ST])),
-#     cex.lab=1.4, cex.axis=1.2)
-#abline(h=dt.1.fst.scan$FST,lty=2, col="lightgreen", lwd=3)
-### NEED SIMULATION TO CALCULATE THE ENVELOPE
-#
-### PCA ON INPUTED AF
-#s.W<-scale(t(reduced.dt.1.imputedRefMLFreq.filtered03), scale=TRUE) #centering
-#s.W[is.na(s.W)]<-0
-#cov.s.W<-cov(t(s.W))
-#s.eig.result<-eigen(cov.s.W)
-#s.eig.vec<-s.eig.result$vectors
-#s.lambda<-s.eig.result$values
-#
-## PVE
-#par(mar=c(5,5,4,1)+.1)
-#plot(s.lambda/sum(s.lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
-#     cex.lab=1.6, pch=19, col="black")
-#lines(s.lambda/sum(s.lambda), col="red")
-#
-#s.l1 <- 100*s.lambda[1]/sum(s.lambda) 
-#s.l2 <- 100*s.lambda[2]/sum(s.lambda) 
-#
-## PCA plot
-#par(mar=c(5,5,4,1)+.1)
-#plot(s.eig.vec[,1],s.eig.vec[,2], col=biotype.col[keep.pools],
-#     xlim = c(-0.75, 0.35), ylim = c(-0.75, 0.55),
-#     xlab=paste0("PC1 (", round(s.l1,2), "%)"), ylab=paste0("PC1 (", round(s.l2,2), "%)"), cex=1.7, pch=19)
-#text(s.eig.vec[,1],s.eig.vec[,2], s.dt.1@poolnames, pos=2 , cex = 0.6)
-#legend("bottomleft", 
-#       legend = c("Biotype 1", "Biotype 4"), col = c("#247F00","#AB1A53"), 
-#       pch = 19, bty = "n", cex = 1.2)
-#abline(v=0,h=0,col="grey",lty=3)
-#
-### pooldata2genobaypass FROM REDUCED DATASET
-#pooldata2genobaypass(pooldata = s.dt.1,
-#                     writing.dir = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/",
-#                     prefix = "aphidpool.PoolSeq.PoolSNP.01.5.28Jun2021.reduced30")
-#
-##SAVE WORKSPACE
-##load("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace_28Jun21.RData")

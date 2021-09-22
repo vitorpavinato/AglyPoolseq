@@ -36,8 +36,8 @@ library(FactoMineR)
 library(Hmisc)
 
 # Import auxiliary R functions
-source("DEST-AglyPoolseq/analysis/aggregated_data/ThinLDinR_SNPtable.R")
-source("DEST-AglyPoolseq/analysis/aggregated_data/aux_func.R")
+source("DEST-AglyPoolseq/analyses/aggregated_data/ThinLDinR_SNPtable.R")
+source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ### FOR COLORS
 ALPHA=0.75
@@ -140,7 +140,7 @@ snps.dt.pools <- data.table(chr=seqGetData(genofile.pools, "chromosome"),
                             missing=seqMissing(genofile.pools, .progress=T))
 
 
-### Remove Physical Linkage
+### Remove Physical Linkage - one SNP every 500bp
 snp_info.pools = data.frame(chr=as.character(snps.dt.pools$chr), pos=as.numeric(snps.dt.pools$pos))
 
 picksnps_500.pools <- pickSNPs(snp_info.pools,dist=500)
@@ -356,7 +356,7 @@ snps.dt.biotypes <- data.table(chr=seqGetData(genofile.biotypes, "chromosome"),
                                nAlleles=seqNumAllele(genofile.biotypes),
                                missing=seqMissing(genofile.biotypes, .progress=T))
 
-### Remove Physical Linkage
+### Remove Physical Linkage - one SNP every 500bp
 snp_info.biotypes = data.frame(chr=as.character(snps.dt.biotypes$chr), pos=as.numeric(snps.dt.biotypes$pos))
 
 picksnps_500.biotypes<- pickSNPs(snp_info.biotypes,dist=500)

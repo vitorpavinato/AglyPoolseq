@@ -3,8 +3,7 @@
 #     Allele frequency calculation from vcf and PCA         #
 #############################################################
 
-# Each library have 5 pooled individuals and they were sequenced 4-5 times (4-5 days.)
-# They were the same library, with same barcode, but the sequencing was splitted in 4-5 days. 
+# Each library has five pooled individuals. These libraries were sequenced 4-5 times in different days (technical replicates)
 
 ## Vitor Pavinato
 ## correapavinato.1@osu.edu
@@ -25,7 +24,7 @@ library(factoextra)
 library(zoo)
 library(FactoMineR)
 packageVersion("poolfstat") 
-source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
+source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ###
 ###
@@ -33,11 +32,11 @@ source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 ###
 ###
 
-### DATASET: VCF WITH REPLICATED RUNS
+### DATASET: VCF WITH TECHNICAL REPLICATES
 
 ## ADD CITATION HERE
 
-# First load vcf using poolfsta function vcf2pooldata from poolfstat package
+# First load the vcf file in poolfstat with the function vcf2pooldata
 
 ALPHA=0.75
 
@@ -94,8 +93,10 @@ dt.repl.imputedRefMLFreq <- dt.repl.imputedRefMLCount[[1]]/dt.repl.imputedRefMLC
 
 ## Price et al 2010 - vcov of matrix individuals x markers
 
-# Prepare the vectors: color, points, names
-# for the plot and for the legends
+# Prepare the vectors for: colors, points, library (or sample) names
+# We are going to use for the plot and for the legends
+
+# run colors vector
 run.colors <- c(rep("#0000FF",5), rep("#FF0000",4), #MN
                 rep("#8282FF",4), rep("#FF8282",4), #ND
                 rep("#10B717",4), rep("#64C366",4), rep("#FD63CB",5), rep("#F98AD1",4), rep("#F4A8D6",4), #NW
@@ -103,7 +104,7 @@ run.colors <- c(rep("#0000FF",5), rep("#FF0000",4), #MN
                 rep("#B2B2FF",4), rep("#D5D5FF",5), rep("#FFB2B2",4), rep("#FFD5D5",4), rep("#FFF2F2",4), #WI
                 rep("#90CE91",4), rep("#EFC0DB",4), rep("#E9D2DF",4), rep("#E4DFE2",4) #WO
                 )
-
+# point format vector
 lib.pch <- c(c(8, 15, 17, 18, 19), c(8, 15, 17, 18),
              c(8, 15, 17, 18), c(8, 15, 17, 18),
              c(8, 15, 17, 18), c(8, 15, 17, 18), c(8, 15, 17, 18, 19), c(8, 15, 17, 18), c(8, 15, 17, 18),
@@ -111,6 +112,7 @@ lib.pch <- c(c(8, 15, 17, 18, 19), c(8, 15, 17, 18),
              c(8, 15, 17, 18), c(8, 15, 17, 18, 19), c(8, 15, 17, 18), c(8, 15, 17, 18), c(8, 15, 17, 18),
              c(8, 15, 17, 18), c(8, 15, 17, 18), c(8, 15, 17, 18), c(8, 15, 17, 18))
 
+# library color vector
 legend.colors <- c("#0000FF", "#FF0000", #MN
                    "#8282FF", "#FF8282", #ND
                    "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
@@ -119,17 +121,17 @@ legend.colors <- c("#0000FF", "#FF0000", #MN
                    "#90CE91", "#EFC0DB", "#E9D2DF", "#E4DFE2", #WO
                    rep("black", 5)
                    )
-
-legend.names <- c("MN-B1.1", "MN-B4.1",
-                  "ND-B1.1", "ND-B4.1", 
-                  "NW-B1.1", "NW-B1.2", "NW-B4.1", "NW-B4.2", "NW-B4.3", 
-                  "PA-B1.1", "PA-B4.1", "PA-B4.2", 
-                  "WI-B1.1", "WI-B1.2", "WI-B4.1", "WI-B4.2", "WI-B4.3", 
-                  "WO-B1.1", "WO-B4.1", "WO-B4.2", "WO-B4.3",
+# library names
+legend.names <- c("MN-Av.1", "MN-V.1",
+                  "ND-Av.1", "ND-V.1", 
+                  "NW-Av.1", "NW-Av.2", "NW-V.1", "NW-V.2", "NW-V.3", 
+                  "PA-Av.1", "PA-V.1",  "PA-V.2", 
+                  "WI-Av.1", "WI-Av.2", "WI-V.1", "WI-V.2", "WI-V.3", 
+                  "WO-Av.1", "WO-V.1",  "WO-V.2", "WO-V.3",
                   paste0("r_",1:5)
                   )
 
-
+# legend point format
 legend.pch <- c(rep(19, 21), c(8, 15, 17, 18, 19))
 
 W<-scale(t(dt.repl.imputedRefMLFreq), scale=TRUE) #centering
@@ -140,7 +142,7 @@ eig.result<-eigen(cov.W)
 eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
-# PVE
+# Fraction of total variance for the first two principal components plot
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
 lines(lambda/sum(lambda), col="red")
@@ -166,6 +168,7 @@ abline(v=0,h=0,col="grey",lty=3)
 dev.off()
 
 ## Remove the _AddRun_ from the allele frequency matrix (5th technical replication)
+# re-run the calculations
 W<-scale(t(dt.repl.imputedRefMLFreq[,-c(5,30,59)]), scale=TRUE) #centering
 W[1:10,1:10]
 W[is.na(W)]<-0
@@ -174,7 +177,7 @@ eig.result<-eigen(cov.W)
 eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
-# PVE
+# Fraction of total variance for the first two principal components plot
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.1), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
@@ -202,24 +205,25 @@ abline(v=0,h=0,col="grey",lty=3)
 
 ###
 ###
-### ---- % OF MISSING DATA AND CORRELATION WITH REPLICATE COVERAGE----
+### ---- % OF MISSING DATA AND CORRELATION WITH TECHNICAL REPLICATES COVERAGES ----
 ###
 ###
 
 #####
-### Total % of of NA Markers in each replicated pool
+### Total % of of NA Markers in each technical replicate
 #####
+
 colnames(dt.repl.imputedRefMLCount[[1]]) <- poolnames
 dt.repl.missing <- 100*(colSums(is.na(dt.repl.imputedRefMLCount[[1]]))/nbr.loci)
 
-# Mean coverage of each replicated pool
+# Mean coverage of each technical replicate
 dt.repl.coverage <- dt.repl@readcoverage
 mean.dt.repl.coverage <- apply(dt.repl.coverage, 2, mean)
 
-# Coverage CI 95%
+# Coverage 95% confidence interval
 mean(mean.dt.repl.coverage) +c(-1.96, +1.96)*sd(mean.dt.repl.coverage)/sqrt(87) # 8.293861 10.807788
 
-## MISSING DATA AS A FUNCTION OF MEAN COVERAGE FROM SNP TOTAL READS
+## MISSING DATA AS A FUNCTION OF MEAN COVERAGE FROM THE SNP TOTAL DEPTH
 # IDENTIFY PROBLEMATIC POOLS/REPLICATES
 missing_coverage_data <- data.frame(MISSING=dt.repl.missing, COV=mean.dt.repl.coverage)
 missing_coverage_data[,'STATUS_COL'] <- rep(NA, dt.repl@npools)
@@ -231,7 +235,7 @@ missing_coverage_data$STATUS_COL[is.na(missing_coverage_data$STATUS_COL)] <- "bl
 
 COL <- adjustcolor(missing_coverage_data$STATUS_COL, alpha.f = 0.5)
 
-pdf("results/technical_replicates/minmaxcov_3_99/missing_read_count_poolfstat.pdf",         # File name
+pdf("results/technical_replicates/minmaxcov_3_99/missing_read_count_poolfstat_.pdf",         # File name
     width = 11, height = 8.5, # Width and height in inches
     bg = "white",          # Background color
     colormodel = "cmyk",    # Color model (cmyk is required for most publications)
@@ -243,6 +247,10 @@ plot(MISSING ~COV,
 lines(lowess(missing_coverage_data$MISSING ~ missing_coverage_data$COV, f=0.99), col='blue', lwd=2)
 abline(v=4, col="black", lty=3)
 abline(h=30, col="black", lty=3)
+legend("topright", c("High % missing data & low coverage",
+                     "High % missing data & high coverage",
+                     "Outliers"), 
+       pch=19, col=COL[c(19, 76, 46)], bty = "n", cex = 1)
 dev.off()
 
 
@@ -257,7 +265,7 @@ header.names <- c("rname", "startpos", "endpos",  "numreads",
 mapped.files <- paste0(pipeline.folder, "/", poolnames, "/", poolnames, sulfixe.file.name)
 mapped.files.list <- lapply(mapped.files, function(x){read.table(file= x, col.names = header.names, na.strings = "NA")})
 
-## MISSING DATA AS A FUNCTION OF MEAN SCAFFOLD COVERAGE %
+## MISSING DATA AS A FUNCTION OF MEAN SCAFFOLD COVERAGE PERCENTAGE
 mapped.files.coverage <- mapped.files.list[[1]][,c(1,2,3,6)]
 names(mapped.files.coverage)[4] <- poolnames[1]
 
@@ -326,7 +334,7 @@ abline(h=30, col="black", lty=3)
 ### MEAN BASE QUALITY FROM THE READ ALIGNMENTS
 #####
 
-## MISSING DATA AS A FUNCTION OF MEAN BASE Q
+## MISSING DATA AS A FUNCTION OF MEAN BASE QUALITY
 mapped.files.baseq <- mapped.files.list[[1]][,c(1,2,3,8)]
 names(mapped.files.baseq)[4] <- poolnames[1]
 
@@ -355,10 +363,10 @@ lines(lowess(mean_baseq_data$MISSING ~ mean_baseq_data$BASEQ, f=0.99), col='blue
 abline(h=30, col="black", lty=3)
 
 #####
-### MEAN BASE MAPQ FROM THE READ ALIGNMENTS
+### MEAN BASE MAPPING QUALITY (MAPQ) FROM THE READ ALIGNMENTS
 #####
 
-## MISSING DATA AS A FUNCTION OF MEAN BASE MAPQ
+## MISSING DATA AS A FUNCTION OF MEAN BASE MAPPING QUALITY
 mapped.files.mapq <- mapped.files.list[[1]][,c(1,2,3,9)]
 names(mapped.files.mapq)[4] <- poolnames[1]
 
@@ -386,7 +394,7 @@ plot(MISSING ~MAPQ,
 lines(lowess(mean_mapq_data$MISSING ~ mean_mapq_data$MAPQ, f=0.99), col='blue', lwd=2)
 abline(h=30, col="black", lty=3)
 
-## COMBINED PLOT
+## COMBINED PLOTS
 pdf("results/technical_replicates/minmaxcov_3_99/missing_read_mapping_stats.pdf",         # File name
     width = 8.50, height = 11, # Width and height in inches
     bg = "white",          # Background color
@@ -422,17 +430,23 @@ plot(MISSING ~MAPQ,
      col=COL_MAPQ, pch=19, cex.lab=1.4, cex.axis=1.2, data=mean_mapq_data)
 lines(lowess(mean_mapq_data$MISSING ~ mean_mapq_data$MAPQ, f=0.99), col='blue', lwd=2)
 abline(h=30, col="black", lty=3)
+legend("topright", c("High % missing data & low coverage",
+                     "High % missing data & high coverage",
+                     "Outliers"), 
+       pch=19, col=COL[c(19, 76, 46)], bty = "n", cex = 0.6)
+
 dev.off()
 
 ## CONCLUSION: WHAT WERE THE CAUSES OF MISSING DATA?
 ## LOW SEQUENCE INPUT (for NW_BIO1_S1) AND LOW NUMBER q20 READS
-## Pools from NW_BIO1_S1 and WO_BIO4_3 had less overall number of reads which caused:
-## 1) Lower scaffold coverage: less than ~30% of the scaffold were coverade in these pools.
-## 2) Lower depth: less than ~1 read/base were coverade in most of scaffolds of these pools.
+## Pools from NW_BIO1_S1 and WO_BIO4_3 had a lower overall number of reads that caused:
+## 1) Lower scaffold coverage: less than ~30% of the scaffold were covered in these pools.
+## 2) Lower depth: less than ~1 read/base was covered in most of the scaffolds of these pools.
 
 ## UNEVEN SEQUENCING
-## Pools from PA_BIO1_S1 had a decent mean depth/based per scaffolds, decent of q20 mapping, but lower % of scaffold coverage
-## which indicated that some  parts were more sequenced than other because probably genome shearing was not good.
+## Pools from PA_BIO1_S1 had a decent mean depth/based per scaffolds, a good of q20 mapping, but a lower % of scaffold coverage
+## These values indicated that some parts were more sequenced than others because probably genome shearing was not good 
+## (see also the percentage of PCR duplicates that might also suggested some issues in the libraries)
 
 ## Savepoint_2
 ##-------------
@@ -446,11 +460,10 @@ dev.off()
 ###
 ###
 
-### DATASET: AGGREGATED DATA OF EACH POOL
+### DATASET: AGGREGATED DATA OF EACH LIBRARY (SAMPLE)
 
-## Aggregate read counts data for each pool
-## and repeat the allele frequency estimates
-## and PCA.
+## Here we aggregated the read counts data for each library
+## and repeated the allele frequency estimation and PCA.
 coverage <- dt.repl@readcoverage
 counts <- dt.repl@refallele.readcount
 
@@ -575,6 +588,7 @@ dt.aggregated.imputedRefMLFreq <- dt.aggregated.imputedRefMLCount[[1]]/dt.aggreg
 ###
 ###
 
+# vector of library colors
 legend.colors.aggr <- c("#0000FF", "#FF0000", #MN
                        "#8282FF", "#FF8282", #ND
                        "#10B717", "#64C366", "#FD63CB", "#F98AD1", "#F4A8D6", #NW
@@ -582,13 +596,13 @@ legend.colors.aggr <- c("#0000FF", "#FF0000", #MN
                        "#B2B2FF", "#D5D5FF", "#FFB2B2", "#FFD5D5", "#FFF2F2", #WI
                        "#90CE91", "#EFC0DB", "#E9D2DF", "#E4DFE2" #WO
                      )
-
-legend.names.aggr <- c("MN-B1.1", "MN-B4.1",
-                       "ND-B1.1", "ND-B4.1", 
-                       "NW-B1.1", "NW-B1.2", "NW-B4.1", "NW-B4.2", "NW-B4.3", 
-                       "PA-B1.1", "PA-B4.1", "PA-B4.2", 
-                       "WI-B1.1", "WI-B1.2", "WI-B4.1", "WI-B4.2", "WI-B4.3", 
-                       "WO-B1.1", "WO-B4.1", "WO-B4.2", "WO-B4.3"
+# vector of library names
+legend.names.aggr <- c("MN-Av.1", "MN-V.1",
+                       "ND-Av.1", "ND-V.1", 
+                       "NW-Av.1", "NW-Av.2", "NW-V.1", "NW-V.2", "NW-V.3", 
+                       "PA-Av.1", "PA-V.1",  "PA-V.2", 
+                       "WI-Av.1", "WI-Av.2", "WI-V.1", "WI-V.2", "WI-V.3", 
+                       "WO-Av.1", "WO-V.1",  "WO-V.2", "WO-V.3"
                     )
 
 ## EXPORT THE IMPUTED ML ALLELE FREQUENCY MATRIX TO A FILE
@@ -613,7 +627,7 @@ eig.result<-eigen(cov.W)
 eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
-# PVE
+# Fraction of total variance plot
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
@@ -644,7 +658,7 @@ eig.result<-eigen(cov.W)
 eig.vec<-eig.result$vectors
 lambda<-eig.result$values
 
-# PVE
+# Fraction of the total variance plot
 par(mar=c(5,5,4,1)+.1)
 plot(lambda/sum(lambda),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.2,
      cex.lab=1.6, pch=19, col="black")
@@ -666,6 +680,7 @@ abline(v=0,h=0,col="grey",lty=3)
 
 
 ## PCA PLOT BY BIOTYPE
+# vector of biotype colors
 biotype.col <- c("#247F00","#AB1A53",
                  "#247F00","#AB1A53",
                  "#247F00","#247F00","#AB1A53","#AB1A53","#AB1A53",
@@ -843,7 +858,7 @@ dev.off()
 
 ###
 ###
-### ---- % OF MISSING DATA AND CORRELATION WITH REPLICATE-AGGREGATED COVERAGE----
+### ---- % OF MISSING DATA AND CORRELATION WITH AGGREGATED LIBRARY COVERAGE----
 ###
 ###
 
