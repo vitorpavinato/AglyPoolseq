@@ -12,7 +12,7 @@ This repository was forked from [alanbergland/DEST](https://github.com/alanbergl
   > `SNAPE\`: SNP calling based on snape output
 
 ### Utility scripts
-  > `utils\`: scripts for additional analyses (__e.g__ identification of population private alleles, etc ). Some scripts were used for the analyses of soybean aphid data (__e.g__  `PNPS4VCF.py` for the calculation of genome-wide p_N, p_S and p_N/p_S) , some were not used. I kept these all scripts here to mirror the [alanbergland/DEST](https://github.com/alanbergland/DEST) original repository.
+  > `utils\`: scripts for additional analyses (_e.g_ identification of population private alleles, etc ). Some scripts were used for the analyses of soybean aphid data (_e.g_  `PNPS4VCF.py` for the calculation of genome-wide $p_N$, $p_S$ and $p_N/p_S$) , some were not used. I kept these all scripts here to mirror the [alanbergland/DEST](https://github.com/alanbergland/DEST) original repository.
   
 
 ### Analysis scripts
