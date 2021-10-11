@@ -8,6 +8,8 @@
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/poolgen.%A_%a.err # Standard error
 #SBATCH --account PAS1715
 
+### EXAMPLE HOW TO RUN PoolGen POOLSNPS for the calculation of summary statistics
+### This analysis was not used in the manuscript.
 
 ### run as: sbatch --array=1-21 ${wd}/DEST-AglyPoolseq/utils/run.PoolGen.PoolSNP.sh
 
@@ -26,7 +28,7 @@ mitochondrion=false
 ### get sample information
   #SLURM_ARRAY_TASK_ID=1
   export popName=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | grep "Pooled" | cut -f1,14 -d',' | grep -v "NA"  | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  export numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | grep "Pooled" | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  export numAphids=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | grep "Pooled" | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
 
 ## set up RAM disk
@@ -42,25 +44,23 @@ echo "run"
 
   runPoolGen () {
     chr=${1}
-    echo ${chr} ${popName} ${numFlies}
+    echo ${chr} ${popName} ${numAphids}
 
     echo "extracting bed"
       zcat -c /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated/${popName}/${popName}.bed.gz | grep  -w "${chr}" > \
       ${tmpdir}/${popName}.${chr}.bed
 
     echo "extracting chromosome"
-
       bcftools view \
       -O v \
       /fs/scratch/PAS1715/aphidpool/vcf/aggregated_data/minmaxcov_4_99/aphidpool.PoolSeq.PoolSNP.01.1.04Ago2021.ann.vcf.gz ${chr} > ${tmpdir}/${chr}.vcf
     
 
     if [[ $chr == "mitochondrion_genome" ]]; then
-      numChr=${numFlies}
+      numChr=${numAphids}
       echo ${numChr}
     else
-      #numChr =
-      numChr=$(( $numFlies*2 ))
+      numChr=$(( $numAphids*2 ))
       echo ${numChr}
     fi
     echo "numChr:" ${numChr}

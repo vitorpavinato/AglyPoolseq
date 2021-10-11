@@ -41,8 +41,6 @@ sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq PoolSNP 05 5 24Jun2
 sbatch ${wd}/DEST-AglyPoolseq/snpCalling/annotate.sh PoolSeq SNAPE NA NA 15Apr2021
 ```
 
-
-
 ## 3. Parameter evaluation for PoolSNP (global MAC & MAF thresholds)
 ### 3a. Random sample of ~10% of data:
 Make sure to have only one region per scaffold. Remove repeated scaffold and add another one.
@@ -91,6 +89,9 @@ Make sure to have only one region per scaffold. Remove repeated scaffold and add
 ```
 
 ### 3.e Calculate pN/pS
+
+WIth `utils/PNPS4VCF.py` script, run:
+
 ```bash
   module load parallel2
   

@@ -18,10 +18,5 @@ PROB: $1 - p (0)$ where $p (f)$ is the probability distribution function for the
 P: $p (1)$
 MEAN: $E (f)$ mean value of $f$
 ```
-
-### Next steps:
-#### Filter using BED file with masked sites (Step 4)
-#### Merge samples and filter SNPs acoording population criteria
-
-## REFERENCES
+### REFERENCES
 _SNP calling by sequencing pooled samples_ (Raineri E, Ferretti L, Esteve-Codina A, Nevado B, Heath S, Pérez-Enciso M. , BMC Bioinformatics. 2012 Sep 20;13:239. doi: 10.1186/1471-2105-13-239)
