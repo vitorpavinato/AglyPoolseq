@@ -193,14 +193,14 @@ ENV GATK="/opt/gatk/GenomeAnalysisTK.jar"
 
 ENV PATH="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:${PATH}"
 
-#Install snape-pooled
-
-WORKDIR /opt
-RUN git clone https://github.com/EmanueleRaineri/snape-pooled.git && \
-    cd snape-pooled && \
-    make snape-pooled
-
-ENV PATH="/opt/snape-pooled:${PATH}"
+##Install snape-pooled
+#
+#WORKDIR /opt
+#RUN git clone https://github.com/EmanueleRaineri/snape-pooled.git && \
+#    cd snape-pooled && \
+#    make snape-pooled
+#
+#ENV PATH="/opt/snape-pooled:${PATH}"
 
 #Clone the repo
 
