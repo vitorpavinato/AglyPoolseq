@@ -25,6 +25,6 @@ echo "running blastp"
 blastp -db nr -query outliers_genes_bedtools-snpeff-annR-windows_aa.fasta -num_threads 16 -evalue 1e-6 -outfmt 5 -out outliers_genes_bedtools-snpeff-annR-windows_blastp.out
 
 ## Move the results back
-cp outliers_genes_bedtools-snpeff-annR-windows_blastp.out $SLURM_SUBMIT_DIR/${outputDir}
+cp outliers_genes_bedtools-snpeff-annR-windows_blastp.out $SLURM_SUBMIT_DIR
 
 echo "done"

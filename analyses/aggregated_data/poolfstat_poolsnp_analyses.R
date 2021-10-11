@@ -23,6 +23,7 @@ rm(list=ls())
 ls()
 
 ### Load R libraries
+library(testthat)
 library(poolfstat)
 #packageVersion("poolfstat") 
 library(tidyverse)
@@ -540,13 +541,20 @@ dt.1.fst$mean.fst+c(-1.96,1.96)*dt.1.fst$se.fst
 # 0.002462227 0.006456007
 
 ### COMPUTE PAIRWISE FST
-dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE)
+#dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE)
 #dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE, output.snp.values = T) 
 # to have SNP-specific FST for all pairwise comparisons
 # it can be used to average across biotypes and get the fst tracks
 
 # with blockjackniff
-dt.1.pfst <- compute.pairwiseFST(dt.1, nsnp.per.bjack.block = 100, verbose=FALSE)
+dt.1.pfst <- compute.pairwiseFST(dt.1, nsnp.per.bjack.block = 100, verbose=TRUE)
+
+dt.1.pfst.bjack.table <- data.frame(dt.1.pfst@values, 
+                                    ci95lw = dt.1.pfst@values$`Fst bjack mean`+c(-1.96)*dt.1.pfst@values$`Fst bjack s.e.`,
+                                    ci95up = dt.1.pfst@values$`Fst bjack mean`+c(1.96)*dt.1.pfst@values$`Fst bjack s.e.`)
+
+dt.1.pfst.bjack.table[which.min(dt.1.pfst.bjack.table$Fst.Estimate), ]
+dt.1.pfst.bjack.table[which.max(dt.1.pfst.bjack.table$Fst.Estimate), ]
 
 # HEATMAP OF PAIRWISE FST
 pdf("results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/pFST_pools_R-heatmap.pdf",   # File name
