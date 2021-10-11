@@ -19,7 +19,7 @@ library(tidyverse)
 library(gridExtra)
 library(scales)
 library(ggpubr)
-source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
 ## MIN_COV = 4; MAX_COV=0.99; SAMPLE OF SNPS
 

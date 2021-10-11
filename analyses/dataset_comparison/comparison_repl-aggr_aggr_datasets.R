@@ -32,7 +32,7 @@ library(ggplot2)
 library(ggpubr)
 
 # Import auxiliary R functions  
-source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
 ALPHA=0.75
 

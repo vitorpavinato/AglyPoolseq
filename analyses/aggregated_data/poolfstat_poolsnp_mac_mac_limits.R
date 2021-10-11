@@ -27,7 +27,7 @@ library(poolfstat)
 packageVersion("poolfstat") 
 
 # Import auxiliary R functions  
-source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
 ### POOL'S INFORMATION
 # Pool's size

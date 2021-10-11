@@ -18,12 +18,12 @@
   wd=/fs/scratch/PAS1715/aphidpool
 
 ### get job number
-  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  pop=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
   
   echo $pop
   
 ### run mean_coverage_across_runs.R  
-  Rscript --vanilla ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/mean_coverage_across_runs.R \
+  Rscript --vanilla ${wd}/AglyPoolseq/mappingPipeline/scripts/mean_coverage_across_runs.R \
   ${outputDir} \
   ${pop} \
   ${outputDir}

@@ -28,7 +28,7 @@ library(foreach)
 library(data.table)
 
 # Import auxiliary R functions  
-#source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
+#source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 #ALPHA=0.75
 

@@ -17,7 +17,7 @@
   wd=/fs/scratch/PAS1715/aphidpool
 
 ### get job number
-  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  pop=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
   
   echo $pop
   
@@ -26,12 +26,12 @@
   
 ### run weGot_thisCoveraged.sh
   
-  #sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/weGot_thisCoveraged.sh \
+  #sh ${wd}/AglyPoolseq/mappingPipeline/scripts/weGot_thisCoveraged.sh \
   #/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.agly.bam \
   #${pop} \
   #${outputDir}
 
-  sh ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/weGot_thisCoveraged.sh \
+  sh ${wd}/AglyPoolseq/mappingPipeline/scripts/weGot_thisCoveraged.sh \
   /fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/${pop}/${pop}.original.bam \
   ${pop} \
   ${outputDir}
