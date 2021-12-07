@@ -18,9 +18,9 @@ inputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated
 outputDir=/fs/scratch/PAS1715/aphidpool/popoolation_sumstats
 
 # POOL NAMES AND SIZE
-poolname=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-poolcode=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-poolsize=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+poolname=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+poolcode=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+poolsize=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
 ## Run monitoring outputs
 echo ${SLURM_ARRAY_TASK_ID}
@@ -30,6 +30,6 @@ echo $poolsize
 
 ## Run Popoolation summary statistics for each pool
 echo "running poopolation summary statistics"
-sh ${wd}/DEST-AglyPoolseq/analyses/aggregated_data/popoolation_summStats.sh ${inputDir} ${outputDir} ${poolname} ${poolsize}
+sh ${wd}/AglyPoolseq/analyses/aggregated_data/popoolation_summStats.sh ${inputDir} ${outputDir} ${poolname} ${poolsize}
 
 echo "done"

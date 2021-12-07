@@ -24,7 +24,7 @@ library(factoextra)
 library(zoo)
 library(FactoMineR)
 packageVersion("poolfstat") 
-source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ###
 ###

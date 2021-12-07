@@ -17,6 +17,7 @@ module load R/4.0.2-gnu9.1
 module load python/3.6
 
 ## working & temp directory
+#maf=01; mac=50; popSet="all"; method="PoolSNP"; version="paramTest"; jobs=poolSNP_jobs.sample.csv
   wd="/fs/scratch/PAS1715/aphidpool"
   #outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs"
   outdir="/fs/scratch/PAS1715/aphidpool/sub_vcfs_aggregated"
@@ -26,7 +27,7 @@ module load python/3.6
   mac=${4}
   version=${5}
   jobs=${6}
-  #maf=01; mac=50; popSet="all"; method="PoolSNP"; version="paramTest"; jobs=poolSNP_jobs.sample.csv
+  
   
 ## Check if outdir exists
   [ ! -d ${outdir} ] && mkdir ${outdir}
@@ -98,14 +99,14 @@ module load python/3.6
 
 ### paste function
   echo "paste"
-  Rscript --no-save --no-restore ${wd}/DEST-AglyPoolseq/snpCalling/paste.R ${job} ${tmpdir} ${method}
+  Rscript --no-save --no-restore ${wd}/AglyPoolseq/snpCalling/paste.R ${job} ${tmpdir} ${method}
 
 ### run through PoolSNP
   echo "poolsnp"
 
   if [[ "${method}" == "SNAPE" ]]; then
     echo $method
-    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
+    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
     --min-cov 4 \
     --max-cov 0.99 \
@@ -119,7 +120,7 @@ module load python/3.6
   elif [[ "${method}"=="PoolSNP" ]]; then
     echo $method
 
-    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/DEST-AglyPoolseq/snpCalling/PoolSnp.py \
+    cat ${tmpdir}/allpops.${method}.sites | python ${wd}/AglyPoolseq/snpCalling/PoolSnp.py \
     --sync - \
     --min-cov 4 \
     --max-cov 0.99 \

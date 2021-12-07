@@ -36,7 +36,7 @@ library(PopGenReport)
 #library(viridis)
 
 ### Import auxiliary R functions  
-source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ### SETUP PYTHON INTEGRATION
 library(reticulate) # To use python code within R
@@ -743,12 +743,12 @@ pfst_lin_matrix[is.na(pfst_lin_matrix)] <- 0
 pfst_lin_matrix <- as.matrix(pfst_lin_matrix)
 
 # Load the NxN Matrix of the geographic distance between Pools in Km
-geo_matrix <- read.table("DEST-AglyPoolseq/populationInfo/filedPools_aggregated_geocoord_pools.matrix.txt", header=TRUE)
+geo_matrix <- read.table("AglyPoolseq/populationInfo/filedPools_aggregated_geocoord_pools.matrix.txt", header=TRUE)
 geo_matrix <- as.matrix(geo_matrix)
 
 # Load the NxN Matrix of the cost distance
 # here is a design matrix were pools collected in the same host have the same identification number
-cost_matrix_1 <-read.table("DEST-AglyPoolseq/populationInfo/fieldPools_aggregated_cost_pools.matrix1.txt", header=TRUE)
+cost_matrix_1 <-read.table("AglyPoolseq/populationInfo/fieldPools_aggregated_cost_pools.matrix1.txt", header=TRUE)
 cost_matrix_1 <-as.matrix(cost_matrix_1)
 
 # Partial mantel test with pFST and cost matrix 1
@@ -764,7 +764,7 @@ wassermann(eucl.mat = geo_matrix, cost.mats = list(cost=cost_matrix_1), gen.mat 
 #1 Gen ~cost | Euclidean 0.0755 0.1724
 
 #  Load the NxN Matrix of the cost distance 2- 1-biotype1; 2-biotype4, 3-different biotypes
-cost_matrix_2 <-read.table("DEST-AglyPoolseq/populationInfo/fieldPools_aggregated_cost_pools.matrix2.txt", header=TRUE)
+cost_matrix_2 <-read.table("AglyPoolseq/populationInfo/fieldPools_aggregated_cost_pools.matrix2.txt", header=TRUE)
 cost_matrix_2 <-as.matrix(cost_matrix_2)
 
 # Partial mantel test with pFST and cost matrix 2
@@ -870,12 +870,12 @@ pfst_biotypes_lin_matrix[is.na(pfst_biotypes_lin_matrix)] <- 0
 pfst_biotypes_lin_matrix <- as.matrix(pfst_biotypes_lin_matrix)
 
 # Load the NxN Matrix of the geographic distance between Pools in Km
-geo_biotypes_matrix <- read.table("DEST-AglyPoolseq/populationInfo/filedPools_aggregated_geocoord_biotypes.matrix.txt", header=TRUE)
+geo_biotypes_matrix <- read.table("AglyPoolseq/populationInfo/filedPools_aggregated_geocoord_biotypes.matrix.txt", header=TRUE)
 geo_biotypes_matrix <- as.matrix(geo_biotypes_matrix)
 
 # Load the NxN Matrix of the cost distance
 # here is a design matrix were pools collected in the same host have the same identification number
-cost_biotypes_matrix_1 <-read.table("DEST-AglyPoolseq/populationInfo/fieldPools_aggregated_cost_biotypes.matrix1.txt", header=TRUE)
+cost_biotypes_matrix_1 <-read.table("AglyPoolseq/populationInfo/fieldPools_aggregated_cost_biotypes.matrix1.txt", header=TRUE)
 cost_biotypes_matrix_1 <-as.matrix(cost_biotypes_matrix_1)
 
 # Change to row and column names of the pfst biotypes matrix
@@ -898,7 +898,7 @@ wassermann(eucl.mat = geo_biotypes_matrix, cost.mats = list(cost=cost_biotypes_m
 #1 Gen ~cost | Euclidean 0.0587 0.1353
 
 #  Load the NxN Matrix of the cost distance 2- 1-biotype1; 2-biotype4, 3-different biotypes
-cost_biotypes_matrix_2 <-read.table("DEST-AglyPoolseq/populationInfo/fieldPools_aggregated_cost_biotypes.matrix2.txt", header=TRUE)
+cost_biotypes_matrix_2 <-read.table("AglyPoolseq/populationInfo/fieldPools_aggregated_cost_biotypes.matrix2.txt", header=TRUE)
 cost_biotypes_matrix_2 <-as.matrix(cost_biotypes_matrix_2)
 
 # Partial mantel test with pFST and cost matrix 2

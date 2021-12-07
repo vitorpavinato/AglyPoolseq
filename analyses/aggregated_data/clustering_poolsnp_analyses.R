@@ -36,8 +36,8 @@ library(FactoMineR)
 library(Hmisc)
 
 # Import auxiliary R functions
-source("DEST-AglyPoolseq/analyses/aggregated_data/ThinLDinR_SNPtable.R")
-source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/analyses/aggregated_data/ThinLDinR_SNPtable.R")
+source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ### FOR COLORS
 ALPHA=0.75

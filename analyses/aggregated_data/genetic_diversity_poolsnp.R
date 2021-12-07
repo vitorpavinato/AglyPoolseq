@@ -32,7 +32,7 @@ library(ggsignif)
 library(xtable)
 
 ### Import auxiliary R functions  
-source("DEST-AglyPoolseq/analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 ALPHA=0.75
 
@@ -1301,7 +1301,7 @@ ggsave("results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/genetic_load_bi
 ### 
 
 ### DATA FOR THIS ANALYSIS WAS OBTAINED WITH:
-### DEST-AglyPoolseq/utils/PNPS4VCF.py
+### AglyPoolseq/utils/PNPS4VCF.py
 ### This script only considers missense_variants as nonsynonymous mutations and synonymous_variants as synonymous mutations,
 ### and counts only if the genotype in vcf file is 0/1 (polymorphic?)
 

@@ -9,7 +9,7 @@
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.%A_%a.err # Standard error
 #SBATCH --account PAS1715
 
-### test run as: sbatch --array=10 ${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/runDocker.sh
+### test run as: sbatch --array=10 ${wd}/AglyPoolseq/mappingPipeline/scripts/runDocker.sh
 # sacct -j 14446076
 # cat /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.16904399_2.out | grep -v "Reference is N; most frequent allele is calculated in position" | less -S
 # cat /fs/scratch/PAS1715/aphidpool/slurmOutput/dockerMap.16904399_2.out
@@ -28,20 +28,20 @@
   #outputDir=/fs/scratch/PAS1715/aphidpool/dest_mapped/pipeline_output/aggregated_2 # try to see if lower BQ in samtools mpileup helps to keep more SNPs
    
 ### check
-  #cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l
+  #cat ${wd}/AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l
   #ls -lh ${wd}/dest_mapped/pipeline_output | wc -l
 
 ### get job number
   #SLURM_ARRAY_TASK_ID=10
   # For the technical replicated run files
-  pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-  numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  pop=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  prx=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  numFlies=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
   
   # For aggregated data
-  #pop=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
-  #prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
-  #numFlies=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  #pop=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f1 -d',' )
+  #prx=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  #numFlies=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,12 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
 
   echo ${SLURM_ARRAY_TASK_ID}
   echo $pop

@@ -1,4 +1,4 @@
-# Population information & basic figures
+## Population information
 
 ### Description
 This directory contains the information of each sequenced pool: (a) one table with the technical replicates information, and (b) another table with the aggregated pools information.

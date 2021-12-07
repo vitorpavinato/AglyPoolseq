@@ -10,6 +10,6 @@ wd=/fs/scratch/PAS1715/aphidpool
 
 ### 1. Run the script
 ```bash
-sbatch --array=2-$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \ 
-${wd}/DEST-AglyPoolseq/analyses/aggregated_data/run_popoolation.sh
+sbatch --array=2-$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools_aggregated.csv | cut -f1,13 -d',' | grep -v "NA" | wc -l ) \ 
+${wd}/AglyPoolseq/analyses/aggregated_data/run_popoolation.sh
 ```

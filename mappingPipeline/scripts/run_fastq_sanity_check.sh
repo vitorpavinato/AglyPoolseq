@@ -20,7 +20,7 @@ source activate local_py3
   
 ### get job number
   # For the technical replicated run files
-  prx=$( cat ${wd}/DEST-AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
+  prx=$( cat ${wd}/AglyPoolseq/populationInfo/fieldPools.csv | cut -f1,13 -d',' | grep -v "NA" | sed "${SLURM_ARRAY_TASK_ID}q;d" | cut -f2 -d',' )
   
   echo ${SLURM_ARRAY_TASK_ID}
   echo $pop
@@ -31,6 +31,6 @@ source activate local_py3
   touch /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R2.fastq.gz
 
 ### Run Fastq Sanity Check
-${wd}/DEST-AglyPoolseq/mappingPipeline/scripts/fastq_sanity_check.sh \
+${wd}/AglyPoolseq/mappingPipeline/scripts/fastq_sanity_check.sh \
 /fs/scratch/PAS1715/aphidpool/fastq/${prx}.R1.fastq.gz
 

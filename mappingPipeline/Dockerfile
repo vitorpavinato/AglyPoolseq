@@ -193,21 +193,21 @@ ENV GATK="/opt/gatk/GenomeAnalysisTK.jar"
 
 ENV PATH="/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:${PATH}"
 
-#Install snape-pooled
-
-WORKDIR /opt
-RUN git clone https://github.com/EmanueleRaineri/snape-pooled.git && \
-    cd snape-pooled && \
-    make snape-pooled
-
-ENV PATH="/opt/snape-pooled:${PATH}"
+##Install snape-pooled
+#
+#WORKDIR /opt
+#RUN git clone https://github.com/EmanueleRaineri/snape-pooled.git && \
+#    cd snape-pooled && \
+#    make snape-pooled
+#
+#ENV PATH="/opt/snape-pooled:${PATH}"
 
 #Clone the repo
 
-RUN git clone https://github.com/vitorpavinato/DEST-AglyPoolseq.git
+RUN git clone https://github.com/vitorpavinato/AglyPoolseq.git
 
 #Setup the hologenome
-RUN /opt/DEST-AglyPoolseq/mappingPipeline/scripts/hologene_gen.sh
+RUN /opt/AglyPoolseq/mappingPipeline/scripts/hologene_gen.sh
 RUN bwa index /opt/hologenome/holo_agly_b4_r2.1.fa && \
     samtools faidx /opt/hologenome/raw/A_glycines_b4_r2.1.fasta && \
     samtools faidx /opt/hologenome/holo_agly_b4_r2.1.fa && \
@@ -217,18 +217,18 @@ RUN bwa index /opt/hologenome/holo_agly_b4_r2.1.fa && \
 
 ARG CACHE_BUST=06:03:2020:1800
 
-RUN python3 /opt/DEST-AglyPoolseq/mappingPipeline/scripts/PickleRef.py \
+RUN python3 /opt/AglyPoolseq/mappingPipeline/scripts/PickleRef.py \
     --ref /opt/hologenome/raw/A_glycines_b4_r2.1.fasta \
     --output /opt/hologenome/raw/A_glycines_b4_r2.1.fasta.pickled > pickled_ref.out
 
 WORKDIR /opt
-RUN rm -rf /opt/DEST-AglyPoolseq/ && \
-    git clone https://github.com/vitorpavinato/DEST-AglyPoolseq.git
+RUN rm -rf /opt/AglyPoolseq/ && \
+    git clone https://github.com/vitorpavinato/AglyPoolseq.git
 
-ENV PATH="/opt/DEST-AglyPoolseq/mappingPipeline/scripts:${PATH}"
+ENV PATH="/opt/AglyPoolseq/mappingPipeline/scripts:${PATH}"
 
 #Command to execute on "docker run" of this image
-ENTRYPOINT ["/bin/bash", "/opt/DEST-AglyPoolseq/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
+ENTRYPOINT ["/bin/bash", "/opt/AglyPoolseq/mappingPipeline/scripts/fq_to_sync_pipeline.sh"]
 
 #Default parameters passed to the above function call. Can be overridden by supplying parameters after image name in "docker run"
 CMD ["--help"]

@@ -9,28 +9,21 @@ brew install repeatmasker
 First create and change into directory
 
 ```bash
-mkdir /Users/mkapun/Documents/GitHub/DEST/RepeatMasker/ref
-cd /Users/mkapun/Documents/GitHub/DEST/RepeatMasker/ref
+mkdir ~/AglyPoolseq/RepeatMasker/ref
+cd ~/AglyPoolseq/RepeatMasker/ref
 ```
 
-get transposon libary and ref genome
+Download reference genome
 ```bash
-curl -O ftp://ftp.flybase.net/genomes/Drosophila_melanogaster//dmel_r6.12_FB2016_04/fasta/dmel-all-transposon-r6.12.fasta.gz
-curl -O ftp://ftp.flybase.net/genomes/Drosophila_melanogaster//dmel_r6.12_FB2016_04/fasta/dmel-all-chromosome-r6.12.fasta.gz
+curl -O https://zenodo.org/record/3453468/files/Aphis_glycines_4.v2.1.scaffolds.fa.gz
+gunzip -c Aphis_glycines_4.v2.1.scaffolds.fa.gz > A_glycines_b4_r2.1.fasta
 ```
-
-only keep contig name in headers (no spaces)
-```bash
-python /Users/mkapun/Documents/GitHub/DEST/RepeatMasker/scripts/adjust-id.py \
-/Users/mkapun/Documents/GitHub/DEST/RepeatMasker/ref/dmel-all-transposon-r6.12.fasta > /Users/mkapun/Documents/GitHub/DEST/RepeatMasker/ref/dmel-all-transposon-r6.12_fixed-id.fasta
-```
-
 repeat mask reference genome
 ```bash
 RepeatMasker \
 -pa 20 \
---lib /Users/mkapun/Documents/GitHub/DEST/RepeatMasker/ref/dmel-all-transposon-r6.12_fixed-id.fasta \
+--lib ~/AglyPoolseq/RepeatMasker/ref/repeatmasker.insecta.fa \
 --gff \
 --q \
-/Users/mkapun/Documents/GitHub/DEST/RepeatMasker/ref/dmel-all-chromosome-r6.12.fasta.gz
+~/AglyPoolseq/RepeatMasker/ref/A_glycines_b4_r2.1.fasta
 ```

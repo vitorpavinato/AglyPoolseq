@@ -29,7 +29,7 @@ library(qvalue)
 source("/users/PAS1554/vitorpavinato/local/baypass/2.2.0/utils/baypass_utils.R")
 
 # Auxiliary functions from aux_func.R
-source("DEST-AglyPoolseq/Analyses/aggregated_data/aux_func.R")
+source("AglyPoolseq/Analyses/aggregated_data/aux_func.R")
 
 ## POOL NAMES - 19
 pool.names <- c("MN-B1.1", "MN-B4.1",
