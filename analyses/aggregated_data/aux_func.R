@@ -341,6 +341,41 @@ calculate.multiple.correlations <- function(list)
   return(res)
 }
 
+#' EXPORT SCAFFOLD_POSITION WITH pFST > THRESHOLD
+#' @param x data.frame with pairwise FSTs
+#' @return void
+#' @export
+export.pfst <- function(x, threshold=0.25)
+{
+  x_names <- names(x[, 5:length(colnames(x))])
+  for (i in seq_along(x_names))
+  {
+    dt <- x[, c(1,2,(4+i))]
+    s  <- dt[which(dt[,3] > threshold), ]
+    l  <- paste0(s[,1], '_', s[,2])
+    write.table(l, file = paste0(x_names[i],".txt"), 
+                col.names = F, row.names = F, quote = F)
+    
+  }
+}
+
+#' FUNCTION TO CALCULATE FST P-VALUES
+#' @param x data.frame with pairwise FSTs
+#' @param num1 number of chromossomes in population 1
+#' @param num2 number of chromossomes in population 2
+#' @param method method to control the type I error
+#' @return list
+#' @export
+calculte.pvalue <- function(x, num1, num2, method="BH")
+{
+  obs_chisq    <- 2*((num1 + num2)/2)*x #Chisq distribution
+  chisq_pvalue <- 1-pchisq(obs_chisq, 1)
+  chisq_padj   <- p.adjust(chisq_pvalue, method=method)
+  minuslog10   <- -log10(chisq_padj)
+  
+  return(list(chisq=obs_chisq, pvalue=chisq_pvalue, padj=chisq_padj, logpvalue=minuslog10))
+}
+
 #' PLOT OMEGA AFTER SVD
 #' 
 #' Compute single value decomposition on the omega matrix and return a PC plot.
@@ -438,4 +473,17 @@ make_baypassrun_slurm_pods <- function(n_nodes=1, n_cores=5, n_hours=3, memory=1
   #system(paste0('sbatch ${wd}/', run_baypass_sh))
   return(parm)
   
+}
+
+
+data_summary <- function(data, varname, groupnames){
+  require(plyr)
+  summary_func <- function(x, col){
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      sd = sd(x[[col]], na.rm=TRUE))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+  return(data_sum)
 }

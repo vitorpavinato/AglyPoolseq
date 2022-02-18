@@ -14,7 +14,8 @@
 ###
 
 ### Recover R-renv environment
-setwd("/fs/scratch/PAS1715/aphidpool")
+#setwd("/fs/scratch/PAS1715/aphidpool")
+setwd("/fs/project/PAS1554/aphidpool")
 renv::restore()
 #renv::snapshot()
 
@@ -34,7 +35,9 @@ library(PopGenReport)
 #library(vegan)
 #library(ggplot2)
 #library(viridis)
+library(pheatmap)
 
+#setwd("/fs/project/PAS1554/aphidpool")
 ### Import auxiliary R functions  
 source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
@@ -200,7 +203,7 @@ hist(dt.1.missing.snps, breaks = 10)
 ## Savepoint_1
 ##-------------
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
-#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
+#load("/fs/project/PAS1554/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
 ############## END THIS PART
 
 ###
@@ -212,6 +215,7 @@ hist(dt.1.missing.snps, breaks = 10)
 ### MULTI-LOCUS FST GENOME SCAN
 multilocusfst_window_size = 10
 dt.1.fst.scan <- computeFST(dt.1, sliding.window.size = multilocusfst_window_size)
+#Average (min-max) Window Sizes 9.9 ( 0 - 626.8 ) kb
 
 ### Multilocus FST thresholds
 # 99% quantile
@@ -330,19 +334,6 @@ dim(no.missing.reduced.2) #82534    21
 ##-------------
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
 #load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
-############## END THIS PART
-
-###
-###
-### ---- EXPORT DATA TO BAYPASS ----
-###
-###
-
-## pooldata2genobaypass
-#pooldata2genobaypass(pooldata = dt.1,
-#                     writing.dir = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/",
-#                     prefix = "aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.complete50")
-#
 ############## END THIS PART
 
 ###
@@ -542,9 +533,6 @@ dt.1.fst$mean.fst+c(-1.96,1.96)*dt.1.fst$se.fst
 
 ### COMPUTE PAIRWISE FST
 #dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE)
-#dt.1.pfst <- compute.pairwiseFST(dt.1,verbose=FALSE, output.snp.values = T) 
-# to have SNP-specific FST for all pairwise comparisons
-# it can be used to average across biotypes and get the fst tracks
 
 # with blockjackniff
 dt.1.pfst <- compute.pairwiseFST(dt.1, nsnp.per.bjack.block = 100, verbose=TRUE)
@@ -989,3 +977,140 @@ summary(lm3_bio_cost_2)
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
 #load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
 ############## END THIS PART
+
+
+###
+###
+### ---- EXPERIMENTAL: INTRA-LOCUS PAIRWISE FST AND FST TRACKS ----
+###
+###
+
+### The idea is to calculate the intra-locus fst for all sample/population pairs.
+### For those locations that has more than 1 sample/biotype, take the average
+### At the and, the goal is to have pairwise FST tracks between each location B1/B4 tracks.
+### If it would be possible, we can identify candidate SNPs significant in each pair and then
+### Identify a set that is common on each virulent/avirulent comparison.
+
+### pFST from poolfstat
+#dt.1.pfst.intralocus <- compute.pairwiseFST(dt.1,verbose=FALSE, output.snp.values = T) 
+
+#save(dt.1.pfst.intralocus, 
+#     file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/dt.1.pfst.intralocus.RData")
+load(file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/dt.1.pfst.intralocus.RData")
+
+## Add column names - pairwise comparison tags
+colnames(dt.1.pfst.intralocus@PairwiseSnpFST) <- row.names(dt.1.pfst.intralocus@values)
+
+## Subset only within-sites pairwise comparison
+mn_pfst <- dt.1.pfst.intralocus@PairwiseSnpFST[,1]
+nd_pfst <- dt.1.pfst.intralocus@PairwiseSnpFST[,40]
+nw_pfst <- dt.1.pfst.intralocus@PairwiseSnpFST[,c(75:78, 91:93, 106:107,120)]
+pa_pfst <- dt.1.pfst.intralocus@PairwiseSnpFST[,c(145:146, 156)]
+wi_pfst <- dt.1.pfst.intralocus@PairwiseSnpFST[,c(175:178, 183:185, 190:191, 196)]
+wo_pfst <- dt.1.pfst.intralocus@PairwiseSnpFST[,205:210]
+
+## Combine the pairwise comparison with the snp information
+pfst_tracks <- data.frame(dt.1@snp.info,
+                          mn_pfst, nd_pfst, nw_pfst,
+                          pa_pfst, wi_pfst, wo_pfst)
+
+pfst_tracks_matrix <- pfst_tracks[which(pfst_tracks$Chromosome == "scaffold_255"), -c(1:4)]
+rownames(pfst_tracks_matrix) <- pfst_tracks[which(pfst_tracks$Chromosome == "scaffold_255"), 2]
+
+pheatmap(t(pfst_tracks_matrix),
+         cluster_rows = TRUE, 
+         cluster_cols = FALSE)
+
+# test window 
+scaff255.win <- pfst_tracks[which(pfst_tracks$Chromosome == "scaffold_14"), ]
+bin_size=100000
+bins = seq(1,max(scaff255.win$Position), by=bin_size)
+averages = rep(0, length(bins))
+bins_fsts = data.frame(bins, averages)
+
+for (i in 1:length(bins)) 
+{
+  interval = subset(scaff255.win, (scaff255.win$Position >= bins[i] & scaff255.win$Position < (bins[i]+bin_size))) 
+  bins_fsts$averages[i]=mean(interval$mn_pfst, na.rm = T) 
+}
+
+plot(bins_fsts$averages~bins_fsts$bins, type='l')
+plot(scaff14.win$mn_pfst~scaff14.win$Position, type='l')
+
+pheatmap(t(bins_fsts$averages),
+         cluster_rows = FALSE, 
+         cluster_cols = FALSE)
+
+## Next step would be take the window averages
+# Second output: averaged raw data bin of bins_size
+# Table with binned distances and observed R^2
+bins = seq(1,max(dt$distance), by=bin_size)
+averages = rep(0, length(bins))
+bins_rsqt = data.frame(bins, averages)
+
+
+#export.pfst(pfst_tracks, threshold = 0.25)
+
+### pFST Heterozygosities
+
+## Subset those that we don't need to average across subsamples
+mn_heFST <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,1:6], Nindv = 5)$fst
+nd_heFST <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,7:8)], Nindv = 5)$fst
+
+## Subset those that we need to average across subsamples
+## Take the average across pairwise comparisons within location
+nw_heFST <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,9:13)], Nindv = 5)$fst
+#nw_heFST.1 <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,9,11:13)], Nindv = 5)$fst
+#nw_heFST.2 <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,10,11:13)], Nindv = 5)$fst
+pa_heFST <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,14:16)], Nindv = 5)$fst
+wi_heFST <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,17:21)], Nindv = 5)$fst
+#wi_heFST.1 <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,17,19:21)], Nindv = 5)$fst
+#wi_heFST.2 <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,18,19:21)], Nindv = 5)$fst
+wo_heFST   <- geneticDiversity(x=dt.1.imputedRefMLFreq.dataFrame[,c(1:4,22:25)], Nindv = 5)$fst
+
+## Combine the pairwise comparison with the snp information
+heFST_tracks <- data.frame(dt.1.imputedRefMLFreq.dataFrame[,c(1:4)],
+                           mn_pfst=mn_heFST,
+                           nd_pfst=nd_heFST,
+                           nw_pfst=nw_heFST,
+                           pa_pfst=pa_heFST,
+                           wi_pfst=wi_heFST,
+                           wo_pfst=wo_heFST)
+
+#export.pfst(pfst_tracks, threshold = 0.25)
+
+
+
+
+
+## Savepoint_5
+##-------------
+#save.image("/fs/project/PAS1554/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
+#load("/fs/project/PAS1554/aphidpool/results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/poolfstat.poolsnp.workspace22Jul21.RData")
+############## END THIS PART
+
+###
+###
+### ---- EXPORT DATA TO BAYPASS ----
+###
+###
+
+## pooldata2genobaypass
+pooldata2genobaypass(pooldata = dt.1,
+                     writing.dir = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/",
+                     prefix = "aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021")
+############## END THIS PART
+
+###
+###
+### ---- EXPORT DATA TO SELESTIM ----
+###
+###
+
+## pooldata2genobaypass
+pooldata2genoselestim(pooldata = dt.1,
+                      writing.dir = "results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/",
+                      prefix = "aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021")
+############## END THIS PART
+
+

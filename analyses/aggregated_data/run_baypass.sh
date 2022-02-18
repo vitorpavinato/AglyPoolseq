@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 #SBATCH -J run_baypass # A single job name for the array
-##SBATCH --ntasks-per-node=1 # one core
-#SBATCH -c 5
+#SBATCH -c 8
 #SBATCH -N 1 # on one node
-#SBATCH -t 25:00:00 ### most jobs should run in 60 minutes or less; the mitochondria takes a lot longer to run through pool-snp
-#SBATCH --mem 10G
+#SBATCH -t 168:00:00
+#SBATCH --mem 4G
 #SBATCH -o /fs/scratch/PAS1715/aphidpool/slurmOutput/run_baypass.%A_%a.out # Standard output
 #SBATCH -e /fs/scratch/PAS1715/aphidpool/slurmOutput/run_baypass.%A_%a.err # Standard error
 #SBATCH --account PAS1715
@@ -12,20 +11,35 @@
 ## Load modules
 module load baypass
 
-popSet=${1}
-method=${2}
-maf=${3}
-mac=${4}
-version=${5}
-dataset=${6}
-#maf=001; mac=100; popSet="all"; method="PoolSNP"; version="paramTest"; dataset="reduced30"
+datafile="aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021"
 
-wd="/fs/scratch/PAS1715/aphidpool"
+wd="/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/baypass_poolsnp"
 
-# Run BAYPASS
-echo "running baypass"
-baypass -gfile ${wd}/results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.${dataset}.genobaypass \
-        -poolsizefile ${wd}/results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.${popSet}.${method}.${maf}.${mac}.${version}.${dataset}.poolsize \
-        -outprefix core.${popSet}.${method}.${maf}.${mac}.${version}.${dataset} -nthreads 5 -npilot 25 -pilotlength 1000 -burnin 5000 -seed 5001;
+# Run BAYPASS CORE MODEL
+# USED SEEDS 4040
+#echo "running baypass core model"
+#baypass -gfile ${wd}/${datafile}.genobaypass \
+#        -poolsizefile ${wd}/${datafile}.poolsize -seed 4040 \
+#        -outprefix ${wd}/core0 \
+#        -nthreads 8 -nval 10000 -thin 25 -burnin 50000 -npilot 25 -pilotlength 1000;
+
+# Run BAYPASS STD-IS MODEL
+# USED SEEDS 6002, 3001, 5005
+#echo "running baypass core std IS  model"
+#baypass -gfile ${wd}/${datafile}.genobaypass \
+#        -efile ${wd}/cov.biotypes -scalecov \
+#        -poolsizefile ${wd}/${datafile}.poolsize -seed 3001 \
+#        -outprefix ${wd}/stdis1 \
+#        -nthreads 8 -nval 10000 -thin 25 -burnin 50000 -npilot 25 -pilotlength 1000;
+
+# Run BAYPASS AUX MODEL
+echo "running baypass AUX model"
+baypass -gfile ${wd}/${datafile}.genobaypass \
+        -efile ${wd}/cov.biotypes -scalecov -auxmodel \
+        -omegafile ${wd}/core0/core0_mat_omega.out \
+        -poolsizefile ${wd}/${datafile}.poolsize -seed 5001 \
+        -outprefix ${wd}/aux0 \
+        -nthreads 8 -nval 10000 -thin 25 -burnin 50000 -npilot 25 -pilotlength 500;
+
 
 echo "done"

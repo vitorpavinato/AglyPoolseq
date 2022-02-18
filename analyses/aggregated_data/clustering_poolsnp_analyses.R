@@ -15,6 +15,7 @@
 
 # Recover R-renv environment
 setwd("/fs/scratch/PAS1715/aphidpool")
+
 renv::restore()
 #renv::snapshot()
 
@@ -35,6 +36,7 @@ library(zoo)
 library(FactoMineR)
 library(Hmisc)
 
+setwd("/fs/project/PAS1554/aphidpool/")
 # Import auxiliary R functions
 source("AglyPoolseq/analyses/aggregated_data/ThinLDinR_SNPtable.R")
 source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
@@ -596,5 +598,182 @@ dev.off()
 ## Savepoint_3
 ##-------------
 #save.image("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/clustering_poolsnp/clustering.poolsnp.workspace29Jul21.RData.RData")
-#load("/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/clustering_poolsnp/clustering.poolsnp.workspace29Jul21.RData.RData")
+#load("/fs/project/PAS1554/aphidpool/results/aggregated_data/minmaxcov_4_99/clustering_poolsnp/clustering.poolsnp.workspace29Jul21.RData.RData")
 ############## END THIS PART
+
+
+###
+###
+### ---- EXPERIMENTAL: PCA ANALYZES WITH AVERAGE ALLELE FREQUENCIES ----
+###
+###
+
+### The goal with these analyzes is to check any missing signal by using samples within locations
+### For locations we have >1 sample per biotype, take the average allele frequency
+### At the end, we have 12 pools (populations); 1 for each biotype/location.
+
+## New biotype tags
+new.poolnames <- c("MN-Av", "MN-V",
+                   "ND-Av", "ND-V", 
+                   "NW-Av", "NW-V", 
+                   "PA-Av", "PA-V", 
+                   "WI-Av", "WI-V", 
+                   "WO-Av", "WO-V")
+
+## New biotypes colors - for PCA
+new.biotype.col <- c(rep(c("#247F00","#AB1A53"), 6))
+
+## Biotype symbols
+new.biotype.sym <- c(rep(c(15,17), 6))
+
+### TAKE THE ONES THAT DON'T NEED BE AVERAGED
+mn_av <- dt.1.flt.pools.imputedRefMLFreq[,1]
+mn_v  <- dt.1.flt.pools.imputedRefMLFreq[,2]
+nd_av <- dt.1.flt.pools.imputedRefMLFreq[,3]
+nd_v  <- dt.1.flt.pools.imputedRefMLFreq[,4]
+pa_av <-  dt.1.flt.pools.imputedRefMLFreq[,10]
+wo_av <-  dt.1.flt.pools.imputedRefMLFreq[,18]
+
+### TAKE THE AVERAGE ALLELE FREQUENCIES FOR POPULATIONS THAT HAVE SAMPLES-WITHIN
+nw_av <- rowMeans(dt.1.flt.pools.imputedRefMLFreq[,5:6], na.rm = T)
+nw_v <- rowMeans(dt.1.flt.pools.imputedRefMLFreq[,7:9], na.rm = T)
+pa_v <- rowMeans(dt.1.flt.pools.imputedRefMLFreq[,11:12], na.rm = T)
+wi_av <- rowMeans(dt.1.flt.pools.imputedRefMLFreq[,13:14], na.rm = T)
+wi_v <- rowMeans(dt.1.flt.pools.imputedRefMLFreq[,15:17], na.rm = T)
+wo_v <- rowMeans(dt.1.flt.pools.imputedRefMLFreq[,19:21], na.rm = T)
+
+dt.1.flt.pools.imputedRefMLFreq.avg <- cbind(mn_av, mn_v,
+                                             nd_av, nd_v,
+                                             nw_av, nw_v,
+                                             pa_av, pa_v,
+                                             wi_av, wi_v,
+                                             wo_av, wo_v)
+
+### ---- PRINCIPAL COMPONENT ANALYSIS PRICE ET AL. 2010 ----
+W_avrg <- scale(t(dt.1.flt.pools.imputedRefMLFreq.avg), scale=TRUE) #centering
+W_avrg[1:10,1:10]
+W_avrg[is.na(W_avrg)]<-0
+cov.W_avrg<-cov(t(W_avrg))
+eig.result_avrg<-eigen(cov.W_avrg)
+eig.vec_avrg<-eig.result_avrg$vectors
+lambda_avrg<-eig.result_avrg$values
+
+## PVE
+par(mar=c(5,5,4,1)+.1)
+plot(lambda_avrg/sum(lambda_avrg),ylab="Fraction of total variance", ylim=c(0,0.2), type='b', cex=1.1,
+     cex.lab=1.6, pch=19, col="black")
+lines(lambda_avrg/sum(lambda_avrg), col="red")
+
+l1_avrg <- 100*lambda_avrg[1]/sum(lambda_avrg) 
+l2_avrg <- 100*lambda_avrg[2]/sum(lambda_avrg)
+
+## PCA plot
+pdf("results/aggregated_data/minmaxcov_4_99/clustering_poolsnp/pca_imputed_allelefreq_filtered_snps_pools_avrg.pdf",         # File name
+    width = 11, height = 8.50, # Width and height in inches
+    bg = "white",          # Background color
+    colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+)
+par(mar=c(5,5,4,1)+.1)
+plot(eig.vec_avrg[,1],eig.vec_avrg[,2], col=new.biotype.col,
+     xlim = c(-0.95, 0.3), ylim = c(-0.75, 0.75),
+     xlab=paste0("PC1 (", round(l1_avrg,2), "%)"), ylab=paste0("PC1 (", round(l2_avrg,2), "%)"), 
+     cex=1.5, pch=new.biotype.sym, cex.lab=1.6)
+text(eig.vec_avrg[,1],eig.vec_avrg[,2], 
+     new.poolnames, pos=2 , cex = 0.6)
+legend("topleft", 
+       legend = c("Avirulent", "Virulent"), col = c("#247F00","#AB1A53"), 
+       pch = new.biotype.sym[1:2], bty = "n", cex = 1.1)
+abline(v=0,h=0,col="grey",lty=3)
+dev.off()
+
+### ---- PRINCIPAL COMPONENT ANALYSIS WITH FactorMineR ----
+
+### Convert NA cells into loci means
+dt.1.flt.pools.NAimputed_avrg = na.aggregate(t(dt.1.flt.pools.imputedRefMLFreq.avg))
+
+### PCA
+pca.dt.1.flt.avrg <- PCA(dt.1.flt.pools.NAimputed_avrg, scale.unit = F, graph = F)
+
+barplot(pca.dt.1.flt.avrg$eig[,1],main="Eigenvalues",names.arg=1:nrow(pca.dt.1.flt.avrg$eig))
+summary(pca.dt.1.flt.avrg)
+
+### Run cluster analysis
+## 1. Loading and preparing data
+pca.dt.1.flt.avrg.ind_coord <- pca.dt.1.flt.avrg$ind$coord
+
+cluster_discovery_avrg = fviz_nbclust(pca.dt.1.flt.avrg.ind_coord, kmeans, method = "gap_stat")
+
+# 2. Compute k-means at K=2, K=3 and at K=4
+set.seed(123)
+kmeans_k2_avrg <- kmeans(pca.dt.1.flt.avrg.ind_coord, 2, nstart = 20)
+kmeans_k3_avrg <- kmeans(pca.dt.1.flt.avrg.ind_coord, 3, nstart = 20)
+kmeans_k4_avrg <- kmeans(pca.dt.1.flt.avrg.ind_coord, 4, nstart = 20)
+kmeans_k5_avrg <- kmeans(pca.dt.1.flt.avrg.ind_coord, 5, nstart = 20)
+
+# Combine Pool ID with cluster assigment
+data.frame(k2_clusters = kmeans_k2_avrg$cluster,
+           k3_clusters = kmeans_k3_avrg$cluster,
+           k4_clusters = kmeans_k4_avrg$cluster,
+           k5_clusters = kmeans_k5_avrg$cluster) %>% mutate(sampleId = new.poolnames) -> pca.dt.1.flt.avrg_cluster_data
+
+### COMBINED PCA PLOTS
+pdf("results/aggregated_data/minmaxcov_4_99/clustering_poolsnp/pca_imputed_allelefreq_filtered_snps_factorminer_clusters_pools_avrg.pdf",         # File name
+    width = 11, height = 8.50, # Width and height in inches
+    bg = "white",          # Background color
+    colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+)
+
+par(mar=c(5,5,4,1)+.1, mfrow=c(2, 2))
+# PLOT PCA COLORED BY BIOTYPE
+plot(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], col=biotype.col,
+     xlim = c(-2.4, 3.5), ylim = c(-2.5, 3), main="K=1",
+     xlab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym)
+text(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], 
+     pca.dt.1.flt.avrg_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("topleft", 
+       legend = c("Avirulent", "Virulent"), col = c("#247F00","#AB1A53"), 
+       pch = c(15,17), bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+
+# PLOT PCA COLORED BY K2
+plot(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], col=pca.dt.1.flt.avrg_cluster_data$k2_clusters,
+     xlim = c(-2.4, 3.5), ylim = c(-2.5, 3),  main="K=2",
+     xlab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym)
+text(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], 
+     pca.dt.1.flt.avrg_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("topleft", 
+       legend = c("K1", "K2", "Avirulent", "Virulent"), col = c(1,2, "grey", "grey"), 
+       pch = c(19,19,15,17), bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+
+# PLOT PCA COLORED BY K3
+plot(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], col=pca.dt.1.flt.avrg_cluster_data$k3_clusters,
+     xlim = c(-2.4, 3.5), ylim = c(-2.5, 3), main="K=3",
+     xlab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym)
+text(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], 
+     pca.dt.1.flt.avrg_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("topleft", 
+       legend = c("K1", "K2","K3", "Avirulent", "Virulent"), col = c(1,2,3, "grey", "grey"), 
+       pch = c(19,19,19,15,17), bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+
+# PLOT PCA COLORED BY K4
+plot(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], col=pca.dt.1.flt.avrg_cluster_data$k4_clusters,
+     xlim = c(-2.4, 3.5), ylim = c(-2.5, 3), main="K=4",
+     xlab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[1,2],2), "%)"), 
+     ylab=paste0("PC1 (", round(pca.dt.1.flt.avrg$eig[2,2],2), "%)"), 
+     cex=1.7, pch=biotype.sym)
+text(pca.dt.1.flt.avrg$svd$U[,1], pca.dt.1.flt.avrg$svd$U[,2], 
+     pca.dt.1.flt.avrg_cluster_data$sampleId, pos=2 , cex = 0.6)
+legend("topleft", 
+       legend = c("K1", "K2","K3","K4", "Avirulent", "Virulent"), col = c(1,2,3,4, "grey", "grey"), 
+       pch = c(19,19,19,19,15,17), bty = "n", cex = 1.2)
+abline(v=0,h=0,col="grey",lty=3)
+dev.off()
+

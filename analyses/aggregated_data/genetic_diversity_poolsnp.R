@@ -991,6 +991,7 @@ combined_summary_statistics_annotation_table <- cbind(summary_statistics_annotat
 head(combined_summary_statistics_annotation_table)
 
 # Save to a file
+# FOLDER: diversity_poolsnp
 #write.table(combined_summary_statistics_annotation_table,
 #            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_summary_statistics_annotation_table.txt", sep = "\t",
 #            quote = F, row.names = F, col.names = TRUE)
@@ -1022,6 +1023,7 @@ gene_piN_piS.merged <- merge(gene_piN_piS, gene_piN_piS.b1.copy, by="GENE")
 gene_piN_piS.merged <- merge(gene_piN_piS.merged, gene_piN_piS.b4.copy, by="GENE")
 
 # Save to a file
+# FOLDER: diversity_poolsnp
 #write.table(gene_piN_piS.merged,
 #            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/combined_gene_piN_piS.txt", sep = "\t",
 #            quote = F, row.names = F, col.names = TRUE)
@@ -1081,6 +1083,7 @@ gene_piN_piS_copy <- mutate(gene_piN_piS_copy, NI = piNpiSbt/piNpiSwi, alpha = (
 dim(gene_piN_piS_copy) #  7473   11
 
 # Save to a file
+# FOLDER: diversity_poolsnp
 #write.table(gene_piN_piS_copy,
 #            file="results/aggregated_data/minmaxcov_4_99/diversity_poolsnp/global_gene_piN_piS.txt", sep = "\t",
 #            quote = F, row.names = F, col.names = TRUE)
