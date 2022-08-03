@@ -8,9 +8,8 @@
 ## CFAES
 
 ## Working directory
-working_dir <- "/Users/vitorpavinato/Documents/PosDoc_OSU_2019/Projects/Aphid_poolseq_adaptation"
+working_dir <- "/fs/project/PAS1554/aphidpool"
 
-#setwd("/fs/scratch/PAS1715/aphidpool")
 setwd(working_dir)
 renv::restore()
 #renv::snapshot()
@@ -25,21 +24,13 @@ library(ggpubr)
 library(ape)
 library(geigen)
 #library(epiR)
-
-# Install Bioconductor qvalue package
-#if (!requireNamespace("BiocManager", quietly = TRUE))
-#  install.packages("BiocManager")
-
-#BiocManager::install("qvalue")
 library(qvalue)
 
 # Auxiliary functions from Baypass
-#source("/users/PAS1554/vitorpavinato/local/baypass/2.2.0/utils/baypass_utils.R")
-source("src/baypass_utils.R")
+source("/users/PAS1554/vitorpavinato/local/baypass/2.2.0/utils/baypass_utils.R")
 
 # Auxiliary functions from aux_func.R
-#source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
-source("src/aux_func.R")
+source("AglyPoolseq/analyses/aggregated_data/aux_func.R")
 
 # Sample's names
 poolnames <- c("MN-Av.1", "MN-V.1",
@@ -64,7 +55,7 @@ n.pools = 21
 ###
 ### ---- CHECK RUN CONVERGENCY WITH PILOT RUNS----
 ###
-###
+###Pilot runs were removed from the results folder
 
 ### The idea is to check the run convergency to later increase the size of the runs
 ### for the core model (and any other model?). The first check is going to be between
@@ -234,31 +225,29 @@ n.pools = 21
 
 ## FILE PATH
 # Alelle frequencies
-ml.frequencies.file = "results/analysis_osc/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/imputedML_REFAlleleFrequencies_pools.txt"
-baypass.core.posteriors_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_summary_yij_pij.out"
-baypass.stdis.posteriors_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis0/stdis0_summary_yij_pij.out"
-baypass.stdis.posteriors_1.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis1/stdis1_summary_yij_pij.out"
-baypass.stdis.posteriors_2.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis2/stdis2_summary_yij_pij.out"
-baypass.aux.posteriors_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aux0/aux0_summary_yij_pij.out"
+ml.frequencies.file = "results/aggregated_data/minmaxcov_4_99/poolfstat_poolsnp/imputedML_REFAlleleFrequencies_pools.txt"
+baypass.core.posteriors_0.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_summary_yij_pij.out"
+baypass.stdis.posteriors_0.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis0/stdis0_summary_yij_pij.out"
+baypass.stdis.posteriors_1.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis1/stdis1_summary_yij_pij.out"
+baypass.stdis.posteriors_2.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis2/stdis2_summary_yij_pij.out"
+baypass.aux.posteriors_0.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aux0/aux0_summary_yij_pij.out"
 
 # Marker list
-baypass.snps.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.snpdet"
+baypass.snps.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.snpdet"
 
 # Omega matrices
-baypass.core.omega_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_mat_omega.out"
-baypass.stdis.omega_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis0/stdis0_mat_omega.out"
-baypass.stdis.omega_1.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis1/stdis1_mat_omega.out"
-baypass.stdis.omega_2.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis2/stdis2_mat_omega.out"
+baypass.core.omega_0.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_mat_omega.out"
+baypass.stdis.omega_0.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis0/stdis0_mat_omega.out"
+baypass.stdis.omega_1.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis1/stdis1_mat_omega.out"
+baypass.stdis.omega_2.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/stdis2/stdis2_mat_omega.out"
 
 ## IMPORT DATA
 # Alelle frequencies
 ml.frequencies <- read.table(ml.frequencies.file, header = T)
 baypass.core.posteriors_0 <- read.table(baypass.core.posteriors_0.file, header = T)
-
-#baypass.stdis.posteriors_0 <- read.table(baypass.stdis.posteriors_0.file, header = T)
-#baypass.stdis.posteriors_1 <- read.table(baypass.stdis.posteriors_1.file, header = T)
-#baypass.stdis.posteriors_2 <- read.table(baypass.stdis.posteriors_2.file, header = T)
-
+baypass.stdis.posteriors_0 <- read.table(baypass.stdis.posteriors_0.file, header = T)
+baypass.stdis.posteriors_1 <- read.table(baypass.stdis.posteriors_1.file, header = T)
+baypass.stdis.posteriors_2 <- read.table(baypass.stdis.posteriors_2.file, header = T)
 baypass.aux.posteriors_0 <- read.table(baypass.aux.posteriors_0.file, header = T)
 
 # Marker list
@@ -291,8 +280,8 @@ aux0.refFreq.matrix  <- matrix(baypass.aux.posteriors_0$M_P, nrow=n.snps, ncol=n
 aux0.refCount.matrix <- matrix(baypass.aux.posteriors_0$M_Y, nrow=n.snps, ncol=n.pools, byrow=TRUE)
 
 # For one STD model
-#stdis0.refFreq.matrix  <- matrix(baypass.stdis.posteriors_0$M_P, nrow=n.snps, ncol=n.pools, byrow=TRUE)
-#stdis0.refCount.matrix <- matrix(baypass.stdis.posteriors_0$M_Y, nrow=n.snps, ncol=n.pools, byrow=TRUE)
+stdis0.refFreq.matrix  <- matrix(baypass.stdis.posteriors_0$M_P, nrow=n.snps, ncol=n.pools, byrow=TRUE)
+stdis0.refCount.matrix <- matrix(baypass.stdis.posteriors_0$M_Y, nrow=n.snps, ncol=n.pools, byrow=TRUE)
 
 ## check read count approximation with round()
 #round(core0.refFreq.matrix, 3)
@@ -300,8 +289,8 @@ aux0.refCount.matrix <- matrix(baypass.aux.posteriors_0$M_Y, nrow=n.snps, ncol=n
 
 ## Savepoint_1
 ##-------------
-#save.image("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
-#load("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
+#save.image("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
 ############## END THIS PART
 
 ### CONVERGENCE: AMONG ML REFERENCE ALLELE AND POSTERIOR REFERENCE ALLELE
@@ -371,10 +360,10 @@ rm(svd.corr)
 
 # Using SVD plots
 # SAVE MANHATTAN PLOT TO A PDF FILE
-pdf("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/omega_convergency.pdf", # File name
-    width = 11, height = 8.50,                                                                   # Width and height in inches
-    bg = "white",                                                                                # Background color
-    colormodel = "cmyk",                                                                         # Color model (cmyk is required for most publications)
+pdf("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/omega_convergency.pdf", # File name
+    width = 11, height = 8.50,                                                               # Width and height in inches
+    bg = "white",                                                                            # Background color
+    colormodel = "cmyk",                                                                     # Color model (cmyk is required for most publications)
 )
 par(mfrow=c(2, 2))
 omega_core0.svd.plots <- plot.omega.mod(omega=baypass.core.omega_0, pop.names=poolnames, col=biotype.col)
@@ -389,8 +378,8 @@ dev.off()
 
 ## Savepoint_2
 ##-------------
-#save.image("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
-#load("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
+#save.image("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
 ############## END THIS PART
 
 ######
@@ -406,7 +395,7 @@ dev.off()
 
 # Visualization of the OMEGA matrix
 # As a PCoA with SVD decomposition
-pdf("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/omega_core0_model_pca.pdf",  # File name
+pdf("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/omega_core0_model_pca.pdf",  # File name
     width = 11, height = 8.50,                                                                    # Width and height in inches
     bg = "white",                                                                                 # Background color
     colormodel = "cmyk",                                                                          # Color model (cmyk is required for most publications)
@@ -419,7 +408,7 @@ dev.off()
 omega_core0.cor_matrix = cov2cor(baypass.core.omega_0)
 dimnames(omega_core0.cor_matrix) = list(poolnames, poolnames)
 
-pdf("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/omega_core0_model_corrplot.pdf",  # File name
+pdf("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/omega_core0_model_corrplot.pdf",  # File name
     width = 11, height = 8.50,                                                                             # Width and height in inches
     bg = "white",                                                                                          # Background color
     colormodel = "cmyk",                                                                                   # Color model (cmyk is required for most publications)
@@ -430,7 +419,7 @@ dev.off()
 
 # as a heatmap and hierarchical clustering tree (using the average agglomeration method)
 hclust.ave <- function(x) hclust(x, method="average")
-pdf("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/omega_core0_model_heatmap.pdf",  # File name
+pdf("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/omega_core0_model_heatmap.pdf",  # File name
     width = 11, height = 8.50,                                                                             # Width and height in inches
     bg = "white",                                                                                          # Background color
     colormodel = "cmyk",                                                                                   # Color model (cmyk is required for most publications)
@@ -440,7 +429,7 @@ heatmap(1-omega_core0.cor_matrix, hclustfun = hclust.ave,
 dev.off()
 
 # as a tree
-pdf("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/omega_core0_model_tree.pdf",  # File name
+pdf("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/omega_core0_model_tree.pdf",  # File name
     width = 11, height = 8.50,                                                                             # Width and height in inches
     bg = "white",                                                                                          # Background color
     colormodel = "cmyk",                                                                                   # Color model (cmyk is required for most publications)
@@ -450,8 +439,8 @@ dev.off()
 
 ## Savepoint_3
 ##-------------
-#save.image("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
-#load("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
+#save.image("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
 ############## END THIS PART
 
 ###
@@ -466,7 +455,7 @@ dev.off()
 
 ## BAYPASS XtX ESTIMATES
 # UploadXtX differentiation estimates (using the calibrated XtXst estimator)
-baypass.core.xtx_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_summary_pi_xtx.out"
+baypass.core.xtx_0.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_summary_pi_xtx.out"
 baypass.core.xtx_0 <- read.table(baypass.core.xtx_0.file, header = T)
 
 # check estimated XtXst distributions
@@ -492,7 +481,9 @@ plot(baypass.core.xtx_0$XtXst)
 plot(baypass.core.xtx_0$log10.1.pval.,ylab="XtX P-value (-log10 scale)")
 abline(h=3,lty=2, col="red") #0.001 p--value theshold
 
-## CALIBRATE THE XtX POSTERIOR ESTIMATES WITH NORMALIZE TRANSFORMATION
+##
+## -- CALIBRATE THE XtX POSTERIOR ESTIMATES WITH NORMALIZE TRANSFORMATION --
+## 
 
 # Posterior mean of XtX
 xtx_core0 = baypass.core.xtx_0$M_XtX
@@ -527,61 +518,47 @@ xtx_core0_empval = empPvals(stat = xtx_core0.std, stat0 = xtx_core0.std[which(xt
 qqplot(x=xtx_core0_empval, y=10**(-1*baypass.core.xtx_0$log10.1.pval.)) 
 abline(a = 0, b = 1, col="red")
 
-# Threshold based on lowest empirical pvalue
+# Threshold based on lowest empirical pvalue - 1%
 thr_pval1ppm_core0 = min(xtx_core0[xtx_core0_empval < 0.01]) #XtX
 thr_pval1ppm_core0.std = min(xtx_core0.std[xtx_core0_empval < 0.01]) #standardized XtX
 
+# Threshold based on lowest empirical pvalue - 5%
 thr_pval5ppm_core0 = min(xtx_core0[xtx_core0_empval < 0.05]) #XtX
 thr_pval5ppm_core0.std = min(xtx_core0.std[xtx_core0_empval < 0.05]) #standardized XtX
 
 # Threshold based on qvalue (FDR)
 xtx_core0_empval.qvalue = qvalue(xtx_core0_empval)
 
+# 1% FDR
+thr_fdr1pcent_core0 = min(xtx_core0[xtx_core0_empval.qvalue$qvalue < 0.01])#XtX
+thr_fdr1pcent_core0.std = min(xtx_core0.std[xtx_core0_empval.qvalue$qvalue < 0.01])
+
+# 5% FDR
 thr_fdr5pcent_core0 = min(xtx_core0[xtx_core0_empval.qvalue$qvalue < 0.05])#XtX
 thr_fdr5pcent_core0.std = min(xtx_core0.std[xtx_core0_empval.qvalue$qvalue < 0.05]) #standardized XtX
 
+# 10% FDR
 thr_fdr10pcent_core0 = min(xtx_core0[xtx_core0_empval.qvalue$qvalue < 0.1])#XtX
 thr_fdr10pcent_core0.std = min(xtx_core0.std[xtx_core0_empval.qvalue$qvalue < 0.1]) #standardized XtX
 
-## Plot XtX with empirically calculate threshold
-layout(matrix(1:2,2,1))
-plot(xtx_core0)
-abline(h=thr_pval1ppm_core0,  lty=2, col="blue")
-abline(h=thr_pval5ppm_core0,  lty=2, col="green")
-abline(h=thr_fdr5pcent_core0, lty=2, col="red")
-abline(h=thr_fdr10pcent_core0,lty=2, col="orange")
-
-plot(xtx_core0.std)
-abline(h=thr_pval1ppm_core0.std,  lty=2, col="blue")
-abline(h=thr_pval5ppm_core0.std,  lty=2, col="green")
-abline(h=thr_fdr5pcent_core0.std, lty=2, col="red")
-abline(h=thr_fdr10pcent_core0.std,lty=2, col="orange")
-
-# compute the 1% quantile threshold
-thr_quantile99_core0 = quantile(xtx_core0, probs=c(0.999))
+# compute the 1% quantile threshold from the observed distribution
+thr_quantile99_core0 = quantile(xtx_core0, probs=c(0.99))
 thr_quantile01_core0 = quantile(xtx_core0, probs=c(0.01))
 
-thr_quantile99_core0.std = quantile(xtx_core0.std, probs=c(0.999))
+thr_quantile99_core0.std = quantile(xtx_core0.std, probs=c(0.99))
 thr_quantile01_core0.std = quantile(xtx_core0.std, probs=c(0.01))
 
-# Which SNPS were signigicant?
-baypass.snps[which(xtx_core0 > thr_fdr5pcent_core0), ] # positive selection?
-baypass.snps[which(xtx_core0 < 18 ), ] # balanced selection?
-
-## Export candidate outliers: core model XtX 
-write.table(baypass.snps[which(xtx_core0 > thr_fdr5pcent_core0), c(1:2)],
-            file = "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/signf_snps_core0_fdr5.txt",
-            col.names = F, row.names = F, quote = F)
-
-## CALIBRATE THE XtX STATISTICS WITH PODs
+##
+## -- CALIBRATE THE XtX STATISTICS WITH PODs --
+##
 
 # get estimates (post. mean) of both the a_pi and b_pi parameters of
 # the Pi Beta distribution
-baypass.core.beta_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_summary_beta_params.out"
+baypass.core.beta_0.file <- "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/core0/core0_summary_beta_params.out"
 baypass.core.beta_0 <- read.table(baypass.core.beta_0.file, header = T)$Mean
 
 # upload the original BAYPASS data to obtain the total allele count
-baypass_genobaypass.file <- "/fs/scratch/PAS1715/aphidpool/results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.genobaypass"
+baypass_genobaypass.file <- "/fs/project/PAS1554/aphidpool/results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aphidpool.PoolSeq.PoolSNP.05.5.24Jun2021.genobaypass"
 baypass_genobaypass <- geno2YN(baypass_genobaypass.file)
 
 # Create the POD
@@ -609,7 +586,7 @@ core_pods_baypass <- make_baypassrun_slurm_pods(n_hours=10, g_file = g_file,
                                                 outdir = outdir)
 
 ## TO RUN BAYPASS IN PODS, RUN IN THE TERMINAL:
-# wd=/fs/scratch/PAS1715/aphidpool
+# wd=/fs/scratch/PAS1715/aphidpool # to run on scratch
 # sbatch ${wd}/run_baypass_pods.sh
 
 #######################################################
@@ -617,7 +594,7 @@ core_pods_baypass <- make_baypassrun_slurm_pods(n_hours=10, g_file = g_file,
 #######################################################
 
 # get estimate of omega from the POD analysis
-pod.core.omega_0 = as.matrix(read.table("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/core.pods_mat_omega.out"))
+pod.core.omega_0 = as.matrix(read.table("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/corePods/core.pods_mat_omega.out"))
 plot(pod.core.omega_0, baypass.core.omega_0) ; abline(a=0,b=1)
 fmd.dist(pod.core.omega_0, baypass.core.omega_0)
 
@@ -630,17 +607,19 @@ abline(v=0, h=0, lty=3,col = "gray60")
 
 # get estimates (post. mean) of both the a_pi and b_pi parameters of
 # the Pi Beta distribution from the POD analysis
-pod.pi.beta.coef=read.table("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/core.pods_summary_beta_params.out",h=T)$Mean
+pod.pi.beta.coef=read.table("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/corePods/core.pods_summary_beta_params.out",h=T)$Mean
 plot(pod.pi.beta.coef, baypass.core.beta_0)  ; abline(a=0,b=1)
+cor(pod.pi.beta.coef, baypass.core.beta_0)
 
 #######################################################
-#XtX calibration
+# XtX calibration
 #######################################################
 #get the pod XtX
-xtx_core0_pod = read.table("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/core.pods_summary_pi_xtx.out",h=T)$M_XtX
+xtx_core0_pod = read.table("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/corePods/core.pods_summary_pi_xtx.out",h=T)$M_XtX
 
 # compute the quantile 1% threshold
-thr_quantile99_core0_pod = quantile(xtx_core0_pod, probs=c(0.999))
+thr_quantile99_core0_pod = quantile(xtx_core0_pod, probs=c(0.99))
+thr_quantile01_core0_pod = quantile(xtx_core0_pod, probs=c(0.01))
 
 # Compute the p-values of XtX calibrated with PODS XtX (From Gautier 2017 presentation)
 hist(xtx_core0, # histogram
@@ -669,7 +648,8 @@ lines(density(xtx_core0_pod.std), # density plot
       col = "red")
 
 # compute the quantile 1% threshold
-thr_quantile99_core0_pod.std = quantile(xtx_core0_pod.std, probs=c(0.999))
+thr_quantile99_core0_pod.std = quantile(xtx_core0_pod.std, probs=c(0.99))
+thr_quantile01_core0_pod.std = quantile(xtx_core0_pod.std, probs=c(0.01))
 
 # Calculate empirical p-value
 xtx_core0_pod_empval = empPvals(stat = xtx_core0.std, stat0 = xtx_core0_pod.std[which(xtx_core0_pod.std <= 4)]) #With qvalue package
@@ -679,46 +659,74 @@ abline(a = 0, b = 1, col="red")
 xtx_core0_pod_empval.qvalue = qvalue(xtx_core0_pod_empval)
 
 # Threshold based on qvalue (FDR)
+# FDR 1%
+thr_fdr1pcent_core0_pod = min(xtx_core0[xtx_core0_pod_empval.qvalue$qvalue < 0.01])# XtX
+thr_fdr1pcent_core0_pod.std = min(xtx_core0.std[xtx_core0_empval.qvalue$qvalue < 0.01]) #standardized XtX
+
+# FDR 5%
 thr_fdr5pcent_core0_pod = min(xtx_core0[xtx_core0_pod_empval.qvalue$qvalue < 0.05])# XtX
 thr_fdr5pcent_core0_pod.std = min(xtx_core0.std[xtx_core0_empval.qvalue$qvalue < 0.05]) #standardized XtX
 
+# FDR 10%
 thr_fdr10pcent_core0_pod = min(xtx_core0[xtx_core0_pod_empval.qvalue$qvalue < 0.1])# XtX
 thr_fdr10pcent_core0_pod.std = min(xtx_core0.std[xtx_core0_empval.qvalue$qvalue < 0.1]) #standardized XtX
 
-# Which SNPS were signigicant?
-baypass.snps[which(xtx_core0 > thr_fdr5pcent_core0_pod), ] # positive selection?
-baypass.snps[which(xtx_core0 < 18 ), ] # balanced selection?
+### Make plot of XtX and XtX normalized
+### Add all thresholds
+
+## Plot XtX with empirically and pod calculate threshold
+## lines are empirically calculated
+## dashed lines are calculated with pods
+#layout(matrix(1:2,2,1))
+plot(xtx_core0)
+#abline(h=thr_pval1ppm_core0,  lty=1, col="#6fb157") #green  **
+#abline(h=thr_pval5ppm_core0,  lty=1, col="#736cb9") #blue   *
+#abline(h=thr_fdr1pcent_core0, lty=1, col="#bd8f3a") #orange ***
+#abline(h=thr_fdr5pcent_core0, lty=1, col="#ac568b") #pink   ***
+#abline(h=thr_fdr10pcent_core0,lty=1, col="#4cb6ad") #blue   ***
+#abline(h=thr_quantile99_core0,lty=1, col="#b3534b") #red    **
+#abline(h=thr_quantile01_core0,lty=1, col="#77874f") #green  balancing selection?
+
+#abline(h=thr_fdr1pcent_core0_pod, lty=2, col="#bd8f3a")  #orange ***
+#abline(h=thr_fdr5pcent_core0_pod, lty=2, col="#ac568b")  #pink   ***
+#abline(h=thr_fdr10pcent_core0_pod,lty=2, col="#4cb6ad")  #blue   ***
+abline(h=thr_quantile99_core0_pod, lty=2, col="#b3534b")  #red    **
+abline(h=thr_quantile01_core0_pod,lty=2, col="#77874f")   #green  balancing selection?
+
+## Plot normalized XtX with empirically and pod calculate threshold
+## lines are empirically calculated
+## dashed lines are calculated with pods
+plot(xtx_core0.std)
+#abline(h=thr_pval1ppm_core0.std,  lty=1, col="#6fb157") #green  **
+#abline(h=thr_pval5ppm_core0.std,  lty=1, col="#736cb9") #blue   *
+#abline(h=thr_fdr1pcent_core0.std, lty=1, col="#bd8f3a") #orange ***
+#abline(h=thr_fdr5pcent_core0.std, lty=1, col="#ac568b") #pink   ***
+#abline(h=thr_fdr10pcent_core0.std,lty=1, col="#4cb6ad") #blue   ***
+#abline(h=thr_quantile99_core0.std,lty=1, col="#b3534b") #red    **
+#abline(h=thr_quantile01_core0.std,lty=1, col="#77874f") #green  balancing selection?
+
+#abline(h=thr_fdr1pcent_core0_pod.std, lty=2, col="#bd8f3a")  #orange ***
+#abline(h=thr_fdr5pcent_core0_pod.std, lty=2, col="#ac568b")  #pink   ***
+#abline(h=thr_fdr10pcent_core0_pod.std,lty=2, col="#4cb6ad")  #blue   ***
+abline(h=thr_quantile99_core0_pod.std, lty=2, col="#b3534b")  #red    **
+abline(h=thr_quantile01_core0_pod.std,lty=2, col="#77874f")   #green  balancing selection?
+
+
+## Identify significant high values of XtX statistics 
+## Use the 99% quantile from the PODs distribution
+dim(baypass.snps[which(xtx_core0 > thr_quantile99_core0_pod), ]) # 4645 positive selection SNPs
+dim(baypass.snps[which(xtx_core0 < thr_quantile01_core0_pod ), ]) # 7463 balanced selection?
 
 ## Export candidate outliers: core model XtX 
-write.table(baypass.snps[which(xtx_core0 > thr_fdr5pcent_core0_pod), c(1:2)],
-            file = "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/signf_snps_core0_fdr5pod.txt",
+write.table(baypass.snps[which(xtx_core0 > thr_quantile99_core0_pod), c(1:2)],
+            file = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/signf_snps_core0_podsQuant99.txt",
             col.names = F, row.names = F, quote = F)
 
 
-###LIST OF THR VALUES
-#thr_pval1ppm_core0
-#thr_pval5ppm_core0
-#thr_fdr5pcent_core0
-#thr_fdr10pcent_core0
-#thr_quantile99_core0 
-#
-#thr_pval1ppm_core0.std
-#thr_pval5ppm_core0.std
-#thr_fdr5pcent_core0.std
-#thr_fdr10pcent_core0.std
-#thr_quantile99_core0.std
-#
-#thr_quantile99_core0_pod
-#thr_quantile99_core0_pod.std 
-#thr_fdr5pcent_core0_pod
-#thr_fdr5pcent_core0_pod.std
-#thr_fdr10pcent_core0_pod
-#thr_fdr10pcent_core0_pod.std
-
 ## Savepoint_4
 ##-------------
-#save.image("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
-#load("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
+#save.image("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
 ############## END THIS PART
 
 ################
@@ -730,61 +738,169 @@ baypass.aux.betai_reg_0 <- read.table(baypass.aux.betai_reg_0.file, header = T)
 baypass.aux.xtx_0.file <- "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/aux0/aux0_summary_pi_xtx.out"
 baypass.aux.xtx_0 <- read.table(baypass.aux.xtx_0.file, header = T)
 
-## Check correlation between core0 XtX and aux0 Xtx
-cor(baypass.aux.xtx_0$M_XtX, baypass.core.xtx_0$M_XtX)
-plot(baypass.aux.xtx_0$M_XtX, baypass.core.xtx_0$M_XtX)
+## Check correlation between core0 XtX and aux0 XtX
+cor(baypass.aux.xtx_0$M_XtX, xtx_core0)
+plot(baypass.aux.xtx_0$M_XtX, xtx_core0)
 
+## Take a preliminary view on the AUX results
 graphics.off()
-layout(matrix(1:3,3,1))
+layout(matrix(1:4,4,1))
 plot(baypass.aux.betai_reg_0$BF.dB.,xlab="SNP",ylab="BFmc (in dB)") 
 plot(baypass.aux.betai_reg_0$M_Beta,xlab="SNP",ylab=expression(beta~"coefficient")) 
 plot(baypass.aux.xtx_0$M_XtX,xlab="SNP",ylab="XtX corrected for SMS")
+plot(xtx_core0,xlab="SNP",ylab="core XtX")
 
+## Preliminar plot only with BFmc Jeffrey's rule
+graphics.off()
 plot(baypass.aux.betai_reg_0$BF.dB.,xlab="SNP",ylab="BFmc (in dB)")
-abline(h=20,  lty=2, col="red")
+abline(h=c(15,20),  lty=2, col=c("green","red"))
 
-## Export candidate outliers: core model XtX 
-write.table(baypass.snps[which(baypass.aux.betai_reg_0$BF.dB. > 20), c(1:2)],
-            file = "results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/signf_snps_aux0_BFmc20.txt",
+thr_BFmc_decisive_aux0 = 20
+thr_BFmc_strongEvi_aux0 = 15
+
+##
+## -- CALIBRATE THE BFmc STATISTICS WITH PODs --
+##
+
+## With the same PODs generated for the core model, run baypass AUX this time with a covariate file
+
+#######################################################
+#Sanity Check: Compare POD and original data estimates
+#######################################################
+
+# get estimates (post. mean) of both the a_pi and b_pi parameters of
+# the Pi Beta distribution from the POD analysis
+pod.pi.beta.coef_aux=read.table("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/auxPods/core_aux.pods_summary_beta_params.out",h=T)$Mean
+plot(pod.pi.beta.coef_aux, baypass.core.beta_0)  ; abline(a=0,b=1)
+cor(pod.pi.beta.coef_aux, baypass.core.beta_0)
+
+#######################################################
+# BFmc calibration
+#######################################################
+
+# the estimated BFmc
+bfmc_aux0 = baypass.aux.betai_reg_0$BF.dB.
+
+#get the pod BFmc
+bfmc_aux0_pod = read.table("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/pods/auxPods/core_aux.pods_summary_betai.out",h=T)$BF.dB.
+
+# compute the quantile 1% threshold
+thr_quantile99_aux0_pod = quantile(bfmc_aux0_pod, probs=c(0.99))
+
+# Compute the p-values of XtX calibrated with PODS XtX (From Gautier 2017 presentation)
+hist(bfmc_aux0, # histogram
+     col="green", # column color
+     border="black",
+     breaks = 100,
+     prob = TRUE, # show densities instead of frequencies
+     xlab = "BFmc",
+     main = "")
+lines(density(bfmc_aux0_pod), # density plot
+      lwd = 2, # thickness of line
+      col = "red")
+
+## Calculate empirical p-value and qvalue
+bfmc_aux0_pod_empval = empPvals(stat = bfmc_aux0, stat0 = bfmc_aux0_pod[which(bfmc_aux0_pod <= 30)]) #With qvalue package
+
+# Threshold based on lowest empirical pvalue - 1%
+thr_pval1ppm_aux0_pod = min(bfmc_aux0[bfmc_aux0_pod_empval < 0.01]) 
+thr_pval5ppm_aux0_pod = min(bfmc_aux0[bfmc_aux0_pod_empval < 0.05])
+
+## Threshold based on qvalue (FDR)
+bfmc_aux0_pod_empval.qvalue = qvalue(bfmc_aux0_pod_empval)
+
+# FDR 1%
+thr_fdr1pcent_aux0_pod = min(bfmc_aux0[bfmc_aux0_pod_empval.qvalue$qvalue < 0.01])
+thr_fdr5pcent_aux0_pod = min(bfmc_aux0[bfmc_aux0_pod_empval.qvalue$qvalue < 0.05])
+thr_fdr10pcent_aux0_pod = min(bfmc_aux0[bfmc_aux0_pod_empval.qvalue$qvalue < 0.1])
+
+## Plot XtX with empirically and pod calculate threshold
+## lines are empirically calculated
+## dashed lines are calculated with pods
+plot(bfmc_aux0)
+abline(h=thr_BFmc_decisive_aux0,  lty=1, col="red") #**
+abline(h=thr_BFmc_strongEvi_aux0,  lty=1, col="green")# *
+abline(h=thr_quantile99_aux0_pod,  lty=2, col="red") #red  ***
+#abline(h=thr_pval1ppm_aux0_pod,  lty=2, col="#736cb9") #blue   **
+#abline(h=thr_pval5ppm_aux0_pod, lty=2, col="#bd8f3a") #orange *
+#abline(h=thr_fdr1pcent_aux0_pod , lty=2, col="#ac568b") #pink   ****
+#abline(h=thr_fdr5pcent_aux0_pod ,lty=2, col="#4cb6ad") #blue   ****
+#abline(h=thr_fdr10pcent_aux0_pod ,lty=2, col="#b3534b") #red    ****
+
+## Identify significant high values of XtX statistics 
+## Use the 99% quantile from the PODs distribution
+dim(baypass.snps[which(bfmc_aux0 > thr_quantile99_aux0_pod), ]) # 2054 positive selected SNPs associated with covariates
+
+## Export candidate outliers: aux model BFmc 
+# quantile 1%
+write.table(baypass.snps[which(bfmc_aux0 > thr_quantile99_aux0_pod), c(1:2)],
+            file = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/signf_snps_aux0_podsQuant99.txt",
             col.names = F, row.names = F, quote = F)
 
+# BFmc > 20
+write.table(baypass.snps[which(bfmc_aux0 > thr_BFmc_decisive_aux0), c(1:2)],
+            file = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/signf_snps_aux0_BFmc20.txt",
+            col.names = F, row.names = F, quote = F)
 
+### Combine evidence an plot significant XtX, BFmc and multi-locus FST
 final.table <- data.frame(baypass.snps,
                           XtX=xtx_core0,
-                          BF=baypass.aux.betai_reg_0$BF.dB.,
+                          BFmc=bfmc_aux0,
                           Beta_is=baypass.aux.betai_reg_0$M_Beta
                           )
-colnames(final.table) <- c("CHROM", "POS", "Ref", "Alt", "XtX", "BF", "Beta_is")
+colnames(final.table) <- c("CHROM", "POS", "Ref", "Alt", "XtX", "BFmc", "Beta_is")
 
-dots <- ifelse(final.table$XtX > thr_fdr5pcent_core0 & final.table$BF > 20, 19, 20)
-colors <- ifelse(final.table$XtX > thr_fdr5pcent_core0 & final.table$BF > 20, "red", "gray")
+final.table[,"dots_core_aux"] <- ifelse(final.table$XtX > thr_quantile99_core0_pod & final.table$BFmc > thr_quantile99_aux0_pod, 1, 20)
+final.table[,"colors_core_aux"] <- ifelse(final.table$XtX > thr_quantile99_core0_pod & final.table$BFmc > thr_quantile99_aux0_pod, "#fca311", "#e5e5e5")
 
+## BAYPASS XtX AND BFmc
 pdf("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/XtX_BFmc_sign.pdf",  # File name
     width = 11, height = 8.50,                                                                             # Width and height in inches
     bg = "white",                                                                                          # Background color
     colormodel = "cmyk",                                                                                   # Color model (cmyk is required for most publications)
 )
 plot(
-  xtx_core0,
-  baypass.aux.betai_reg_0$BF.dB.,
-  ylab="BFmc (in dB)",xlab="XtX", pch = dots, col= colors)
-abline(h=20,lty=2) #BF threshold for decisive evidence (according to Jeffreys’ rule)
-abline(v=thr_fdr5pcent_core0,lty=2) 
+  final.table$XtX,
+  final.table$BFmc,
+  ylab="BFmc (in dB)",xlab="XtX", pch = final.table$dots_core_aux, col= final.table$colors_core_aux)
+abline(v=thr_quantile99_core0_pod,lty=2, col="black") 
+abline(h=20,lty=2, col="black") #BF threshold for decisive evidence (according to Jeffreys’ rule)
+abline(h=thr_quantile99_aux0_pod,lty=2, col="red") 
+dev.off()
+
+##  BAYPASS XtX AND BFmc AND FST
+lociids_signf_WC_beta_window <-scan(file = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/lociIDs_signf_WC_beta_window.txt",what = "character")
+lociids_signf_WC_beta_window <- unique(lociids_signf_WC_beta_window)
+length(lociids_signf_WC_beta_window)
+
+final.table[,"colores_fst"] <- NA
+final.table[paste0(final.table$CHROM,"_",final.table$POS) %in% lociids_signf_WC_beta_window, "colores_fst"] <- "#14213d"
+
+pdf("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/XtX_BFmc_WC_beta_sign.pdf",  # File name
+    width = 11, height = 8.50,                                                                             # Width and height in inches
+    bg = "white",                                                                                          # Background color
+    colormodel = "cmyk",                                                                                   # Color model (cmyk is required for most publications)
+)
+plot(
+  final.table$XtX,
+  final.table$BFmc,
+  ylab="BFmc (in dB)",xlab="XtX", pch = final.table$dots_core_aux, col= final.table$colors_core_aux)
+points(final.table$XtX, final.table$BFmc, col=final.table$colores_fst)
+abline(v=thr_quantile99_core0_pod,lty=2, col="black") 
+abline(h=20,lty=2, col="black") #BF threshold for decisive evidence (according to Jeffreys’ rule)
+abline(h=thr_quantile99_aux0_pod,lty=2, col="#e63946")
+text(x=18.8, y=c(20, thr_quantile99_aux0_pod)-0.1,
+     c("decisive BF",
+       "quantile 99%"),
+     cex=0.75, pos=3,col=c("black", "#e63946"))
+
 dev.off()
 
 ## Savepoint_5
 ##-------------
-#save.image("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
-#load("results/analysis_osc/aggregated_data/minmaxcov_4_99/baypass_poolsnp/baypass.poolsnp.workspace01Jan22.RData")
+#save.image("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/baypass.poolsnp.workspace01Jan22.RData")
 ############## END THIS PART
-
-
-
-
-
-
-
-
 
 ################
 # STD IS MODEL #
