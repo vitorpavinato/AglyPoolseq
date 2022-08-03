@@ -14,7 +14,7 @@
 ###
 
 # Recover R-renv environment
-setwd("/fs/scratch/PAS1715/aphidpool")
+setwd("/fs/project//PAS1554/aphidpool")
 renv::restore()
 #renv::snapshot()
 
@@ -24,10 +24,14 @@ ls()
 
 # Load R libraries
 library(tidyverse)
+library(gplots)
+
+##### PART 1: MULTILOCUS-FST SIGNIFICANT SNPS
+#####----------------------------------------
 
 ###
 ###
-### ---- UPLOAD FILES ----
+### --- UPLOAD FILES ---
 ###
 ###
 
@@ -82,7 +86,7 @@ head(significant_snps_window)
 
 ## FOLDER: signf_multilocusfst_poolsnp
 ## Save the preliminar Annotation
-#write.table(x=significant_snps_window, file = 'results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign_multilocus_fst_ann-sumstats.txt',
+#write.table(x=significant_snps_window, file = 'results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign_multilocus_fst_annot_table.txt',
 #            quote = F, row.names = F, col.names = T)
 
 ## SAVE THE SNPeff-annR windows predicted genes
@@ -91,7 +95,7 @@ head(significant_snps_window)
 ###ADDED 26/JAN/2022
 ###
 ###
-### --- ISOLATE WC_BETA OF SIGNIFICANT SCAFFOLDS
+### --- ISOLATE WC_BETA OF SIGNIFICANT SCAFFOLDS --- 
 ###
 ###
 
@@ -188,21 +192,338 @@ for (s in seq_along(unique(sign_scaffolds$CHROM)))
 dev.off()
 
 ## FILTER 1
-## SNP-POOLFSTAT FST > 0.25 (multilocus fst)
+## ALL SNP-POOLFSTAT FST > 0.25 WITHIN SIGNIFICANT SCAFFOLDS IDENTIFIED WITH MULTILOCUS FST
 sign_snp_fst <- sign_scaffolds[which(sign_scaffolds$POOLFSTAT_FST > dt.1.fst.scan.025_thres), c(1:2)]
 
 # Save to a file
 write.table(sign_snp_fst,
-            file="results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/signf_snp_fst.txt", sep = "\t",
+            file="results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/loci/signf_snp_fst.txt", sep = "\t",
             quote = F, row.names = F, col.names = F)
 
 ## FILTER 2
-## SNP-W&C Beta > 0.25 (multilocus fst)
+## ALL  SNP-W&C Beta > 0.25  WITHIN SIGNIFICANT SCAFFOLDS IDENTIFIED WITH MULTILOCUS FST
 sign_WC_beta <- sign_scaffolds[which(sign_scaffolds$WC_Beta > dt.1.fst.scan.025_thres), c(1:2)]
 
 write.table(sign_WC_beta,
-            file="results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/signf_WC_beta.txt", sep = "\t",
+            file="results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/loci/signf_WC_beta.txt", sep = "\t",
             quote = F, row.names = F, col.names = F)
+
+
+## FILTER 3
+## ONLY SNP-W&C Beta > 0.25 WITHIN 10Kbp WINDOWS WITHIN SIGNIFICANT SCAFFOLDS IDENTIFIED WITH MULTILOCUS FST
+sign_WC_beta_window <- significant_snps_window[which(significant_snps_window$WC_Beta > dt.1.fst.scan.025_thres), c(1:2)]
+
+write.table(sign_WC_beta_window,
+            file="results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/loci/signf_WC_beta_window.txt", sep = "\t",
+            quote = F, row.names = F, col.names = F)
+
+## Savepoint_1
+#save.image("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+
+
+##### PART 2: ADDITIONAL EVIDENCE TO SUPPORT SIGNIFICANT SNPS
+#####-------------------------------------------------------
+###
+###
+### --- SNPS IN COMMON AMONG GENOME SCAN METHODS ---
+###
+###
+### METHODS::MULTILOCUS-FST; BAYPASS-XtX; BAYPASS-BFmc; SELESTIM-KLD
+
+## Upload files
+lociids_signf_WC_beta_window <- scan(file = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/loci/lociIDs_signf_WC_beta_window.txt",what = "character")
+lociids_signf_snps_core0_xtx <- scan(file = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/lociIDs_signf_snps_core0_podsQuant99.txt", what = "character")
+lociids_signf_snps_aux0_bfmc <- scan(file = "results/aggregated_data/minmaxcov_4_99/baypass_poolsnp/analysis/lociIDs_signf_snps_aux0_podsQuant99.txt", what = "character")
+lociids_signf_snps_common_kld <- scan(file = "results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/analysis/lociIDs_signf_snps_kld_common.txt", what = "character")
+
+## EXPORT THE LIST GENES ASSOCIATED WITH OUTLIER LIST
+lociids_lists <- list(fst = unique(lociids_signf_WC_beta_window),
+                      xtx = lociids_signf_snps_core0_xtx,
+                      bfmc = lociids_signf_snps_aux0_bfmc,
+                      kld = lociids_signf_snps_common_kld)
+
+venn.obj <- venn(lociids_lists, intersections=TRUE)
+
+venn.obj.intersections <- attr(venn.obj, "intersections")
+
+## TWO METHODS
+fst.xtx <- venn.obj.intersections$`fst:xtx`
+fst.kld <- venn.obj.intersections$`fst:kld`
+xtx.bfmc <- venn.obj.intersections$`xtx:bfmc`
+xtx.kld <- venn.obj.intersections$`xtx:kld`
+bfmc.kld <- venn.obj.intersections$`bfmc:kld`
+
+## THREE METHODS
+fst.xtx.kld <- venn.obj.intersections$`fst:xtx:kld`
+xtx.bfmc.kld <- venn.obj.intersections$`xtx:bfmc:kld`
+
+list_sign_methods <- list(fst_xtx = fst.xtx,
+                          fst_kld = fst.kld,
+                          xtx_bfmc = xtx.bfmc,
+                          xtx_kld = xtx.kld,
+                          bfcm_kld = bfmc.kld,
+                          fst_xtx_kld = fst.xtx.kld,
+                          xtx_bfmc_kld = xtx.bfmc.kld)
+
+## EXPORT THE LIST OF COMMON SNPS IN AT LEAST TWO TESTS
+workingdir = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/loci/"
+for (i in 1:length(list_sign_methods))
+{
+  tmp <- list_sign_methods[[i]]
+  
+  write.table(tmp,
+              file = paste0(workingdir, "signf_snps_methods", "_", names(list_sign_methods[i]), ".txt"),
+              col.names = F, row.names = F, quote = F)
+  rm(tmp)
+}
+
+## EXPORT THE ANNOTATION OF SNPS PRESENT IN THOSE LISTS
+workingdir = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/loci/"
+for (i in 1:length(list_sign_methods))
+{
+  tmp <- snps_ann[paste0(snps_ann$CHROM, "_", snps_ann$POS) %in% list_sign_methods[[i]], ]
+  
+  write.table(tmp,
+              file = paste0(workingdir, "signf_snps_methods_anno", "_", names(list_sign_methods[i]), ".txt"),
+              col.names = F, row.names = F, quote = F)
+  rm(tmp)
+}
+
+## Savepoint_2
+#save.image("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+
+##### PART 3: FUNCTIONAL ANNOTATION OF SIGNIFICANT GENES
+#####---------------------------------------------------
+###
+###
+### --- GENES IN COMMON AMONG GENOME SCAN METHODS ---
+###
+###
+
+## GET GENE IDS ASSOCIATED WITH SIGNIFICANT SNPs
+## THIS MIGHT CONTAIN GENES THAT HAS WITHIN OR OUTSIDE SNPS
+## THE "WINDOW" SIZE MAY VARY
+workingdir = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/gene/"
+for (i in 1:length(lociids_lists))
+{
+  tmp <- snps_ann[paste0(snps_ann$CHROM, "_", snps_ann$POS) %in% lociids_lists[[i]], "GENE"]
+  res <- unique(sort(do.call("c", strsplit(tmp, split="-"))))
+  
+  write.table(res,
+              file = paste0(workingdir, "geneIDs_signf", "_", names(lociids_lists[i]), ".txt"),
+              col.names = F, row.names = F, quote = F)
+  rm(tmp)
+  rm(res)
+}
+
+## GET GENES IN COMMON AMONG METHODS
+## Upload files
+genesids_fst <- scan(file = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/gene/geneIDs_signf_fst.txt",what = "character")
+genesids_xtx <- scan(file = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/gene/geneIDs_signf_xtx.txt", what = "character")
+genesids_bfmc <- scan(file = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/gene/geneIDs_signf_bfmc.txt", what = "character")
+genesids_kld <- scan(file = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/gene/geneIDs_signf_kld.txt", what = "character")
+
+## EXPORT THE LIST GENES ASSOCIATED WITH OUTLIER LIST
+genesids_lists <- list(fst = genesids_fst,
+                       xtx = genesids_xtx,
+                       bfmc = genesids_bfmc,
+                       kld = genesids_kld)
+
+venn.obj.genes <- venn(genesids_lists, intersections=TRUE)
+
+venn.obj.genes.intersections <- attr(venn.obj.genes, "intersections")
+
+## TWO METHODS
+g_fst.xtx <-  venn.obj.genes.intersections$`fst:xtx`
+g_fst.kld <-  venn.obj.genes.intersections$`fst:kld`
+g_xtx.bfmc <- venn.obj.genes.intersections$`xtx:bfmc`
+g_xtx.kld <-  venn.obj.genes.intersections$`xtx:kld`
+g_bfmc.kld <- venn.obj.genes.intersections$`bfmc:kld`
+
+## THREE METHODS
+g_fst.xtx.kld <- venn.obj.genes.intersections$`fst:xtx:kld`
+g_xtx.bfmc.kld <- venn.obj.genes.intersections$`xtx:bfmc:kld`
+
+## FOUR METHODS
+g_fst.xtx.bfmc.kld <- venn.obj.genes.intersections$`fst:xtx:bfmc:kld`
+
+## OUTPUT A TABLE CONTAINING THE GENES IDENTIFIED BY AT LEAST TWO METHODS
+gene_table <- data.frame(geneID = c(g_fst.xtx, g_fst.kld, g_xtx.bfmc, g_xtx.kld, 
+                                    g_bfmc.kld, g_fst.xtx.kld, g_xtx.bfmc.kld, g_fst.xtx.bfmc.kld),
+                         methods = c(rep("FST_XtX",14), rep("FST_KLD",2), rep("XtX_BFmc",135), rep("XtX_KLD",762), 
+                                     rep("BFmc_KLD",136), rep("FST_XtX_KLD",8), rep("XtX_BFmc_KLD",220), rep("FST_XtX_BFmc_KLD",7)),
+                         signf_level = c(rep(2, 1049), rep(3, 228), rep(4, 7))
+                         )
+
+## Add the scaffold information
+gene_table_scaffolds <- snps_ann[snps_ann$GENE %in% gene_table$geneID, c("CHROM", "GENE")] 
+colnames(gene_table_scaffolds) <- c("Scaffold","geneID")
+
+gene_table_scaffolds <- gene_table_scaffolds[!duplicated(gene_table_scaffolds$geneID), ]
+
+gene_table <- merge(gene_table, gene_table_scaffolds, by.x = 1, by.y=2, all.x=T)
+gene_table <- gene_table[, c(1, 4, 2, 3)]
+
+barplot(table(gene_table$signf_level))
+dim(gene_table)
+length(unique(gene_table$geneID)) #1284
+
+## EXPORT TABLE
+workingdir = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/gene/"
+write.table(gene_table,
+            file = paste0(workingdir, "signf_common_genes_table", ".txt"),
+            col.names = T, row.names = F, quote = F)
+
+## Savepoint_3
+#save.image("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+
+###
+###
+### --- INCLUDE FUNCTIONAL ANNOTATION OF CANDIDATE GENES ---
+###
+###
+
+## BIPAA ANNOTATION
+bipaa_annot <- read.table(file="ref/raw/func_annot/bipaa/blast2go.tsv", header = T, sep = "\t", na.strings = "")
+bipaa_annot["geneID"] <- do.call(rbind, strsplit(bipaa_annot$Sequence.Name, ".p"))[,1]
+bipaa_annot <- bipaa_annot[,c(14, 1:13)]
+
+bipaa_annot <- bipaa_annot[!duplicated(bipaa_annot$geneID), ]
+
+# GO TERMS
+bipaa_gaf <- read.table(file="ref/raw/func_annot/bipaa/blast2go.gaf", header = T, na.strings = "")
+colnames(bipaa_gaf) <- c("Sequence.Name", "go_term")
+
+bipaa_gaf["geneID"] <- do.call(rbind, strsplit(bipaa_gaf$Sequence.Name, ".p"))[,1]
+bipaa_gaf <- bipaa_gaf[,c(3, 1:2)]
+
+## ROGER KEGG TERMS 
+roger_kegg <- read.table(file = "ref/raw/func_annot/rogerio/Kegg.txt", header = T, sep = "\t", fill = T, na.strings = "")
+roger_kegg["geneID"] <- do.call(rbind, strsplit(roger_kegg$gene, ".t"))[,1]
+roger_kegg <- roger_kegg[,c(3, 1:2)]
+
+roger_kegg <- roger_kegg[!duplicated(roger_kegg$geneID), ]
+
+## MERGE "gene_table" with annotations
+gene_table_annot <- merge(gene_table, bipaa_annot, by = 1)
+gene_table_annot <- merge(gene_table_annot, roger_kegg, by = 1)
+
+## Savepoint_4
+#save.image("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+
+###
+###
+### --- INCLUDE THE GENE EXPRESSION AND THE ADAPTIVE RESPONSE ---
+###
+###
+
+## File path of the expression analysis
+plastic_biotype1_file <- "/fs/project/PAS1554/aphidrnaseq/results/response_plastic_b1_RS.txt"
+plastic_biotype4_file <- "/fs/project/PAS1554/aphidrnaseq/results/response_plastic_b4_RS.txt"
+evolved_susceptible_file <- "/fs/project/PAS1554/aphidrnaseq/results/response_evolved_b1b4_S.txt"
+evolved_resistance_file <- "/fs/project/PAS1554/aphidrnaseq/results/response_evolved_b1b4_R.txt"
+
+file_names <- c(plastic_biotype1_file, plastic_biotype4_file, 
+                evolved_susceptible_file, evolved_resistance_file)
+
+## Import
+data_std.response <- lapply(file_names, function(x){read.table(file= x, header=T)})
+
+## Change names
+names(data_std.response) <- c("plastic_b1_RS",
+                              "plastic_b4_RS",
+                              "evolved_b1b4_S",
+                              "evolved_b1b4_R")
+
+## Simplify the data
+plastic_b1_RS <- data_std.response$plastic_b1_RS[,c("name", "foldChange", "FDR", "adaptation")]
+colnames(plastic_b1_RS) <- c("geneID", "plastic_b1_RS_foldChange", "plastic_b1_RS_b1_FDR", "plastic_b1_RS_adaptation")
+
+plastic_b4_RS <- data_std.response$plastic_b4_RS[,c("name", "foldChange", "FDR", "adaptation")]
+colnames(plastic_b4_RS) <- c("geneID", "plastic_b4_RS_foldChange", "plastic_b4_RS_FDR", "plastic_b4_RS_adaptation")
+
+evolved_b1b4_S <- data_std.response$evolved_b1b4_S[,c("name", "foldChange", "FDR", "adaptation")]
+colnames(evolved_b1b4_S) <- c("geneID", "evolved_b1b4_S_foldChange", "evolved_b1b4_S_FDR", "evolved_b1b4_S_adaptation")
+
+evolved_b1b4_R <- data_std.response$evolved_b1b4_R[,c("name", "foldChange", "FDR", "adaptation")]
+colnames(evolved_b1b4_R) <- c("geneID", "evolved_b1b4_R_foldChange", "evolved_b1b4_R_FDR", "evolved_b1b4_R_adaptation")
+
+## Make a list 
+data_std.response.simple <- list(plastic_b1_RS, plastic_b4_RS, 
+                                 evolved_b1b4_S, evolved_b1b4_R)
+
+## Combine the datasets
+data_std.response.merged <- Reduce(function(x,y) {merge(x,y, by=1, all = TRUE)}, data_std.response.simple)
+
+
+## Now merge with the table with significant genes
+gene_table_annot.response <- merge(gene_table_annot, data_std.response.merged, by = 1, all.x = TRUE)
+
+## Sort by the number of significant tests
+gene_table_annot.response.sorted <- gene_table_annot.response[order(gene_table_annot.response$signf_level, decreasing = T), ]
+
+## EXPORT TABLE
+workingdir = "results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/gene/"
+write.table(gene_table_annot.response.sorted,
+            file = paste0(workingdir, "signf_common_genes_table_annotated_reponse", ".txt"),
+            col.names = T, row.names = F, quote = F, sep = "\t")
+
+
+## MAKE SOME PLOTS
+n_genes=length(unique(gene_table_annot.response.sorted$geneID))
+
+## % OF PLASTIC REPONSE IN EACH BIOTYPE
+df_1 <- data.frame(biotype = c(rep("B1", 2), rep("B4",2)),
+                  response = c(rep(c("Constitutive", "Plastic"),2)),
+                  value = c(99.343832, 0.656168, 99.0909091,0.9090909))
+
+p_1 <- ggplot(df_1 , aes(fill=response, y=value, x=biotype)) + 
+       geom_bar(position="dodge",stat="identity") +
+       labs(fill="Response") +
+       xlab("") +
+       scale_x_discrete(labels = c("Avirulent", "Virulent")) +
+       ylab("%") +
+       ylim(c(0,100)) +
+       theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                          axis.line = element_line(colour = "black"),
+                          axis.text = element_text(size = 14),
+                          axis.title.y=element_text(size=16),
+                          axis.title.x=element_text(size=16),
+                          axis.text.x = element_text(size=12, angle = 0, vjust = 0.5, hjust=0.5))
+p_1
+
+## % OF EVOLVED REPONSE IN EACH PLANT
+df_2 <- data.frame(plant = c(rep("Susceptible", 2), rep("Resistant",2)),
+                   response = c(rep(c("Constitutive", "Evolved"),2)),
+                   value = c(68.14965, 31.85035, 72.77433, 27.22567))
+
+p_2 <- ggplot(df_2 , aes(fill=response, y=value, x=plant)) + 
+  geom_bar(position="dodge",stat="identity") +
+  labs(fill="Response") +
+  xlab("") +
+  scale_x_discrete(labels = c("Resistant", "Susceptible")) +
+  ylab("%") +
+  ylim(c(0,100)) +
+  theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                     axis.line = element_line(colour = "black"),
+                     axis.text = element_text(size = 14),
+                     axis.title.y=element_text(size=16),
+                     axis.title.x=element_text(size=16),
+                     axis.text.x = element_text(size=12, angle = 0, vjust = 0.5, hjust=0.5))
+p_2
+
+## Savepoint_5
+#save.image("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+#load("results/aggregated_data/minmaxcov_4_99/signf_multilocusfst_poolsnp/sign.multilocusfst.workspace23Feb22.RData")
+
+
+
+
+
 
 
 

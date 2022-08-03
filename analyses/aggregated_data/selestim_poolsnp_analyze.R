@@ -20,19 +20,19 @@ library(lattice)
 #library(corrplot)
 library(ggplot2)
 #library(cowplot)
-#library(qvalue)
+library(qvalue)
 library(fitdistrplus)
 library(invgamma)
 library(tidyverse)
 library(gridExtra)
 library(scales)
-library(ggpubr)
+library(ggpubr) # cannot install
 library(ggsignif)
 library(xtable)
 #require(plyr)
 library(psych)
 library(viridis)
-
+library(VennDiagram)
 
 ### Recover R-renv environment
 setwd("/fs/project/PAS1554/aphidpool")
@@ -357,18 +357,24 @@ plot.delta(file = paste0(workingdir,"output_2/","summary_delta.out"))
 dev.off()
 
 ### Plot Kld
-pdf("results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/analysis//kdl_runs.pdf", # File name
+pdf("results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/analysis//kld_runs.pdf", # File name
     width = 11, height = 8.50,                                                                # Width and height in inches
     bg = "white",                                                                             # Background color
     colormodel = "cmyk",                                                                      # Color model (cmyk is required for most publications)
 )
 par(mar=c(5,5,4,1)+.1, mfrow=c(3, 1))
-plot.kld(file = paste0(workingdir,"output_0/","summary_delta.out"))
-plot.kld(file = paste0(workingdir,"output_1/","summary_delta.out"))
-plot.kld(file = paste0(workingdir,"output_2/","summary_delta.out"))
+plot.kld(file = paste0(workingdir,"output_0/","summary_delta.out"), 
+         calibration_file = paste0(workingdir,"output_0/","calibration/","summary_delta.out"), limit = 0.001)
+plot.kld(file = paste0(workingdir,"output_1/","summary_delta.out"),
+         calibration_file = paste0(workingdir,"output_1/","calibration/","summary_delta.out"), limit = 0.001)
+plot.kld(file = paste0(workingdir,"output_2/","summary_delta.out"),
+         calibration_file = paste0(workingdir,"output_2/","calibration/","summary_delta.out"), limit = 0.001)
 dev.off()
 
-### Identify significant selected SNPs
+
+###
+### -- Identify significant selected SNPs --
+###
 
 ## Load summary_delta.out for three independent SELEstim runs
 summary_delta_files <- paste0(workingdir, "output_", seq(from=0,to=2, by=1), "/", "summary_delta.out")
@@ -385,25 +391,71 @@ colnames(loci_deltas[[1]]) <- c("CHROM","POS", "REF", "ALT","locus","mean","std"
 colnames(loci_deltas[[2]]) <- c("CHROM","POS", "REF", "ALT","locus","mean","std","KLD")
 colnames(loci_deltas[[3]]) <- c("CHROM","POS", "REF", "ALT","locus","mean","std","KLD")
 
+### Calculate FDR thresholds from the data for each independent run
+## Posterior mean of KLD
+#kld_0 = loci_deltas[[1]]$KLD
+#kld_1 = loci_deltas[[2]]$KLD
+#kld_2 = loci_deltas[[3]]$KLD
+#
+## Posterior mean of the KLD NORMALIZED
+#kld_0.std = (kld_0 - mean(kld_0))/(sd(kld_0))
+#kld_1.std = (kld_1 - mean(kld_1))/(sd(kld_1))
+#kld_2.std = (kld_2 - mean(kld_2))/(sd(kld_2))
+#
+## Calculate empirical p-value
+#kld_0_empval = empPvals(stat = kld_0.std, stat0 = kld_0.std[which(kld_0.std <= quantile(kld_0, 0.9999))]) #With qvalue package
+## Threshold based on lowest empirical pvalue
+#thr_pval1ppm_0 = min(kld_0[kld_0_empval < 0.01]) #KLD
+#thr_pval1ppm_0.std = min(kld_0.std[kld_0_empval < 0.01]) #standardized KLD
+#
+#kld_1_empval = empPvals(stat = kld_1.std, stat0 = kld_1.std[which(kld_1.std <= quantile(kld_1, 0.9999))]) #With qvalue package
+## Threshold based on lowest empirical pvalue
+#thr_pval1ppm_1 = min(kld_1[kld_1_empval < 0.01]) #KLD
+#thr_pval1ppm_1.std = min(kld_1.std[kld_1_empval < 0.01]) #standardized KLD
+#
+#kld_2_empval = empPvals(stat = kld_2.std, stat0 = kld_2.std[which(kld_2.std <= quantile(kld_2, 0.9999))]) #With qvalue package
+## Threshold based on lowest empirical pvalue
+#thr_pval1ppm_2 = min(kld_2[kld_2_empval < 0.01]) #KLD
+#thr_pval1ppm_2.std = min(kld_2.std[kld_2_empval < 0.01]) #standardized KLD
+#
+#kld_thr1ppm <- c(thr_pval1ppm_0, thr_pval1ppm_1, thr_pval1ppm_2)
+#kld_thr1ppm.std <- c(thr_pval1ppm_0.std, thr_pval1ppm_1.std, thr_pval1ppm_2.std)
+
 ## Select SNPs with KDL > 95% quantile KDL in each run
-top_kdl_snps <- lapply(loci_deltas, function(x){x[which(x[,8] > quantile(x[,8], 0.95)), ]})
+top_kld_snps <- lapply(loci_deltas, function(x){x[which(x[,8] > quantile(x[,8], 0.95)), ]})
 
 ## Save Top KDL SNPs names to a file
 for (i in 1:3)
 {
-  tmp <- paste0(top_kdl_snps[[i]]$CHROM,"_", top_kdl_snps[[i]]$POS)
+  tmp <- paste0(top_kld_snps[[i]]$CHROM,"_", top_kdl_snps[[i]]$POS)
   
   write.table(tmp,
-              file = paste0(workingdir, "analysis/" ,"top5perc_empKdl_snps", "_", (i-1), ".txt"),
+              file = paste0(workingdir, "analysis/" ,"top5perc_empKld_snps", "_", (i-1), ".txt"),
               col.names = F, row.names = F, quote = F)
 }
 
 ## HOW MANY SNPS ARE IN COMMON AMONG THE INDEPENDENT RUNS?
-l0 <- paste0(top_kdl_snps[[1]]$CHROM,"_", top_kdl_snps[[1]]$POS)
-l1 <- paste0(top_kdl_snps[[2]]$CHROM,"_", top_kdl_snps[[2]]$POS)
-l2 <- paste0(top_kdl_snps[[3]]$CHROM,"_", top_kdl_snps[[3]]$POS)
+l0 <- paste0(top_kld_snps[[1]]$CHROM,"_", top_kld_snps[[1]]$POS) #13144
+l1 <- paste0(top_kld_snps[[2]]$CHROM,"_", top_kld_snps[[2]]$POS) #13143
+l2 <- paste0(top_kld_snps[[3]]$CHROM,"_", top_kld_snps[[3]]$POS) #13144
 
-venn(list(r0=l0,r1=l1,r2=l2))
+venn.obj <- venn(list(r0=l0,r1=l1,r2=l2), intersections=TRUE)
+intersections <- attr(venn.obj, "intersections")
+
+common_top_kld_snps <- intersections$`r0:r1:r2`
+
+## Save the name of significan snps identified with KLD::SelEstim
+write.table(x=common_top_kld_snps, file = "results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/analysis/lociIDs_signf_snps_kld_common.txt",
+            quote=F, row.names = F, col.names = F)
+
+## Export venn diagram to a file
+venn(list(r0=l0,r1=l1,r2=l2), intersections=TRUE)
+
+## PLOT VENN DIAGRAM
+#venn.plot <- venn.diagram(list(r0=l0,r1=l1,r2=l2),
+#                          category.names = c("run 1", "run 2", "run 3"),
+#                          fill = c("#0073C2FF", "#EFC000FF", "#868686FF"), alpha = 0.3, filename = NULL);
+#grid.draw(venn.plot)
 
 ## Savepoint_1
 ##-------------
@@ -605,6 +657,7 @@ p5
 # Create a data.frame with counts per bin/strength per pool
 df3_sel_type <- as.data.frame(table(df3$names, df3$bin, df3$mutation))
 colnames(df3_sel_type) <- c("pools", "bin", "type","counts")
+
 df3_sel_type["logCounts"] <- log10(df3_sel_type$counts)
 df3_sel_type$logCounts[is.infinite(df3_sel_type$logCounts)] <- 0
 
@@ -625,7 +678,7 @@ p6 <- ggplot(df3_sel_type, aes(fill=bin, y=logCounts, x=pools)) +
                          axis.text.x = element_text(size=12, angle = 90, vjust = 0.5, hjust=0.5))
 p6
 
-
+## COMBINED PLOT 1
 CP1 <- ggarrange(p5, p6,
                  ncol=2,
                  widths = c(2, 1),
@@ -641,6 +694,42 @@ ggsave("results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/analysis/sigma_p
        device="pdf",
        width=15,
        height=9)
+
+
+##
+## -- ISOLATE CANDIDATE SNPS IN COMMON ON THE 3 INDEPENDET RUNS --
+##
+
+## Take the row number
+selected_snps_idx <- row.names(summary_annotation[paste0(summary_annotation$CHROM,"_", summary_annotation$POS) %in% common_top_kld_snps, ])
+
+## Filter the data.frame to contain only selected snps
+df3.filt <- df3[df3$locus %in% selected_snps_idx, ]
+
+# BOXPLOT OF \sigmas 4: AS A FUNCTION OF POOL, STRENGTH CLASS AND MUTATION TYPE OF SELECTED SNPS
+p7 <- ggplot(df3.filt , aes(x=names, group=names, y=median, fill=biotype)) + 
+      geom_boxplot() + 
+      facet_grid(mutation ~ strength) +
+      scale_fill_manual(values = c("#247F00","#AB1A53"),
+                        name   = "Biotypes",
+                        breaks = c("Av", "V"),
+                        labels = c("Avirulent", "Virulent")) +
+      xlab("") +
+      ylab(expression(paste(italic(sigma)[ij], " (2",italic(Ns)[ij],")"))) +
+      #ylim(c(0, 10.5)) +
+      theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                         axis.line = element_line(colour = "black"),
+                         axis.text = element_text(size = 12),
+                         axis.title=element_text(size=20),
+                         axis.text.x = element_text(size= 12, angle = 90, vjust = 0.5, hjust=0.5))
+    
+p7
+
+## Export the information of selected loci
+common_top_kld_snps_table <- summary_annotation[paste0(summary_annotation$CHROM,"_", summary_annotation$POS) %in% common_top_kld_snps, ]
+
+write.table(x=common_top_kld_snps_table, file="results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/analysis/signf_snps_kld_common_annot_table.txt",
+            quote = F, row.names = F, col.names = T)
 
 ## Savepoint_3
 ##-------------
@@ -690,7 +779,7 @@ df6["alphaCode"] <- ifelse(df6$biotype == "Av", "A",
                            ifelse(df6$biotype == "V", "B", "C")) 
 
 ## BOXPLOT OF \sigmas: AS A FUNCTION OF BIOTYPE
-p7 <- ggplot(df6, aes(x=alphaCode, y=mean, fill=alphaCode)) + 
+p8 <- ggplot(df6, aes(x=alphaCode, y=mean, fill=alphaCode)) + 
       geom_boxplot() +
       scale_fill_manual(values = c("#247F00","#AB1A53", "#636363"),
                         name   = "Biotypes",
@@ -705,10 +794,10 @@ p7 <- ggplot(df6, aes(x=alphaCode, y=mean, fill=alphaCode)) +
                          axis.title=element_text(size=20),
                          axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))
      
-p7
+p8
 
 ## BOXPLOT OF \sigmas 2: AS A FUNCTION OF BIOTYPE AND SELECTION STRENGTH CLASS
-p8 <- ggplot(df6, aes(x=alphaCode, y=mean,fill=alphaCode)) + 
+p9 <- ggplot(df6, aes(x=alphaCode, y=mean,fill=alphaCode)) + 
       geom_boxplot() + 
       facet_grid(~ strength) +
       scale_fill_manual(values = c("#247F00","#AB1A53", "#636363"),
@@ -725,10 +814,10 @@ p8 <- ggplot(df6, aes(x=alphaCode, y=mean,fill=alphaCode)) +
                          axis.title=element_text(size=20),
                          axis.text.x = element_text(size= 12, angle = 90, vjust = 0.5, hjust=0.5))
       
-p8
+p9
 
 # BOXPLOT OF \sigmas 3: AS A FUNCTION OF BIOTYPE, STRENGTH CLASS AND MUTATION TYPE
-p9 <- ggplot(df6 , aes(x=alphaCode, y=mean,fill=alphaCode)) + 
+p10 <- ggplot(df6 , aes(x=alphaCode, y=mean,fill=alphaCode)) + 
       geom_boxplot() + 
       facet_grid(mutation ~ strength) +
       scale_fill_manual(values = c("#247F00","#AB1A53", "#636363"),
@@ -745,7 +834,7 @@ p9 <- ggplot(df6 , aes(x=alphaCode, y=mean,fill=alphaCode)) +
                          axis.title=element_text(size=20),
                          axis.text.x = element_text(size= 12, angle = 90, vjust = 0.5, hjust=0.5))
       
-p9
+p10
 
 ## BARPLOT OF THE NUMBER OF MUTATIONS OF DIFFERENT STRENGTH CLASS AND TYPE
 # Create a data.frame with counts per bin/strength per pool
@@ -755,7 +844,7 @@ df6_sel_type["logCounts"] <- log10(df6_sel_type$counts)
 df6_sel_type$logCounts[is.infinite(df6_sel_type$logCounts)] <- 0
 
 # BARPLOT WITH PROPORTIONS
-p10 <- ggplot(df6_sel_type, aes(fill=bin, y=logCounts, x=pools)) + 
+p11 <- ggplot(df6_sel_type, aes(fill=bin, y=logCounts, x=pools)) + 
        geom_bar(position="stack", stat="identity") +
        facet_grid(type ~ .) +
        scale_fill_viridis(discrete = T) +
@@ -770,9 +859,9 @@ p10 <- ggplot(df6_sel_type, aes(fill=bin, y=logCounts, x=pools)) +
                           axis.title.y=element_text(size=16),
                           axis.title.x=element_text(size=16),
                           axis.text.x = element_text(size=12, angle = 0, vjust = 0.5, hjust=0.5))
-p10
+p11
 
-CP2 <- ggarrange(p9, p10,
+CP2 <- ggarrange(p10, p11,
                  ncol=2,
                  widths = c(2, 1),
                  labels=c("A","B"),
@@ -789,12 +878,28 @@ ggsave("results/aggregated_data/minmaxcov_4_99/selestim_poolsnp/analysis/sigma_b
        height=9)
 
 
+## Filter the data.frame to contain only selected snps
+df6.filt <- df6[df6$locus %in% selected_snps, ]
 
-
-
-
-
-
+# BOXPLOT OF \sigmas 3: AS A FUNCTION OF BIOTYPE, STRENGTH CLASS AND MUTATION TYPE
+p12 <- ggplot(df6.filt , aes(x=alphaCode, y=mean,fill=alphaCode)) + 
+       geom_boxplot() + 
+       facet_grid(mutation ~ strength) +
+       scale_fill_manual(values = c("#247F00","#AB1A53", "#636363"),
+                         name   = "Biotypes",
+                         breaks = c("A", "B", "C"),
+                         labels = c("Avirulent", "Virulent", "Global")) +
+       xlab("") +
+       scale_x_discrete(labels = c("", "", "")) +
+       ylab(expression(paste(italic(sigma)[ij], " (2",italic(Ns)[ij],")"))) +
+       #ylim(c(0, 10.5)) +
+       theme_bw() + theme(panel.border = element_rect(colour = "black"), 
+                          axis.line = element_line(colour = "black"),
+                          axis.text = element_text(size = 12),
+                          axis.title=element_text(size=20),
+                          axis.text.x = element_text(size= 12, angle = 90, vjust = 0.5, hjust=0.5))
+     
+p12
 
 ## Savepoint_4
 ##-------------
