@@ -17,7 +17,7 @@
 #setwd("/fs/scratch/PAS1715/aphidpool")
 setwd("/fs/project/PAS1554/aphidpool")
 renv::restore()
-#renv::snapshot()
+renv::snapshot()
 
 ### Remove last features
 rm(list=ls())
